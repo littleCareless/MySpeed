@@ -38,4 +38,19 @@ module.exports.libreList = [
     {os: 'freebsd', arch: 'ia32', suffix: 'freebsd_386.tar.gz'},
     {os: 'freebsd', arch: 'arm', suffix: 'freebsd_armv7.tar.gz'},
     {os: 'freebsd', arch: 'arm64', suffix: 'freebsd_arm64.tar.gz'}
+];
+
+module.exports.cloudflareVersion = "1.3.4";
+module.exports.cloudflareList = [
+    // MacOS
+    {os: 'darwin', arch: 'x64', suffix: 'cfspeedtest-x86_64-apple-darwin.tar.gz'},
+    {os: 'darwin', arch: 'arm64', suffix: 'cfspeedtest-aarch64-apple-darwin.tar.gz'},
+    {os: 'darwin', arch: 'universal', suffix: 'cfspeedtest-universal-apple-darwin.tar.gz'},
+
+    // Windows
+    {os: 'win32', arch: 'x64', suffix: 'cfspeedtest-x86_64-pc-windows-msvc.zip'},
+
+    // Linux
+    {os: 'linux', arch: 'x64', suffix: 'cfspeedtest-x86_64-unknown-linux-gnu.tar.gz'},
+    {os: 'linux', arch: 'arm64', suffix: 'cfspeedtest-aarch64-unknown-linux-gnu.tar.gz'}
 ]
