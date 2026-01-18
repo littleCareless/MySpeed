@@ -1,5 +1,9 @@
 @use "@/common/styles/colors" as *
 
+$purple-primary: #9B59B6
+$purple-secondary: #8E44AD
+$purple-glow: rgba(155, 89, 182, 0.5)
+
 .analyse-area
   margin-top: 2rem
   display: flex
@@ -14,6 +18,7 @@
   margin-bottom: 2rem
   box-sizing: border-box
   user-select: none
+  position: relative
 
 .pulse
   border: $green 2px solid
@@ -26,6 +31,11 @@
     box-shadow: 0 0 0 10px #CCA92C00
   100%
     box-shadow: 0 0 0 0 #CCA92C00
+
+.test-running
+  border: 2px solid $light-gray
+  animation: none
+  position: relative
 
 .inner-container
   margin-left: 2rem

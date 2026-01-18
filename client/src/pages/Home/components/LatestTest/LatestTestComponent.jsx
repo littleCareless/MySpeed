@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useState, useRef, useMemo} from "react";
 import {faArrowDown, faArrowUp, faClockRotateLeft, faPingPongPaddleBall} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {generateRelativeTime} from "./utils";
@@ -10,6 +10,41 @@ import "./styles.sass";
 import {getIconBySpeed} from "@/common/utils/TestUtil";
 import {downloadInfo, latestTestInfo, pingInfo, uploadInfo} from "@/pages/Home/components/LatestTest/utils/dialogs";
 import {t} from "i18next";
+
+const BORDER_RADIUS = 14;
+const DASH_LENGTH = 200;
+const STROKE_WIDTH = 3;
+
+const BorderAnimation = () => {
+    const ref = useRef(null);
+    const [size, setSize] = useState({ w: 100, h: 100 });
+    
+    useEffect(() => {
+        const update = () => {
+            const parent = ref.current?.parentElement;
+            if (parent) setSize({ w: parent.offsetWidth, h: parent.offsetHeight });
+        };
+        update();
+        const timeout = setTimeout(update, 100);
+        window.addEventListener('resize', update);
+        return () => { window.removeEventListener('resize', update); clearTimeout(timeout); };
+    }, []);
+    
+    const perimeter = useMemo(() => {
+        const inner = { w: size.w - 2, h: size.h - 2 };
+        return 2 * (inner.w - 2 * BORDER_RADIUS) + 2 * (inner.h - 2 * BORDER_RADIUS) + 2 * Math.PI * BORDER_RADIUS;
+    }, [size]);
+    
+    return (
+        <svg ref={ref} style={{ position: 'absolute', inset: 0, width: size.w, height: size.h, pointerEvents: 'none', zIndex: 10 }}>
+            <rect x={1} y={1} width={size.w - 2} height={size.h - 2} rx={BORDER_RADIUS} ry={BORDER_RADIUS}
+                  fill="none" stroke="var(--blue)" strokeWidth={STROKE_WIDTH} strokeLinecap="round"
+                  strokeDasharray={`${DASH_LENGTH} ${perimeter}`}
+                  style={{ animation: `border-dash 3s linear infinite` }} />
+            <style>{`@keyframes border-dash { to { stroke-dashoffset: -${perimeter + DASH_LENGTH}; } }`}</style>
+        </svg>
+    );
+};
 
 const LatestTestComponent = () => {
     const status = useContext(StatusContext)[0];
@@ -32,9 +67,15 @@ const LatestTestComponent = () => {
     if (Object.entries(config).length === 0) return (<></>);
     if (latest === null) return (<></>);
 
+    const getAreaClass = () => {
+        if (status.running) return "analyse-area test-running";
+        if (status.paused) return "analyse-area tests-paused";
+        return "analyse-area pulse";
+    };
+
     return (
-        <div className={"analyse-area " + (status.paused ? "tests-paused" : "pulse")}>
-            {/* Ping */}
+        <div className={getAreaClass()}>
+            {status.running && <BorderAnimation />}
             <div className="inner-container">
                 <div className="container-header">
                     <FontAwesomeIcon onClick={() => setDialog(pingInfo())} icon={faPingPongPaddleBall}
@@ -47,7 +88,6 @@ const LatestTestComponent = () => {
                 </div>
             </div>
 
-            {/* Download */}
             <div className="inner-container">
                 <div className="container-header">
                     <FontAwesomeIcon onClick={() => setDialog(downloadInfo())} icon={faArrowDown}
@@ -62,7 +102,6 @@ const LatestTestComponent = () => {
 
             <div className="mobile-break"></div>
 
-            {/* Upload */}
             <div className="inner-container">
                 <div className="container-header">
                     <FontAwesomeIcon onClick={() => setDialog(uploadInfo())} icon={faArrowUp}
@@ -75,7 +114,6 @@ const LatestTestComponent = () => {
                 </div>
             </div>
 
-            {/* Latest update */}
             <div className="inner-container">
                 <div className="container-header">
                     <FontAwesomeIcon onClick={() => setDialog(latestTestInfo(latest))} icon={faClockRotateLeft}

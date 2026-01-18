@@ -17,7 +17,6 @@ import { jsonRequest, postRequest } from "@/common/utils/RequestUtil";
 import { updateInfo } from "@/common/components/Header/utils/infos";
 import { t } from "i18next";
 import { ConfigContext } from "@/common/contexts/Config";
-import { LoadingDialog } from "@/common/components/LoadingDialog";
 import { NodeContext } from "@/common/contexts/Node";
 import { WEB_URL } from "@/index";
 import { Trans } from "react-i18next";
@@ -32,8 +31,7 @@ const HeaderComponent = () => {
 
     const [setDialog] = useContext(InputDialogContext);
     const [icon, setIcon] = useState(faGear);
-    const [status, updateStatus] = useContext(StatusContext);
-    const [startedManually, setStartedManually] = useState(false);
+    const [status, updateStatus, setRunning] = useContext(StatusContext);
     const {updateTests} = useContext(SpeedtestContext);
     const [config, reloadConfig, checkConfig] = useContext(ConfigContext);
     const [updateAvailable, setUpdateAvailable] = useState("");
@@ -74,15 +72,10 @@ const HeaderComponent = () => {
             buttonText: t("dialog.okay")
         });
 
-        if (status.running) return setDialog({
-            title: t("failed"),
-            description: t("header.running"),
-            buttonText: t("dialog.okay")
-        });
+        if (status.running) return;
 
-        setStartedManually(true);
-
-        postRequest("/speedtests/run").then(updateTests).then(updateStatus).then(() => setStartedManually(false));
+        setRunning(true);
+        postRequest("/speedtests/run").then(updateTests).then(updateStatus);
     }
 
     const openDownloadPage = () => window.open(WEB_URL + "/install", "_blank");
@@ -106,7 +99,6 @@ const HeaderComponent = () => {
 
     return (
         <header>
-            <LoadingDialog isOpen={startedManually} />
             <div className="header-main">
                 <div className="header-left">
                     {config.viewMode && <h2>{t("header.title")}</h2>}
