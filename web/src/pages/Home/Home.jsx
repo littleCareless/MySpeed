@@ -15,7 +15,8 @@ const GITHUB_LINK = "https://github.com/gnmyt/myspeed";
 const COLORS = ["#22c55e", "#f59e0b", "#ef4444"];
 
 const chooseRandomColor = () => COLORS[Math.floor(Math.random() * COLORS.length)];
-const randomPosition = () => Math.random() * 80 + 10; // 10-90%
+const randomPosition = () => Math.random() * 70 + 15;
+const randomOpacity = () => 0.06 + Math.random() * 0.08;
 
 export const Home = () => {
     const navigate = useNavigate();
@@ -50,7 +51,7 @@ export const Home = () => {
         <div className="home-page">
             <section className="hero">
                 <div className="floating-icons">
-                    {Array(12).fill(0).map((_, index) => (
+                    {Array(7).fill(0).map((_, index) => (
                         <FontAwesomeIcon
                             key={index}
                             icon={index % 2 === 0 ? faArrowDown : faArrowUp}
@@ -59,8 +60,9 @@ export const Home = () => {
                                 color: chooseRandomColor(),
                                 left: `${randomPosition()}%`,
                                 top: `${randomPosition()}%`,
-                                animationDelay: `${index * 0.4}s`,
-                                animationDuration: `${3 + Math.random() * 2}s`
+                                opacity: randomOpacity(),
+                                animationDelay: `${index * 1.2 + Math.random() * 2}s`,
+                                animationDuration: `${12 + Math.random() * 8}s`
                             }}
                         />
                     ))}
