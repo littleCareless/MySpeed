@@ -1,131 +1,143 @@
 @use "@/common/styles/colors" as *
 
 .home-page
-  display: flex
-  flex-direction: column
-  height: 100vh
-  position: relative
   overflow-x: hidden
 
-  .info-area
-    user-select: none
-    pointer-events: none
-    display: flex
-    align-items: center
-    gap: 1rem
-    padding: 5rem
+.hero
+  min-height: 100vh
+  display: flex
+  flex-direction: column
+  align-items: center
+  justify-content: center
+  padding: 120px 24px 60px
+  position: relative
+  overflow: hidden
 
-    img
-      width: 5.5rem
-      height: 5.5rem
+.hero-content
+  text-align: center
+  z-index: 2
+  max-width: 650px
 
-    h1
-      font-size: 2.5rem
+.hero-title
+  font-size: 4.5rem
+  font-weight: 800
+  color: $text
+  margin: 0 0 8px
+  letter-spacing: -0.03em
 
-    h2
-      font-size: 1.3rem
+.hero-tagline
+  font-size: 1.5rem
+  font-weight: 500
+  color: $text-secondary
+  margin-bottom: 16px
 
-    h1, h2
-      margin: 0
+.hero-description
+  font-size: 1.0625rem
+  color: $text-muted
+  line-height: 1.7
+  margin-bottom: 32px
+  max-width: 520px
+  margin-left: auto
+  margin-right: auto
 
+.hero-actions
+  display: flex
+  gap: 16px
+  justify-content: center
+  flex-wrap: wrap
 
-.interface-image
-  margin-left: 30vw
-  margin-top: 16vh
-  animation: fadeIn 1s ease-in-out
-  z-index: 0
+.floating-icons
+  position: absolute
+  inset: 0
+  pointer-events: none
+  z-index: 1
+
+.floating-icon
+  position: absolute
+  font-size: 1.5rem
+  opacity: 0.1
+  animation: drift ease-in-out infinite
+
+@keyframes drift
+  0%, 100%
+    transform: translate(0, 0) rotate(0deg)
+  25%
+    transform: translate(10px, -15px) rotate(5deg)
+  50%
+    transform: translate(-5px, 10px) rotate(-5deg)
+  75%
+    transform: translate(-15px, -10px) rotate(3deg)
+
+.interface-preview
+  position: sticky
+  top: 100px
+  margin-top: 56px
+  z-index: 2
+  max-width: 1000px
+  width: 95%
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.35))
 
   img
-    width: 61vw
-    transform: rotate(12deg)
-    pointer-events: none
-    user-select: none
+    width: 100%
+    border-radius: 12px
+    transform: perspective(1000px) rotateX(25deg) scale(0.75)
+    will-change: transform
 
-.flying-icons
+.scroll-indicator
   position: absolute
-  transform: rotate(-25deg)
+  bottom: 32px
+  left: 50%
+  transform: translateX(-50%)
   display: flex
-  gap: 1rem
-  animation: spawn 1s ease-in-out
+  flex-direction: column
+  align-items: center
+  gap: 8px
+  background: none
+  border: none
+  color: $text-muted
+  font-size: 0.75rem
+  cursor: pointer
+  transition: color 0.2s ease
+  z-index: 10
+
+  &:hover
+    color: $text-secondary
 
   svg
-    font-size: 4vh
-    animation: flyAround 16s linear infinite
+    font-size: 1rem
+    animation: bounce 2s ease-in-out infinite
 
-.flying-icons:nth-child(2)
-  top: 70%
-  left: 10%
-
-.flying-icons:nth-child(3)
-  top: 30%
-  right: 10%
-
-.flying-icons:nth-child(4)
-  bottom: 50%
-  left: 12%
-
-.flying-icons:nth-child(5)
-  top: 25%
-  right: 25%
-
-.flying-icons:nth-child(6)
-  bottom: 30%
-  left: 20%
-
-
-@keyframes fadeIn
-  from
-    transform: translateY(10rem)
-    opacity: 0
-  to
-    transform: translateY(0)
-    opacity: 1
-
-@keyframes spawn
-  from
-    transform: rotate(-25deg) scale(0.2)
-    opacity: 0
-  to
-    transform: rotate(-25deg)
-    opacity: 1
-
-@keyframes flyAround
+@keyframes bounce
   0%, 100%
-    transform: translate(0, 0)
-
-  25%
-    transform: translate(0.5rem, -0.5rem)
-
+    transform: translateY(0)
   50%
-    transform: translate(-0.5rem, 0.5rem)
+    transform: translateY(6px)
 
-  75%
-    transform: translate(-0.5rem, -0.5rem)
+@media (max-width: 768px)
+  .hero-title
+    font-size: 3rem
 
+  .hero-tagline
+    font-size: 1.25rem
 
-@media screen and (max-width: 1800px)
-  .flying-icons:nth-child(6)
-    display: none
+  .hero-description
+    font-size: 1rem
 
-@media screen and (max-width: 1650px)
-  .flying-icons:nth-child(4)
-    display: none
-  .flying-icons:nth-child(2)
-    display: none
+  .interface-preview
+    margin-top: 40px
 
-@media screen and (max-width: 1250px)
-  .interface-image
-    margin-left: 20vw
-    margin-top: 10vh
+    img
+      transform: none
 
-@media screen and (max-width: 1000px)
-  .flying-icons:nth-child(3)
-    display: none
-  .flying-icons:nth-child(5)
-    right: 10rem
-    top: 20rem
+  .scroll-indicator
+    bottom: 20px
 
-@media screen and (max-width: 500px)
-  .flying-icons:nth-child(5)
-    right: 5rem
-    top: 15rem
+@media (max-width: 480px)
+  .hero-title
+    font-size: 2.5rem
+
+  .hero-tagline
+    font-size: 1.1rem
+
+  .floating-icon
+    font-size: 1.25rem

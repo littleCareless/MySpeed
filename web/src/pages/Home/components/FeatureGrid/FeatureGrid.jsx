@@ -1,39 +1,57 @@
 import "./styles.sass";
-
-import LanguageFeature from "@/common/assets/feature/language.png";
-import ViewsFeature from "@/common/assets/feature/views.png";
-import IntegrationsFeature from "@/common/assets/feature/integrations.png";
-import CronFeature from "@/common/assets/feature/cron.png";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faGlobe, faLayerGroup, faBell, faClock} from "@fortawesome/free-solid-svg-icons";
 
 export const TRANSLATIONS_LINK = "https://crowdin.com/project/myspeed";
 
+const features = [
+    {
+        icon: faGlobe,
+        title: "Multilingual",
+        description: "Available in multiple languages including English and German. Help translate on Crowdin.",
+        link: TRANSLATIONS_LINK
+    },
+    {
+        icon: faLayerGroup,
+        title: "Multiple Views",
+        description: "Choose between different visualization options to display your speed data the way you prefer."
+    },
+    {
+        icon: faBell,
+        title: "Integrations",
+        description: "Connect with Discord, Telegram, HealthChecks, custom webhooks, and more notification services."
+    },
+    {
+        icon: faClock,
+        title: "Flexible Scheduling",
+        description: "Configure tests to run every 5 minutes or every 5 hours. You decide what works for you."
+    }
+];
+
 export const FeatureGrid = () => {
     return (
-        <div className="feature-grid-section">
-            <div className="feature-grid-row">
-                <div className="feature-box">
-                    <img src={LanguageFeature} alt="Multilingual"/>
-                    <h1>Multilingual</h1>
-                    <p>MySpeed supports English, German and <a href={TRANSLATIONS_LINK} target="_blank">more languages</a>.</p>
-                </div>
-                <div className="feature-box">
-                    <img src={ViewsFeature} alt="Multiple Views"/>
-                    <h1>Multiple Views</h1>
-                    <p>Choose between different views to display your data.</p>
-                </div>
+        <section className="feature-grid-section">
+            <div className="section-header">
+                <span className="section-label">Features</span>
+                <h2>Built for your workflow</h2>
             </div>
-            <div className="feature-grid-row">
-                <div className="feature-box">
-                    <img src={IntegrationsFeature} alt="Extensible"/>
-                    <h1>Extensible</h1>
-                    <p>You can integrate MySpeed in WhatsApp, Discord, HealthChecks or your own Webhook</p>
-                </div>
-                <div className="feature-box">
-                    <img src={CronFeature} alt="Cron Jobs"/>
-                    <h1>Choose your time</h1>
-                    <p>Whether you want to check every 5 minutes or every 5 hours, MySpeed has you covered.</p>
-                </div>
+            
+            <div className="feature-grid">
+                {features.map((feature, index) => (
+                    <div key={index} className="feature-card">
+                        <div className="feature-icon">
+                            <FontAwesomeIcon icon={feature.icon}/>
+                        </div>
+                        <h3>{feature.title}</h3>
+                        <p>
+                            {feature.description}
+                            {feature.link && (
+                                <> <a href={feature.link} target="_blank" rel="noopener noreferrer">Learn more →</a></>
+                            )}
+                        </p>
+                    </div>
+                ))}
             </div>
-        </div>
+        </section>
     )
 }
