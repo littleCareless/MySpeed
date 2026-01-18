@@ -52,6 +52,7 @@
     "upload": "Optimal up-speed",
     "download": "Optimal down-speed",
     "recommendations": "Recommendations",
+    "optimal_values": "Optimal values",
     "change_provider": "Change provider",
     "password": "Change password",
     "cron": "Set frequency",
@@ -423,5 +424,9 @@
   },
   "common": {
     "back_to_top": "Back to top"
+  },
+  "optimal_values": {
+    "title": "Optimal Values",
+    "apply_recommendations": "Apply recommended values"
   }
 }
