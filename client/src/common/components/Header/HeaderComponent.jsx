@@ -5,7 +5,6 @@ import {
     faGaugeHigh,
     faGear,
     faLock,
-    faServer,
     faClose
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useEffect, useState } from "react";
@@ -102,7 +101,7 @@ const HeaderComponent = () => {
             <div className="header-main">
                 <div className="header-left">
                     {config.viewMode && <h2>{t("header.title")}</h2>}
-                    {!config.viewMode && <h2 onClick={() => navigate("/nodes")} className="h2-click"><FontAwesomeIcon icon={faServer} /> {getNodeName()}</h2>}
+                    {!config.viewMode && <h2 onClick={() => navigate("/nodes")} className="h2-click"><img src="/assets/img/logo192.png" alt="MySpeed Logo" className="header-logo" /> {getNodeName()}</h2>}
 
                     {config.previewMode && <h2 className="demo-info" onClick={showDemoDialog}>{t("preview.info")}</h2>}
                 </div>
