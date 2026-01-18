@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { t } from "i18next";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown, faArrowUp, faSignal } from "@fortawesome/free-solid-svg-icons";
-import "../DownloadChart/styles.sass";
+import { faArrowDown, faArrowUp, faPingPongPaddleBall } from "@fortawesome/free-solid-svg-icons";
+import StatisticContainer from "@/pages/Statistics/components/StatisticContainer";
 import "./styles.sass";
 
 export const ConsistencyChart = (props) => {
@@ -27,59 +27,41 @@ export const ConsistencyChart = (props) => {
     };
 
     return (
-        <div className="chart-container">
-            <div className="chart-header">
-                <h3 className="chart-title">{t("statistics.consistency.title")}</h3>
-            </div>
-            <div className="chart-body">
-                <div className="consistency-container">
-                    <div className="consistency-item">
-                        <div className="consistency-header">
-                            <FontAwesomeIcon icon={faArrowDown} className={getConsistencyColor(data.download.consistency)} />
-                            <span>{t("latest.down")}</span>
-                        </div>
-                        <div className="consistency-value">
-                            <span className={"consistency-percent " + getConsistencyColor(data.download.consistency)}>
-                                {data.download.consistency}%
-                            </span>
-                            <span className="consistency-label">{getConsistencyLabel(data.download.consistency)}</span>
-                        </div>
-                        <div className="consistency-detail">
-                            ±{data.download.stdDev} {t("latest.speed_unit")}
-                        </div>
+        <StatisticContainer title={t("statistics.consistency.title")} onClick={props.onClick}>
+            <div className="consistency-container">
+                <div className="consistency-item">
+                    <div className="consistency-info">
+                        <h2>{t("latest.down")}</h2>
+                        <p className={getConsistencyColor(data.download.consistency)}>
+                            {data.download.consistency}% - {getConsistencyLabel(data.download.consistency)}
+                        </p>
+                        <span className="consistency-detail">±{data.download.stdDev} {t("latest.speed_unit")}</span>
                     </div>
+                    <FontAwesomeIcon icon={faArrowDown} className={getConsistencyColor(data.download.consistency)} />
+                </div>
 
-                    <div className="consistency-item">
-                        <div className="consistency-header">
-                            <FontAwesomeIcon icon={faArrowUp} className={getConsistencyColor(data.upload.consistency)} />
-                            <span>{t("latest.up")}</span>
-                        </div>
-                        <div className="consistency-value">
-                            <span className={"consistency-percent " + getConsistencyColor(data.upload.consistency)}>
-                                {data.upload.consistency}%
-                            </span>
-                            <span className="consistency-label">{getConsistencyLabel(data.upload.consistency)}</span>
-                        </div>
-                        <div className="consistency-detail">
-                            ±{data.upload.stdDev} {t("latest.speed_unit")}
-                        </div>
+                <div className="consistency-item">
+                    <div className="consistency-info">
+                        <h2>{t("latest.up")}</h2>
+                        <p className={getConsistencyColor(data.upload.consistency)}>
+                            {data.upload.consistency}% - {getConsistencyLabel(data.upload.consistency)}
+                        </p>
+                        <span className="consistency-detail">±{data.upload.stdDev} {t("latest.speed_unit")}</span>
                     </div>
+                    <FontAwesomeIcon icon={faArrowUp} className={getConsistencyColor(data.upload.consistency)} />
+                </div>
 
-                    <div className="consistency-item">
-                        <div className="consistency-header">
-                            <FontAwesomeIcon icon={faSignal} className="icon-orange" />
-                            <span>{t("latest.ping")}</span>
-                        </div>
-                        <div className="consistency-value">
-                            <span className="consistency-percent icon-orange">
-                                ±{data.ping.stdDev}
-                            </span>
-                            <span className="consistency-unit">{t("latest.ping_unit")}</span>
-                            <span className="consistency-label">{t("statistics.consistency.ping_variance")}</span>
-                        </div>
+                <div className="consistency-item">
+                    <div className="consistency-info">
+                        <h2>{t("latest.ping")}</h2>
+                        <p className="icon-orange">
+                            ±{data.ping.stdDev} {t("latest.ping_unit")}
+                        </p>
+                        <span className="consistency-detail">{t("statistics.consistency.ping_variance")}</span>
                     </div>
+                    <FontAwesomeIcon icon={faPingPongPaddleBall} className="icon-orange" />
                 </div>
             </div>
-        </div>
+        </StatisticContainer>
     );
 };

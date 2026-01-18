@@ -15,7 +15,7 @@ export const LatestTestChart = (props) => {
     if (config === null) return <></>;
 
     return (
-        <StatisticContainer title={t("latest.latest")}>
+        <StatisticContainer title={t("latest.latest")} onClick={props.onClick}>
             <div className="info-container">
                 <div className="test-container">
                     <div className="test-info">
