@@ -1,0 +1,47 @@
+@use "@/common/styles/colors" as *
+
+.chart-container
+  display: flex
+  flex-direction: column
+  min-width: 16rem
+  border: 2px solid $light-gray
+  background-color: $dark-gray
+  border-radius: 1rem
+  cursor: pointer
+  transition: all 0.2s ease-in-out
+  animation: 0.3s fadeIn
+  flex: 1 0 30%
+
+  &:hover
+    border: 2px solid $green
+    transform: scale(1.05)
+
+.chart-header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 0.75rem 1rem 0.5rem 1rem
+
+.chart-title
+  color: $white
+  font-size: 16pt
+  font-weight: 700
+  margin: 0
+
+.chart-body
+  flex: 1
+  min-height: 14rem
+  padding: 0 1rem 1rem 1rem
+  position: relative
+
+@media screen and (max-width: 900px)
+  .chart-container
+    min-width: 100%
+    flex: 1 0 100%
+
+@media screen and (max-width: 500px)
+  .chart-container
+    padding: 0.5rem
+
+  .chart-body
+    min-height: 180px
