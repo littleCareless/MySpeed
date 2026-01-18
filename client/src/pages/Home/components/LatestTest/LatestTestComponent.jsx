@@ -20,14 +20,19 @@ const BorderAnimation = () => {
     const [size, setSize] = useState({ w: 100, h: 100 });
     
     useEffect(() => {
+        const parent = ref.current?.parentElement;
+        if (!parent) return;
+        
         const update = () => {
-            const parent = ref.current?.parentElement;
-            if (parent) setSize({ w: parent.offsetWidth, h: parent.offsetHeight });
+            setSize({ w: parent.offsetWidth, h: parent.offsetHeight });
         };
+        
         update();
-        const timeout = setTimeout(update, 100);
-        window.addEventListener('resize', update);
-        return () => { window.removeEventListener('resize', update); clearTimeout(timeout); };
+        
+        const resizeObserver = new ResizeObserver(update);
+        resizeObserver.observe(parent);
+        
+        return () => resizeObserver.disconnect();
     }, []);
     
     const perimeter = useMemo(() => {
@@ -36,13 +41,19 @@ const BorderAnimation = () => {
     }, [size]);
     
     return (
-        <svg ref={ref} style={{ position: 'absolute', inset: 0, width: size.w, height: size.h, pointerEvents: 'none', zIndex: 10 }}>
+        <svg ref={ref} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 10 }}>
             <rect x={1} y={1} width={size.w - 2} height={size.h - 2} rx={BORDER_RADIUS} ry={BORDER_RADIUS}
                   fill="none" stroke="var(--accent-primary)" strokeWidth={STROKE_WIDTH} strokeLinecap="round"
                   strokeDasharray={`${DASH_LENGTH} ${perimeter}`}
                   style={{ animation: `border-dash 3s linear infinite` }} />
             <style>{`@keyframes border-dash { to { stroke-dashoffset: -${perimeter + DASH_LENGTH}; } }`}</style>
         </svg>
+    );
+};
+
+const LoadingValue = ({ children }) => {
+    return (
+        <span className="loading-value">{children}</span>
     );
 };
 
@@ -84,7 +95,13 @@ const LatestTestComponent = () => {
                         className="container-subtext">{t("latest.ping_unit")}</span></h2>
                 </div>
                 <div className="container-main">
-                    <h2>{latest.ping === -1 ? "N/A" : latest.ping}</h2>
+                    <h2>
+                        {status.running ? (
+                            <LoadingValue>{latest.ping === -1 ? "N/A" : latest.ping}</LoadingValue>
+                        ) : (
+                            latest.ping === -1 ? "N/A" : latest.ping
+                        )}
+                    </h2>
                 </div>
             </div>
 
@@ -96,7 +113,13 @@ const LatestTestComponent = () => {
                         className="container-subtext">{t("latest.speed_unit")}</span></h2>
                 </div>
                 <div className="container-main">
-                    <h2>{latest.download === -1 ? "N/A" : latest.download}</h2>
+                    <h2>
+                        {status.running ? (
+                            <LoadingValue>{latest.download === -1 ? "N/A" : latest.download}</LoadingValue>
+                        ) : (
+                            latest.download === -1 ? "N/A" : latest.download
+                        )}
+                    </h2>
                 </div>
             </div>
 
@@ -110,7 +133,13 @@ const LatestTestComponent = () => {
                         className="container-subtext">{t("latest.speed_unit")}</span></h2>
                 </div>
                 <div className="container-main">
-                    <h2>{latest.upload === -1 ? "N/A" : latest.upload}</h2>
+                    <h2>
+                        {status.running ? (
+                            <LoadingValue>{latest.upload === -1 ? "N/A" : latest.upload}</LoadingValue>
+                        ) : (
+                            latest.upload === -1 ? "N/A" : latest.upload
+                        )}
+                    </h2>
                 </div>
             </div>
 
@@ -122,7 +151,13 @@ const LatestTestComponent = () => {
                         className="container-subtext">{t("latest.before")}</span></h2>
                 </div>
                 <div className="container-main">
-                    <h2>{latestTestTime}</h2>
+                    <h2>
+                        {status.running ? (
+                            <LoadingValue>{latestTestTime}</LoadingValue>
+                        ) : (
+                            latestTestTime
+                        )}
+                    </h2>
                 </div>
             </div>
         </div>
