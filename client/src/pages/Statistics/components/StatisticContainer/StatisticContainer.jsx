@@ -3,7 +3,7 @@ import "./styles.sass";
 export const StatisticContainer = (props) => {
 
     return (
-        <div className={"stats-container" + (props.size ? " container-" + props.size : "")}>
+        <div className={"stats-container" + (props.size ? " container-" + props.size : "")} onClick={props.onClick}>
             <div className="stats-header">
                 {props.title}
             </div>
