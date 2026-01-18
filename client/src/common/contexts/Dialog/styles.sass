@@ -23,9 +23,9 @@
 
 .dialog
   padding: 1.25rem
-  background-color: var(--glass-bg)
-  backdrop-filter: blur(16px)
-  -webkit-backdrop-filter: blur(16px)
+  background-color: $dark-gray
+  backdrop-filter: blur(4px)
+  -webkit-backdrop-filter: blur(4px)
   border: 1px solid $light-gray
   border-radius: 1rem
   transition: all 0.2s
@@ -91,28 +91,23 @@
   color: $accent-danger
 
 .dialog-btn
-  font-size: 14pt
-  padding: 10px 20px
-  font-weight: 600
-  border-radius: 0.5rem
+  font-size: 16pt
+  padding: 8px 15px
+  border: none
+  font-weight: 700
+  border-radius: 5px
+  color: $dark-gray
+  background-color: $green
   cursor: pointer
-  transition: all 0.2s ease
-  background-color: $darker-gray
-  color: $white
-  border: 1px solid $light-gray
+  margin-left: 5px
+  margin-right: 5px
+  transition: all 0.2s
 
 .dialog-btn:hover
-  border-color: $accent-primary
-  color: $accent-primary
-
-.dialog-btn:active
-  background-color: $light-gray
+  filter: brightness(0.8)
 
 .dialog-secondary
-  color: $accent-danger
-  border-color: $accent-danger
+  background-color: $red
 
 .dialog-secondary:hover
-  background-color: rgba(239, 68, 68, 0.1)
-  border-color: $accent-danger
-  color: $accent-danger
+  background-color: $red
