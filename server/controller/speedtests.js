@@ -69,29 +69,145 @@ module.exports.importTests = async (data) => {
     return true;
 }
 
-module.exports.listStatistics = async (days) => {
-    let dbEntries = (await tests.findAll({order: [["created", "DESC"]]}))
-        .filter((entry) => new Date(entry.created) > new Date().getTime() - (days <= 30 ? days : 30 ) * 24 * 3600000);
+module.exports.listStatistics = async (fromDate, toDate) => {
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    from.setHours(0, 0, 0, 0);
+    to.setHours(23, 59, 59, 999);
+    
+    const dbEntries = (await tests.findAll({order: [["created", "DESC"]]}))
+        .filter((entry) => {
+            const entryDate = new Date(entry.created);
+            return entryDate >= from && entryDate <= to;
+        });
 
     let notFailed = dbEntries.filter((entry) => entry.error === null);
+
+    const daysDiff = Math.ceil((to - from) / (1000 * 60 * 60 * 24));
+
+    const shouldAggregate = daysDiff > 60;
+    const aggregateWeekly = daysDiff > 180;
 
     let data = {};
     ["ping", "download", "upload", "time"].forEach(item => {
         data[item] = notFailed.map(entry => entry[item]);
     });
 
+    const hourlyData = {};
+    for (let i = 0; i < 24; i++) {
+        hourlyData[i] = { download: [], upload: [], ping: [] };
+    }
+    
+    notFailed.forEach(entry => {
+        const hour = new Date(entry.created).getHours();
+        hourlyData[hour].download.push(entry.download);
+        hourlyData[hour].upload.push(entry.upload);
+        hourlyData[hour].ping.push(entry.ping);
+    });
+
+    const hourlyAverages = Object.keys(hourlyData).map(hour => ({
+        hour: parseInt(hour),
+        download: hourlyData[hour].download.length > 0 
+            ? parseFloat((hourlyData[hour].download.reduce((a, b) => a + b, 0) / hourlyData[hour].download.length).toFixed(2))
+            : null,
+        upload: hourlyData[hour].upload.length > 0
+            ? parseFloat((hourlyData[hour].upload.reduce((a, b) => a + b, 0) / hourlyData[hour].upload.length).toFixed(2))
+            : null,
+        ping: hourlyData[hour].ping.length > 0
+            ? Math.round(hourlyData[hour].ping.reduce((a, b) => a + b, 0) / hourlyData[hour].ping.length)
+            : null,
+        count: hourlyData[hour].download.length
+    }));
+
+    const calcStdDev = (arr) => {
+        if (arr.length < 2) return 0;
+        const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
+        const squaredDiffs = arr.map(val => Math.pow(val - mean, 2));
+        return Math.sqrt(squaredDiffs.reduce((a, b) => a + b, 0) / arr.length);
+    };
+
+    const downloadValues = notFailed.map(e => e.download);
+    const uploadValues = notFailed.map(e => e.upload);
+    const pingValues = notFailed.map(e => e.ping);
+
+    const downloadMean = downloadValues.length > 0 ? downloadValues.reduce((a, b) => a + b, 0) / downloadValues.length : 0;
+    const uploadMean = uploadValues.length > 0 ? uploadValues.reduce((a, b) => a + b, 0) / uploadValues.length : 0;
+
+    const consistency = {
+        download: {
+            stdDev: parseFloat(calcStdDev(downloadValues).toFixed(2)),
+            consistency: downloadMean > 0 ? parseFloat((100 - (calcStdDev(downloadValues) / downloadMean * 100)).toFixed(1)) : 100
+        },
+        upload: {
+            stdDev: parseFloat(calcStdDev(uploadValues).toFixed(2)),
+            consistency: uploadMean > 0 ? parseFloat((100 - (calcStdDev(uploadValues) / uploadMean * 100)).toFixed(1)) : 100
+        },
+        ping: {
+            stdDev: parseFloat(calcStdDev(pingValues).toFixed(2)),
+            jitter: parseFloat(calcStdDev(pingValues).toFixed(2))
+        }
+    };
+
+    let chartData = data;
+    let chartLabels = notFailed.map((entry) => new Date(entry.created).toISOString());
+    
+    if (shouldAggregate && notFailed.length > 0) {
+        const aggregated = {};
+        
+        notFailed.forEach(entry => {
+            const date = new Date(entry.created);
+            let key;
+            
+            if (aggregateWeekly) {
+                const day = date.getDay();
+                const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+                const weekStart = new Date(date.setDate(diff));
+                key = weekStart.toISOString().split('T')[0];
+            } else {
+                key = date.toISOString().split('T')[0];
+            }
+            
+            if (!aggregated[key]) {
+                aggregated[key] = { ping: [], download: [], upload: [], time: [], count: 0 };
+            }
+            
+            aggregated[key].ping.push(entry.ping);
+            aggregated[key].download.push(entry.download);
+            aggregated[key].upload.push(entry.upload);
+            aggregated[key].time.push(entry.time);
+            aggregated[key].count++;
+        });
+
+        const sortedKeys = Object.keys(aggregated).sort((a, b) => new Date(a) - new Date(b));
+        
+        chartLabels = sortedKeys.map(key => new Date(key).toISOString());
+        chartData = {
+            ping: sortedKeys.map(key => Math.round(aggregated[key].ping.reduce((a, b) => a + b, 0) / aggregated[key].ping.length)),
+            download: sortedKeys.map(key => parseFloat((aggregated[key].download.reduce((a, b) => a + b, 0) / aggregated[key].download.length).toFixed(2))),
+            upload: sortedKeys.map(key => parseFloat((aggregated[key].upload.reduce((a, b) => a + b, 0) / aggregated[key].upload.length).toFixed(2))),
+            time: sortedKeys.map(key => Math.round(aggregated[key].time.reduce((a, b) => a + b, 0) / aggregated[key].time.length))
+        };
+    }
+
     return {
         tests: {
-            total: dbEntries.length,
-            failed: dbEntries.length - notFailed.length,
-            custom: dbEntries.filter((entry) => entry.type === "custom").length
+            total: dbEntries.length
         },
         ping: mapRounded(notFailed, "ping"),
         download: mapFixed(notFailed, "download"),
         upload: mapFixed(notFailed, "upload"),
         time: mapRounded(notFailed, "time"),
-        data,
-        labels: notFailed.map((entry) => new Date(entry.created).toISOString())
+        data: chartData,
+        labels: chartLabels,
+        hourlyAverages,
+        consistency,
+        aggregated: shouldAggregate,
+        aggregationType: aggregateWeekly ? 'weekly' : (shouldAggregate ? 'daily' : 'none'),
+        dateRange: {
+            from: fromDate,
+            to: toDate,
+            days: daysDiff
+        }
     };
 }
 

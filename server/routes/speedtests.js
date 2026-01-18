@@ -16,7 +16,19 @@ app.get("/", password(true), async (req, res) => {
 });
 
 app.get("/statistics", password(true), async (req, res) => {
-    res.json(await tests.listStatistics(req.query.days || 1));
+    const { from, to } = req.query;
+
+    if (!from || !to) {
+        return res.status(400).json({ message: "Both 'from' and 'to' date parameters are required" });
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(from)) {
+        return res.status(400).json({ message: "Invalid 'from' date format. Use YYYY-MM-DD" });
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(to)) {
+        return res.status(400).json({ message: "Invalid 'to' date format. Use YYYY-MM-DD" });
+    }
+    
+    res.json(await tests.listStatistics(from, to));
 });
 
 app.post("/run", password(false), async (req, res) => {
