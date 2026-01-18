@@ -5,7 +5,9 @@
   display: flex
   padding: 1.5rem 2rem
   border: 1px solid $light-gray
-  background-color: $dark-gray
+  background-color: var(--glass-bg)
+  backdrop-filter: blur(16px)
+  -webkit-backdrop-filter: blur(16px)
   border-radius: 1rem
   justify-content: space-between
   width: 100%
@@ -16,11 +18,13 @@
   user-select: none
   box-sizing: border-box
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1)
+  position: relative
+  overflow: hidden
 
 .speedtest:hover
-  border-color: $accent-primary
+  border-color: var(--accent-primary)
   transform: translateY(-4px)
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15)
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(16, 185, 129, 0.1)
 
 .speedtest-hidden
   visibility: hidden

@@ -25,6 +25,7 @@ import {PushOverIcon} from "@/common/assets/icons/pushover";
 import Nodes from "@/pages/Nodes";
 import Statistics from "@/pages/Statistics";
 import Home from "@/pages/Home";
+import BackgroundElements from "@/common/components/BackgroundElements";
 
 library.add(fas, fab);
 library.add(PushOverIcon);
@@ -61,6 +62,7 @@ const App = () => {
             path: "/",
             element: (
                 <Providers>
+                    <BackgroundElements/>
                     <HeaderComponent/>
                     <main><Outlet/></main>
                 </Providers>

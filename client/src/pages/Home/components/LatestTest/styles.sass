@@ -9,7 +9,9 @@ $purple-glow: rgba(139, 92, 246, 0.4)
   display: flex
   padding: 2.5rem 2rem
   border: 1px solid $light-gray
-  background-color: $dark-gray
+  background-color: var(--glass-bg)
+  backdrop-filter: blur(16px)
+  -webkit-backdrop-filter: blur(16px)
   border-radius: 1rem
   width: 100%
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1)

@@ -7,6 +7,23 @@ body, html
   background-color: $background
   font-family: "Inter", sans-serif
   font-weight: 600
+  position: relative
+
+body::before
+  content: ""
+  position: fixed
+  top: -30%
+  left: 50%
+  transform: translateX(-50%)
+  width: 150%
+  height: 80%
+  background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.06) 0%, transparent 60%)
+  pointer-events: none
+  z-index: 0
+
+#root
+  position: relative
+  z-index: 1
 
 ::-webkit-scrollbar
   width: 12px
