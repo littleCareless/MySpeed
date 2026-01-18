@@ -1,4 +1,4 @@
-import React, {useContext, useRef} from "react";
+import React, {forwardRef, useContext, useRef, useImperativeHandle} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
     faArrowDown, faArrowUp, faClockRotateLeft, faClose,
@@ -14,13 +14,15 @@ import {t} from "i18next";
 import {ConfigContext} from "@/common/contexts/Config";
 import {ToastNotificationContext} from "@/common/contexts/ToastNotification";
 
-const SpeedtestComponent = (props) => {
+const SpeedtestComponent = forwardRef((props, forwardedRef) => {
     const [setDialog] = useContext(InputDialogContext);
     const updateToast = useContext(ToastNotificationContext);
     const [config] = useContext(ConfigContext);
     const {deleteTest} = useContext(SpeedtestContext);
 
     const ref = useRef();
+
+    useImperativeHandle(forwardedRef, () => ref.current);
 
     let errorMessage = t("test.unknown_error") + " " + props.error;
 
@@ -86,6 +88,6 @@ const SpeedtestComponent = (props) => {
             </div>
         </div>
     );
-}
+});
 
 export default SpeedtestComponent;
