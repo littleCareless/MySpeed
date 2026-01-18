@@ -1,0 +1,73 @@
+@use "@/common/styles/colors" as *
+
+.consistency-container
+  display: flex
+  flex-direction: row
+  justify-content: center
+  align-items: center
+  width: 100%
+  height: 100%
+  gap: 0.5rem
+  overflow: hidden
+  box-sizing: border-box
+
+.consistency-item
+  display: flex
+  flex-direction: column
+  align-items: center
+  text-align: center
+  flex: 1
+  min-width: 0
+  padding: 0.5rem 0.25rem
+
+.consistency-header
+  display: flex
+  align-items: center
+  gap: 0.4rem
+  margin-bottom: 0.75rem
+  
+  svg
+    font-size: 1.25rem
+  
+  span
+    color: $subtext
+    font-size: 0.9rem
+    font-weight: 500
+
+.consistency-value
+  display: flex
+  flex-direction: column
+  align-items: center
+  gap: 0.15rem
+
+.consistency-percent
+  font-size: 1.75rem
+  font-weight: 700
+  white-space: nowrap
+
+.consistency-label
+  color: $subtext
+  font-size: 0.75rem
+  font-weight: 400
+
+.consistency-unit
+  color: $subtext
+  font-size: 1rem
+  font-weight: 500
+  margin-top: -0.15rem
+
+.consistency-detail
+  color: $subtext
+  font-size: 0.75rem
+  margin-top: 0.5rem
+  opacity: 0.8
+
+@media screen and (max-width: 600px)
+  .consistency-container
+    flex-direction: column
+    align-items: center
+    gap: 0.5rem
+
+  .consistency-item
+    width: 100%
+    padding: 0.25rem
