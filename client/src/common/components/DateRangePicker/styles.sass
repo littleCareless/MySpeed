@@ -1,0 +1,188 @@
+@use "@/common/styles/colors" as *
+
+.date-range-picker
+  position: relative
+  display: inline-block
+
+.date-range-trigger
+  display: flex
+  align-items: center
+  gap: 0.75rem
+  padding: 0.75rem 1.25rem
+  background-color: $darker-gray
+  border: 1px solid $light-gray
+  border-radius: 0.5rem
+  cursor: pointer
+  transition: all 0.15s ease-in-out
+  
+  &:hover
+    border-color: $green
+    background-color: $dark-gray
+
+.calendar-icon
+  color: $subtext
+  font-size: 1.1rem
+
+.date-range-text
+  color: $white
+  font-size: 1rem
+  font-weight: 500
+  white-space: nowrap
+
+.date-range-popover
+  position: absolute
+  top: calc(100% + 0.5rem)
+  left: 0
+  z-index: 1000
+  background-color: $dark-gray
+  border: 1px solid $light-gray
+  border-radius: 0.75rem
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3)
+  overflow: hidden
+  padding: 1rem
+  animation: popoverFadeIn 0.15s ease-out
+
+@keyframes popoverFadeIn
+  from
+    opacity: 0
+    transform: translateY(-8px)
+  to
+    opacity: 1
+    transform: translateY(0)
+
+.selection-hint
+  text-align: center
+  color: $subtext
+  font-size: 0.75rem
+  font-weight: 500
+  margin-bottom: 0.75rem
+  padding-bottom: 0.75rem
+  border-bottom: 1px solid $light-gray
+
+.calendar-nav
+  display: flex
+  align-items: center
+  justify-content: space-between
+  margin-bottom: 1rem
+
+.nav-btn
+  display: flex
+  align-items: center
+  justify-content: center
+  width: 2rem
+  height: 2rem
+  background: transparent
+  border: 1px solid $light-gray
+  border-radius: 0.375rem
+  color: $subtext
+  cursor: pointer
+  transition: all 0.15s ease
+  
+  &:hover:not(:disabled)
+    border-color: $green
+    color: $white
+    background-color: $light-gray
+  
+  &:disabled
+    opacity: 0.3
+    cursor: not-allowed
+
+.current-month
+  color: $white
+  font-size: 0.95rem
+  font-weight: 600
+
+.calendar-grid
+  min-width: 280px
+
+.weekdays
+  display: grid
+  grid-template-columns: repeat(7, 1fr)
+  margin-bottom: 0.5rem
+
+.weekday
+  text-align: center
+  color: $subtext
+  font-size: 0.7rem
+  font-weight: 600
+  text-transform: uppercase
+  padding: 0.5rem 0
+
+.days
+  display: grid
+  grid-template-columns: repeat(7, 1fr)
+
+.day-btn
+  display: flex
+  align-items: center
+  justify-content: center
+  width: 40px
+  height: 36px
+  background: transparent
+  border: none
+  color: $white
+  font-size: 0.85rem
+  font-weight: 500
+  cursor: pointer
+  transition: background-color 0.1s ease
+  
+  &:hover:not(.disabled):not(.selected)
+    background-color: $light-gray
+  
+  &.other-month
+    color: $subtext
+    opacity: 0.5
+  
+  &.in-range
+    background-color: rgba(69, 198, 90, 0.2)
+  
+  &.range-start
+    background-color: $green
+    color: #000
+    font-weight: 600
+    border-radius: 0.5rem 0 0 0.5rem
+    
+    &.range-end
+      border-radius: 0.5rem
+  
+  &.range-end
+    background-color: $green
+    color: #000
+    font-weight: 600
+    border-radius: 0 0.5rem 0.5rem 0
+  
+  &.today:not(.selected)
+    position: relative
+    font-weight: 600
+    
+    &::after
+      content: ""
+      position: absolute
+      bottom: 4px
+      left: 50%
+      transform: translateX(-50%)
+      width: 4px
+      height: 4px
+      background-color: $green
+      border-radius: 50%
+  
+  &.disabled
+    opacity: 0.3
+    cursor: not-allowed
+
+@media screen and (max-width: 600px)
+  .date-range-popover
+    position: fixed
+    top: 50%
+    left: 50%
+    transform: translate(-50%, -50%)
+    max-width: calc(100vw - 2rem)
+    max-height: calc(100vh - 2rem)
+    overflow-y: auto
+
+  .calendar-grid
+    min-width: unset
+
+  .day-btn
+    width: 36px
+    height: 32px
