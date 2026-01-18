@@ -1,76 +1,84 @@
 import "./styles.sass";
 import Logo from "@/common/assets/logo192.png";
-import Button from "@/common/components/Button";
-import {faBars, faBarsStaggered, faHeart} from "@fortawesome/free-solid-svg-icons";
-import {Link} from "react-router-dom";
+import {faXmark, faBars, faArrowUpRightFromSquare} from "@fortawesome/free-solid-svg-icons";
+import {faGithub} from "@fortawesome/free-brands-svg-icons";
+import {Link, useLocation} from "react-router-dom";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {useEffect, useState} from "react";
+import {useState, useEffect} from "react";
 import {DOCUMENTATION_BASE} from "@/main.jsx";
 
-export const DONATION_LINK = "https://www.ko-fi.com/gnmyt";
+export const GITHUB_LINK = "https://github.com/gnmyt/myspeed";
 
 export const Navigation = () => {
-    const [mobileOpen, setMobileOpen] = useState(true);
-    const [showScreen, setShowScreen] = useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const location = useLocation();
 
     useEffect(() => {
-        const timeout = setTimeout(() => {
-            setMobileOpen(false);
-        }, 500);
-
-        return () => clearTimeout(timeout);
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const onAnimationEnd = (event) => {
-        if (event.animationName === "navClose") {
-            setShowScreen(false);
-        }
-    }
+    useEffect(() => {
+        setMobileOpen(false);
+    }, [location]);
 
-    const openMenu = () => {
-        setMobileOpen(true);
-        setShowScreen(true);
-    }
+    const isActive = (path) => location.pathname === path;
 
     return (
         <>
-            <nav>
+            <nav className={scrolled ? "nav-scrolled" : ""}>
                 <Link className="logo-area" to="/">
-                    <img src={Logo} alt="Logo"/>
-                    <h1>MySpeed</h1>
+                    <img src={Logo} alt="MySpeed Logo"/>
+                    <span>MySpeed</span>
                 </Link>
-                <div className="nav-area">
-                    <ul>
-                        <li><Link to="/install">Install</Link></li>
-                        <li><Link to="/tutorials">Tutorials</Link></li>
-                        <li><Link to={DOCUMENTATION_BASE}>Documentation</Link></li>
-                    </ul>
-                    <Button icon={faHeart} text="Donate" color="red"
-                            onClick={() => window.open(DONATION_LINK, "_blank")}/>
+
+                <div className="nav-links">
+                    <Link to="/" className={isActive("/") ? "active" : ""}>Home</Link>
+                    <Link to="/install" className={isActive("/install") ? "active" : ""}>Install</Link>
+                    <Link to="/tutorials" className={isActive("/tutorials") ? "active" : ""}>Tutorials</Link>
+                    <a href={DOCUMENTATION_BASE} target="_blank" rel="noopener noreferrer" className="external-link">
+                        Docs
+                        <FontAwesomeIcon icon={faArrowUpRightFromSquare}/>
+                    </a>
                 </div>
-                <div className="mobile-toggle" onClick={openMenu}>
-                    <FontAwesomeIcon icon={mobileOpen ? faBarsStaggered : faBars}/>
+
+                <div className="nav-actions">
+                    <a href={GITHUB_LINK} target="_blank" rel="noopener noreferrer" className="github-link">
+                        <FontAwesomeIcon icon={faGithub}/>
+                        <span>GitHub</span>
+                    </a>
                 </div>
+
+                <button className="mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+                    <FontAwesomeIcon icon={mobileOpen ? faXmark : faBars}/>
+                </button>
             </nav>
 
-            <div className={`mobile-nav ${mobileOpen ? "" : "mobile-nav-closed"}`}
-                 onClick={() => setMobileOpen(false)} onAnimationEnd={onAnimationEnd}>
-                <Link className={`logo${showScreen ? "" : " logo-pulse"}`} to="/">
-                    <img src={Logo} alt="Logo"/>
-                    <h1>MySpeed</h1>
-                </Link>
-                {showScreen && <>
+            <div className={`mobile-nav ${mobileOpen ? "mobile-open" : ""}`}>
+                <div className="mobile-content">
+                    <Link to="/" className="mobile-logo">
+                        <img src={Logo} alt="MySpeed Logo"/>
+                        <span>MySpeed</span>
+                    </Link>
+                    
                     <div className="mobile-links">
-                        <Link to={"/install"}>Install</Link>
-                        <Link to={"/tutorials"}>Tutorials</Link>
-                        <Link to={DOCUMENTATION_BASE}>Documentation</Link>
+                        <Link to="/" className={isActive("/") ? "active" : ""}>Home</Link>
+                        <Link to="/install" className={isActive("/install") ? "active" : ""}>Install</Link>
+                        <Link to="/tutorials" className={isActive("/tutorials") ? "active" : ""}>Tutorials</Link>
+                        <a href={DOCUMENTATION_BASE} target="_blank" rel="noopener noreferrer">
+                            Docs
+                            <FontAwesomeIcon icon={faArrowUpRightFromSquare}/>
+                        </a>
+                        <a href={GITHUB_LINK} target="_blank" rel="noopener noreferrer">GitHub</a>
                     </div>
-                    <Button icon={faHeart} text="Donate" color="red"
-                            onClick={() => window.open(DONATION_LINK, "_blank")}/>
-                </>
-                }
+                </div>
             </div>
 
+            {mobileOpen && <div className="mobile-overlay" onClick={() => setMobileOpen(false)}/>}
         </>
     );
 }
