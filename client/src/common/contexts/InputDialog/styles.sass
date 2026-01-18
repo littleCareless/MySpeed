@@ -4,21 +4,31 @@
   width: 480px
 
 .dialog-input
-  font-size: 18pt
-  padding: 15px
-  font-weight: 700
+  font-size: 17pt
+  padding: 14px 16px
+  font-weight: 600
   margin-top: 15px
   margin-bottom: 15px
+  width: 100%
   background-color: $darker-gray
-  color: $subtext
+  color: $white
   border: 1px solid $light-gray
-  border-radius: 15px
+  border-radius: 0.75rem
   text-align: center
   box-sizing: border-box
   outline: none
+  transition: all 0.2s ease
+
+.dialog-input::placeholder
+  color: $subtext
 
 .dialog-input:focus
-  border: 1px solid $green
+  border-color: $accent-primary
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15)
 
 .input-error
-  border: 1px solid $red
+  border-color: $accent-danger
+  
+.input-error:focus
+  border-color: $accent-danger
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15)

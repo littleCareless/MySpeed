@@ -37,12 +37,12 @@ header
   justify-content: center
   font-size: 14pt
   background-color: $dark-gray
-  color: $green
+  color: $accent-primary
   margin: 0
 
 .header-main h2
   padding: 0.5rem 1rem
-  border-radius: 1rem
+  border-radius: 0.75rem
   margin: 0
 
 .header-main .h2-click
@@ -51,46 +51,47 @@ header
   align-items: center
   cursor: pointer
   user-select: none
+  transition: all 0.2s ease
 
   svg
     margin-right: 0.3rem
 
 .header-main .h2-click:hover
-  color: $green
+  color: $accent-primary
   background-color: $dark-gray
 
 .header-icon
   cursor: pointer
   display: flex
-
-  transition: all 50ms ease-in-out
+  transition: all 0.15s ease-in-out
   width: 30px
   height: 30px
+  color: $subtext
 
 .header-icon:hover
   transform: scale(1.1)
-  color: $green
+  color: $accent-primary
 
 .test-running
   animation: pulse 2s infinite
   border-radius: 150px
-  color: $green
+  color: $accent-primary
 
 .update-icon
   animation: pulse-update 2s infinite
   border-radius: 150px
 
 .update-icon:hover
-  color: $orange
+  color: $accent-warning
   filter: brightness(1.2)
 
 @keyframes pulse-update
   0%
-    box-shadow: 0 0 0 0 $orange
+    box-shadow: 0 0 0 0 $accent-warning
   70%
-    box-shadow: 0 0 0 10px #CCA92C00
+    box-shadow: 0 0 0 10px transparent
   100%
-    box-shadow: 0 0 0 0 #CCA92C00
+    box-shadow: 0 0 0 0 transparent
 
 @media (max-width: 768px)
   .header-main

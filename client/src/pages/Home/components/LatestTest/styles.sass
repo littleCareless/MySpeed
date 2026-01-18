@@ -1,39 +1,40 @@
 @use "@/common/styles/colors" as *
 
-$purple-primary: #9B59B6
-$purple-secondary: #8E44AD
-$purple-glow: rgba(155, 89, 182, 0.5)
+$purple-primary: #8b5cf6
+$purple-secondary: #7c3aed
+$purple-glow: rgba(139, 92, 246, 0.4)
 
 .analyse-area
   margin-top: 2rem
   display: flex
   padding: 2.5rem 2rem
-  border: transparent 1px solid
+  border: 1px solid $light-gray
   background-color: $dark-gray
-  border-radius: 15px
+  border-radius: 1rem
   width: 100%
-  transition: border 0.5s
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1)
   align-items: center
   justify-content: center
   margin-bottom: 2rem
   box-sizing: border-box
   user-select: none
   position: relative
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1)
 
 .pulse
-  border: $green 2px solid
+  border-color: $accent-primary
   animation: pulse 2s infinite
 
 @keyframes pulse
   0%
-    box-shadow: 0 0 0 0 #14AB37FF
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6)
   70%
-    box-shadow: 0 0 0 10px #CCA92C00
+    box-shadow: 0 0 0 12px rgba(16, 185, 129, 0)
   100%
-    box-shadow: 0 0 0 0 #CCA92C00
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0)
 
 .test-running
-  border: 2px solid $light-gray
+  border: 1px solid $light-gray
   animation: none
   position: relative
 
@@ -48,18 +49,18 @@ $purple-glow: rgba(155, 89, 182, 0.5)
   align-items: center
 
 .tests-paused
-  border: $orange 2px solid
+  border-color: $accent-warning
 
 .container-text
   margin: 0 0 0 25px
   color: $white
-  font-weight: 700
+  font-weight: 600
   font-size: 24pt
   white-space: nowrap
 
 .container-subtext
   color: $subtext
-  font-size: 16pt
+  font-size: 15pt
   margin-left: 10px
   font-weight: 500
 

@@ -38,7 +38,7 @@ const BorderAnimation = () => {
     return (
         <svg ref={ref} style={{ position: 'absolute', inset: 0, width: size.w, height: size.h, pointerEvents: 'none', zIndex: 10 }}>
             <rect x={1} y={1} width={size.w - 2} height={size.h - 2} rx={BORDER_RADIUS} ry={BORDER_RADIUS}
-                  fill="none" stroke="var(--blue)" strokeWidth={STROKE_WIDTH} strokeLinecap="round"
+                  fill="none" stroke="var(--accent-primary)" strokeWidth={STROKE_WIDTH} strokeLinecap="round"
                   strokeDasharray={`${DASH_LENGTH} ${perimeter}`}
                   style={{ animation: `border-dash 3s linear infinite` }} />
             <style>{`@keyframes border-dash { to { stroke-dashoffset: -${perimeter + DASH_LENGTH}; } }`}</style>
@@ -117,7 +117,7 @@ const LatestTestComponent = () => {
             <div className="inner-container">
                 <div className="container-header">
                     <FontAwesomeIcon onClick={() => setDialog(latestTestInfo(latest))} icon={faClockRotateLeft}
-                                     className="container-icon icon-blue help-icon"/>
+                                     className="container-icon icon-green help-icon"/>
                     <h2 className="container-text">{t("latest.latest")}<span
                         className="container-subtext">{t("latest.before")}</span></h2>
                 </div>

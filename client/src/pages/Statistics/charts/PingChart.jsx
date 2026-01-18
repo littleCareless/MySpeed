@@ -30,15 +30,15 @@ const PingChart = (props) => {
         maintainAspectRatio: false,
         plugins: {
             tooltip: {
-                backgroundColor: 'hsl(220, 35%, 11%)',
-                titleColor: 'hsl(210, 20%, 92%)',
-                bodyColor: 'hsl(215, 15%, 60%)',
-                borderColor: 'hsl(220, 25%, 20%)',
+                backgroundColor: 'hsl(215, 28%, 10%)',
+                titleColor: 'hsl(210, 40%, 96%)',
+                bodyColor: 'hsl(215, 20%, 65%)',
+                borderColor: 'hsl(215, 25%, 22%)',
                 borderWidth: 1,
-                padding: 12,
-                cornerRadius: 8,
+                padding: 14,
+                cornerRadius: 10,
                 displayColors: true,
-                boxPadding: 6,
+                boxPadding: 8,
                 callbacks: {
                     label: (item) => `${item.dataset.label}: ${item.formattedValue} ${t("latest.ping_unit")}`
                 }
@@ -47,10 +47,11 @@ const PingChart = (props) => {
                 position: "bottom",
                 labels: {
                     usePointStyle: true,
-                    pointStyle: 'rect',
+                    pointStyle: 'circle',
                     padding: 20,
                     font: {
-                        size: 12
+                        size: 12,
+                        weight: 500
                     }
                 }
             }
@@ -59,14 +60,14 @@ const PingChart = (props) => {
             x: {
                 reverse: false,
                 grid: {
-                    color: 'hsla(220, 25%, 20%, 0.5)',
+                    color: 'hsla(215, 25%, 22%, 0.4)',
                     drawBorder: false
                 },
                 border: {
                     display: false
                 },
                 ticks: {
-                    color: 'hsl(215, 15%, 50%)',
+                    color: 'hsl(215, 20%, 50%)',
                     maxTicksLimit: 5,
                     callback: function(value, index) {
                         const date = new Date(filteredData.labels[index]);
@@ -78,14 +79,14 @@ const PingChart = (props) => {
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: 'hsla(220, 25%, 20%, 0.5)',
+                    color: 'hsla(215, 25%, 22%, 0.4)',
                     drawBorder: false
                 },
                 border: {
                     display: false
                 },
                 ticks: {
-                    color: 'hsl(215, 15%, 50%)'
+                    color: 'hsl(215, 20%, 50%)'
                 }
             }
         },
@@ -95,11 +96,11 @@ const PingChart = (props) => {
         },
         elements: {
             line: {
-                tension: 0.4,
-                borderWidth: 2
+                tension: 0.35,
+                borderWidth: 2.5
             },
             point: {
-                radius: 4,
+                radius: 3,
                 hoverRadius: 6,
                 hoverBorderWidth: 2
             }
@@ -112,26 +113,26 @@ const PingChart = (props) => {
             {
                 label: t("latest.ping"),
                 data: filteredData.data,
-                borderColor: 'hsl(32, 85%, 55%)',
+                borderColor: 'hsl(38, 92%, 50%)',
                 backgroundColor: (context) => {
                     const ctx = context.chart.ctx;
                     const gradient = ctx.createLinearGradient(0, 0, 0, context.chart.height);
-                    gradient.addColorStop(0, 'hsla(32, 85%, 55%, 0.3)');
-                    gradient.addColorStop(1, 'hsla(32, 85%, 55%, 0.02)');
+                    gradient.addColorStop(0, 'hsla(38, 92%, 50%, 0.25)');
+                    gradient.addColorStop(1, 'hsla(38, 92%, 50%, 0.01)');
                     return gradient;
                 },
                 fill: true,
-                pointBackgroundColor: 'hsl(32, 85%, 55%)',
-                pointBorderColor: 'hsl(32, 85%, 55%)',
+                pointBackgroundColor: 'hsl(38, 92%, 50%)',
+                pointBorderColor: 'hsl(38, 92%, 50%)',
                 order: 1
             },
             {
                 label: t("statistics.average"),
                 data: filteredData.labels.map(() => filteredData.average),
-                borderColor: 'hsl(0, 70%, 55%)',
+                borderColor: 'hsl(330, 80%, 60%)',
                 backgroundColor: 'transparent',
                 borderWidth: 2,
-                borderDash: [],
+                borderDash: [6, 4],
                 pointRadius: 0,
                 pointHoverRadius: 0,
                 fill: false,

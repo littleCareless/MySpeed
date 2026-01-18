@@ -6,13 +6,14 @@
     left: 0
     right: 0
     bottom: 0
-    background-color: rgba(0, 0, 0, 0.8)
+    background-color: rgba(0, 0, 0, 0.85)
     display: flex
     align-items: center
     justify-content: center
     z-index: 1000
     padding: 2rem
-    animation: modalFadeIn 0.2s ease-out
+    animation: modalFadeIn 0.25s ease-out
+    backdrop-filter: blur(4px)
 
 .chart-modal-content
     position: relative
@@ -21,10 +22,11 @@
     max-width: 1400px
     max-height: 90vh
     background-color: $dark-gray
-    border: 2px solid $light-gray
+    border: 1px solid $light-gray
     border-radius: 1rem
     overflow: hidden
-    animation: scaleIn 0.2s ease-out
+    animation: scaleIn 0.25s ease-out
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4)
 
     &.modal-chart
         width: 100%
@@ -50,6 +52,7 @@
     &:hover
         background: $light-gray
         color: $white
+        border-color: $accent-primary
 
 .chart-modal-body
     padding: 1.5rem
@@ -61,10 +64,12 @@
         border: none
         transform: none !important
         cursor: default
+        box-shadow: none
 
         &:hover
             border: none
             transform: none !important
+            box-shadow: none
 
     &.modal-body-chart
         .chart-container
@@ -141,7 +146,7 @@
 @keyframes scaleIn
     from
         opacity: 0
-        transform: scale(0.95)
+        transform: scale(0.96)
     to
         opacity: 1
         transform: scale(1)

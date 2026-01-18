@@ -18,18 +18,18 @@ const HourlyChart = (props) => {
                 {
                     label: t("latest.down"),
                     data: props.hourlyAverages.map(h => h.download),
-                    backgroundColor: 'hsla(187, 100%, 50%, 0.7)',
-                    borderColor: 'hsl(187, 100%, 50%)',
-                    borderWidth: 1,
-                    borderRadius: 4
+                    backgroundColor: 'hsla(187, 94%, 43%, 0.75)',
+                    borderColor: 'hsl(187, 94%, 43%)',
+                    borderWidth: 1.5,
+                    borderRadius: 6
                 },
                 {
                     label: t("latest.up"),
                     data: props.hourlyAverages.map(h => h.upload),
-                    backgroundColor: 'hsla(280, 70%, 60%, 0.7)',
-                    borderColor: 'hsl(280, 70%, 60%)',
-                    borderWidth: 1,
-                    borderRadius: 4
+                    backgroundColor: 'hsla(258, 90%, 66%, 0.75)',
+                    borderColor: 'hsl(258, 90%, 66%)',
+                    borderWidth: 1.5,
+                    borderRadius: 6
                 }
             ]
         };
@@ -40,15 +40,15 @@ const HourlyChart = (props) => {
         maintainAspectRatio: false,
         plugins: {
             tooltip: {
-                backgroundColor: 'hsl(220, 35%, 11%)',
-                titleColor: 'hsl(210, 20%, 92%)',
-                bodyColor: 'hsl(215, 15%, 60%)',
-                borderColor: 'hsl(220, 25%, 20%)',
+                backgroundColor: 'hsl(215, 28%, 10%)',
+                titleColor: 'hsl(210, 40%, 96%)',
+                bodyColor: 'hsl(215, 20%, 65%)',
+                borderColor: 'hsl(215, 25%, 22%)',
                 borderWidth: 1,
-                padding: 12,
-                cornerRadius: 8,
+                padding: 14,
+                cornerRadius: 10,
                 displayColors: true,
-                boxPadding: 6,
+                boxPadding: 8,
                 callbacks: {
                     label: (item) => `${item.dataset.label}: ${item.formattedValue} ${t("latest.speed_unit")}`,
                     afterBody: (items) => {
@@ -65,7 +65,8 @@ const HourlyChart = (props) => {
                     pointStyle: 'rect',
                     padding: 20,
                     font: {
-                        size: 12
+                        size: 12,
+                        weight: 500
                     }
                 }
             }
@@ -73,28 +74,28 @@ const HourlyChart = (props) => {
         scales: {
             x: {
                 grid: {
-                    color: 'hsla(220, 25%, 20%, 0.5)',
+                    color: 'hsla(215, 25%, 22%, 0.4)',
                     drawBorder: false
                 },
                 border: {
                     display: false
                 },
                 ticks: {
-                    color: 'hsl(215, 15%, 50%)',
+                    color: 'hsl(215, 20%, 50%)',
                     maxRotation: 0
                 }
             },
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: 'hsla(220, 25%, 20%, 0.5)',
+                    color: 'hsla(215, 25%, 22%, 0.4)',
                     drawBorder: false
                 },
                 border: {
                     display: false
                 },
                 ticks: {
-                    color: 'hsl(215, 15%, 50%)'
+                    color: 'hsl(215, 20%, 50%)'
                 }
             }
         }

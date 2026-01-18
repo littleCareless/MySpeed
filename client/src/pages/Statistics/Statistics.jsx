@@ -26,22 +26,22 @@ import i18n, {t} from "i18next";
 import "./styles.sass";
 
 ChartJS.register(ArcElement, Tooltip, CategoryScale, LinearScale, PointElement, LineElement, Title, Legend, BarElement, RadialLinearScale, Filler);
-ChartJS.defaults.color = "hsl(215, 15%, 55%)";
-ChartJS.defaults.font.color = "hsl(215, 15%, 55%)";
+ChartJS.defaults.color = "hsl(215, 20%, 55%)";
+ChartJS.defaults.font.color = "hsl(215, 20%, 55%)";
 ChartJS.defaults.font.family = "Inter, sans-serif";
-ChartJS.defaults.font.weight = 400;
+ChartJS.defaults.font.weight = 500;
 ChartJS.defaults.font.size = 11;
-ChartJS.defaults.elements.line.tension = 0.4;
-ChartJS.defaults.elements.line.borderWidth = 2;
+ChartJS.defaults.elements.line.tension = 0.35;
+ChartJS.defaults.elements.line.borderWidth = 2.5;
 ChartJS.defaults.elements.point.radius = 0;
-ChartJS.defaults.elements.point.hoverRadius = 4;
+ChartJS.defaults.elements.point.hoverRadius = 5;
 ChartJS.defaults.elements.point.hoverBorderWidth = 2;
 ChartJS.defaults.elements.arc.borderWidth = 0;
 ChartJS.defaults.plugins.legend.labels.usePointStyle = true;
 ChartJS.defaults.plugins.legend.labels.pointStyle = 'circle';
 ChartJS.defaults.plugins.legend.labels.padding = 16;
-ChartJS.defaults.plugins.legend.labels.boxWidth = 6;
-ChartJS.defaults.plugins.legend.labels.boxHeight = 6;
+ChartJS.defaults.plugins.legend.labels.boxWidth = 8;
+ChartJS.defaults.plugins.legend.labels.boxHeight = 8;
 
 
 export const Statistics = () => {
@@ -111,9 +111,9 @@ export const Statistics = () => {
             case 'consistency':
                 return <ConsistencyChart consistency={statistics.consistency}/>;
             case 'download':
-                return <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 100%, 50%)" />;
+                return <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 94%, 43%)" />;
             case 'upload':
-                return <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="upload" titleKey="latest.up" color="hsl(280, 70%, 60%)" />;
+                return <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="upload" titleKey="latest.up" color="hsl(258, 90%, 66%)" />;
             case 'ping':
                 return <PingChart labels={statistics.labels} data={statistics.data}/>;
             case 'hourly':
@@ -146,8 +146,8 @@ export const Statistics = () => {
             <LatestTestChart test={latestTest} onClick={() => setExpandedChart('latest')}/>
             <ConsistencyChart consistency={statistics.consistency} onClick={() => setExpandedChart('consistency')}/>
 
-            <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 100%, 50%)" onClick={() => setExpandedChart('download')}/>
-            <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="upload" titleKey="latest.up" color="hsl(280, 70%, 60%)" onClick={() => setExpandedChart('upload')}/>
+            <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 94%, 43%)" onClick={() => setExpandedChart('download')}/>
+            <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="upload" titleKey="latest.up" color="hsl(258, 90%, 66%)" onClick={() => setExpandedChart('upload')}/>
             <PingChart labels={statistics.labels} data={statistics.data} onClick={() => setExpandedChart('ping')}/>
 
             <HourlyChart hourlyAverages={statistics.hourlyAverages} onClick={() => setExpandedChart('hourly')}/>
