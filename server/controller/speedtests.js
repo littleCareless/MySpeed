@@ -84,9 +84,20 @@ module.exports.listStatistics = async (fromDate, toDate) => {
     let notFailed = dbEntries.filter((entry) => entry.error === null);
 
     const daysDiff = Math.ceil((to - from) / (1000 * 60 * 60 * 24));
+    const dataPointCount = notFailed.length;
 
-    const shouldAggregate = daysDiff > 60;
-    const aggregateWeekly = daysDiff > 180;
+    const MAX_CHART_POINTS = 100;
+    
+    let aggregationType = 'none';
+    if (dataPointCount > MAX_CHART_POINTS) {
+        if (daysDiff > 180 || dataPointCount > MAX_CHART_POINTS * 10) {
+            aggregationType = 'weekly';
+        } else if (daysDiff > 7 || dataPointCount > MAX_CHART_POINTS * 3) {
+            aggregationType = 'daily';
+        } else {
+            aggregationType = 'hourly';
+        }
+    }
 
     let data = {};
     ["ping", "download", "upload", "time"].forEach(item => {
@@ -151,20 +162,23 @@ module.exports.listStatistics = async (fromDate, toDate) => {
     let chartData = data;
     let chartLabels = notFailed.map((entry) => new Date(entry.created).toISOString());
     
-    if (shouldAggregate && notFailed.length > 0) {
+    if (aggregationType !== 'none' && notFailed.length > 0) {
         const aggregated = {};
         
         notFailed.forEach(entry => {
             const date = new Date(entry.created);
             let key;
             
-            if (aggregateWeekly) {
+            if (aggregationType === 'weekly') {
                 const day = date.getDay();
                 const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-                const weekStart = new Date(date.setDate(diff));
+                const weekStart = new Date(date);
+                weekStart.setDate(diff);
                 key = weekStart.toISOString().split('T')[0];
-            } else {
+            } else if (aggregationType === 'daily') {
                 key = date.toISOString().split('T')[0];
+            } else {
+                key = date.toISOString().substring(0, 13);
             }
             
             if (!aggregated[key]) {
@@ -180,7 +194,12 @@ module.exports.listStatistics = async (fromDate, toDate) => {
 
         const sortedKeys = Object.keys(aggregated).sort((a, b) => new Date(a) - new Date(b));
         
-        chartLabels = sortedKeys.map(key => new Date(key).toISOString());
+        chartLabels = sortedKeys.map(key => {
+            if (aggregationType === 'hourly') {
+                return new Date(key + ':00:00.000Z').toISOString();
+            }
+            return new Date(key).toISOString();
+        });
         chartData = {
             ping: sortedKeys.map(key => Math.round(aggregated[key].ping.reduce((a, b) => a + b, 0) / aggregated[key].ping.length)),
             download: sortedKeys.map(key => parseFloat((aggregated[key].download.reduce((a, b) => a + b, 0) / aggregated[key].download.length).toFixed(2))),
@@ -201,8 +220,8 @@ module.exports.listStatistics = async (fromDate, toDate) => {
         labels: chartLabels,
         hourlyAverages,
         consistency,
-        aggregated: shouldAggregate,
-        aggregationType: aggregateWeekly ? 'weekly' : (shouldAggregate ? 'daily' : 'none'),
+        aggregated: aggregationType !== 'none',
+        aggregationType,
         dateRange: {
             from: fromDate,
             to: toDate,
