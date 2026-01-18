@@ -20,7 +20,7 @@ import LatestTestChart from "@/pages/Statistics/charts/LatestTestChart";
 import PingChart from "@/pages/Statistics/charts/PingChart";
 import OverviewChart from "@/pages/Statistics/charts/OverviewChart";
 import AverageChart from "@/pages/Statistics/charts/AverageChart";
-import HourlyChart from "@/pages/Statistics/charts/HourlyChart";
+import HourlyChart from "@/pages/Statistics/charts/HourlyChart.jsx";
 import ConsistencyChart from "@/pages/Statistics/charts/ConsistencyChart";
 import i18n, {t} from "i18next";
 import "./styles.sass";
