@@ -210,7 +210,8 @@ module.exports.listStatistics = async (fromDate, toDate) => {
 
     return {
         tests: {
-            total: dbEntries.length
+            total: dbEntries.length,
+            failed: dbEntries.length - notFailed.length
         },
         ping: mapRounded(notFailed, "ping"),
         download: mapFixed(notFailed, "download"),
