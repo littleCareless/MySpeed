@@ -21,8 +21,7 @@ import {StatusContext} from "@/common/contexts/Status";
 import {InputDialogContext} from "@/common/contexts/InputDialog";
 import {ThemeContext} from "@/common/contexts/Theme";
 import {baseRequest, patchRequest, postRequest} from "@/common/utils/RequestUtil";
-import {creditsInfo} from "@/common/components/Dropdown/utils/infos";
-import {levelOptions, selectOptions} from "@/common/components/Dropdown/utils/options";
+ import {levelOptions, selectOptions} from "@/common/components/Dropdown/utils/options";
 import {parseCron, stringifyCron} from "@/common/components/Dropdown/utils/utils";
 import {t} from "i18next";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -146,8 +145,6 @@ const DropdownComponent = ({isOpen, switchDropdown}) => {
         } else postRequest("/speedtests/continue").then(updateStatus);
     }
 
-    const showCredits = () => setDialog({title: "MySpeed", description: creditsInfo(), buttonText: t("dialog.close")});
-
     const showProviderDetails = () => setDialog({title: t("dropdown.provider"), description: config.previewMessage, buttonText: t("dialog.close")});
 
     const handleThemeToggle = () => {
@@ -167,7 +164,6 @@ const DropdownComponent = ({isOpen, switchDropdown}) => {
         {hr: true, key: 2},
         {run: handleThemeToggle, icon: isDarkMode ? faSun : faMoon, text: t(isDarkMode ? "dropdown.light_mode" : "dropdown.dark_mode"), allowView: true},
         {run: () => setShowLanguageDialog(true), icon: faGlobeEurope, text: t("dropdown.language"), allowView: true},
-        {run: showCredits, icon: faInfo, text: t("dropdown.info"), allowView: true, previewHidden: true},
         {run: showProviderDetails, icon: faInfo, text: t("dropdown.provider"), previewShown: true}
     ];
 
