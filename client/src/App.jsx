@@ -16,6 +16,7 @@ import {ThemeProvider} from "@/common/contexts/Theme";
 import i18n from './i18n';
 import Loading from "@/pages/Loading";
 import Error from "@/pages/Error";
+import RouteError from "@/pages/RouteError";
 import {ToastNotificationProvider} from "@/common/contexts/ToastNotification";
 import {NodeProvider} from "@/common/contexts/Node";
 import {library} from '@fortawesome/fontawesome-svg-core';
@@ -65,6 +66,7 @@ const App = () => {
                     <main><Outlet/></main>
                 </Providers>
             ),
+            errorElement: <RouteError />,
             children: [
                 {path: "/", element: <Home/>},
                 {path: "/nodes", element: <Nodes/>},

@@ -1,31 +1,27 @@
 import React, {useContext, useEffect, useRef, useState} from "react";
 import "./styles.sass";
 import {
-    faArrowDown,
-    faArrowUp,
     faCircleNodes,
     faClock,
     faGlobeEurope,
     faInfo,
     faKey,
     faPause,
-    faPingPongPaddleBall,
     faPlay,
-    faWandMagicSparkles,
     faCheck,
     faExclamationTriangle, 
     faSliders, 
     faHardDrive,
     faMoon,
-    faSun
+    faSun,
+    faGauge
 } from "@fortawesome/free-solid-svg-icons";
 import {ConfigContext} from "@/common/contexts/Config";
 import {StatusContext} from "@/common/contexts/Status";
 import {InputDialogContext} from "@/common/contexts/InputDialog";
 import {ThemeContext} from "@/common/contexts/Theme";
-import {baseRequest, jsonRequest, patchRequest, postRequest} from "@/common/utils/RequestUtil";
-import {creditsInfo, recommendationsInfo} from "@/common/components/Dropdown/utils/infos";
-import {levelOptions, selectOptions} from "@/common/components/Dropdown/utils/options";
+import {baseRequest, patchRequest, postRequest} from "@/common/utils/RequestUtil";
+ import {levelOptions, selectOptions} from "@/common/components/Dropdown/utils/options";
 import {parseCron, stringifyCron} from "@/common/components/Dropdown/utils/utils";
 import {t} from "i18next";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -35,6 +31,7 @@ import {IntegrationDialog} from "@/common/components/IntegrationDialog";
 import LanguageDialog from "@/common/components/LanguageDialog";
 import ProviderDialog from "@/common/components/ProviderDialog";
 import StorageDialog from "@/common/components/StorageDialog";
+import OptimalValuesDialog from "@/common/components/OptimalValuesDialog";
 
 const DropdownComponent = ({isOpen, switchDropdown}) => {
     const [config, reloadConfig] = useContext(ConfigContext);
@@ -49,6 +46,7 @@ const DropdownComponent = ({isOpen, switchDropdown}) => {
     const [showLanguageDialog, setShowLanguageDialog] = useState(false);
     const [showProviderDialog, setShowProviderDialog] = useState(false);
     const [showStorageDialog, setShowStorageDialog] = useState(false);
+    const [showOptimalValuesDialog, setShowOptimalValuesDialog] = useState(false);
     const ref = useRef();
 
     useEffect(() => {
@@ -84,36 +82,6 @@ const DropdownComponent = ({isOpen, switchDropdown}) => {
             onSuccess: value => patchRequest(`/config/${key}`, {value: postValue(value)})
                 .then(res => showFeedback(!res.ok ? "dropdown.changes_unsaved" : undefined))
         }), 160);
-    }
-
-    const updatePing = async () => patchDialog("ping", (value) => ({
-        title: t("update.ping_title"), placeholder: t("update.ping_placeholder"), value
-    }));
-
-    const updateUpload = async () => patchDialog("upload", (value) => ({
-        title: t("update.upload_title"), placeholder: t("update.upload_placeholder"), value
-    }));
-
-    const updateDownload = async () => patchDialog("download", (value) => ({
-        title: t("update.download_title"), placeholder: t("update.download_placeholder"), value
-    }));
-
-    const recommendedSettings = async () => {
-        const result = await jsonRequest("/recommendations");
-
-        if (!result.message) {
-            setDialog({
-                title: t("update.recommendations_set"),
-                description: recommendationsInfo(result.ping, result.download, result.upload),
-                buttonText: t("dialog.apply"),
-                onSuccess: async () => {
-                    await patchRequest("/config/ping", {value: result.ping});
-                    await patchRequest("/config/download", {value: result.download});
-                    await patchRequest("/config/upload", {value: result.upload});
-                    showFeedback();
-                }
-            });
-        } else setDialog({title: t("update.recommendations_title"), description: t("info.recommendations_error"), buttonText: t("dialog.okay")});
     }
 
     const updatePassword = async () => {
@@ -177,8 +145,6 @@ const DropdownComponent = ({isOpen, switchDropdown}) => {
         } else postRequest("/speedtests/continue").then(updateStatus);
     }
 
-    const showCredits = () => setDialog({title: "MySpeed", description: creditsInfo(), buttonText: t("dialog.close")});
-
     const showProviderDetails = () => setDialog({title: t("dropdown.provider"), description: config.previewMessage, buttonText: t("dialog.close")});
 
     const handleThemeToggle = () => {
@@ -187,10 +153,7 @@ const DropdownComponent = ({isOpen, switchDropdown}) => {
     };
 
     const options = [
-        {run: updatePing, icon: faPingPongPaddleBall, text: t("dropdown.ping")},
-        {run: updateUpload, icon: faArrowUp, text: t("dropdown.upload")},
-        {run: updateDownload, icon: faArrowDown, text: t("dropdown.download")},
-        {run: recommendedSettings, icon: faWandMagicSparkles, text: t("dropdown.recommendations")},
+        {run: () => setShowOptimalValuesDialog(true), icon: faGauge, text: t("dropdown.optimal_values")},
         {hr: true, key: 1},
         {run: () => setShowProviderDialog(true), icon: faSliders, text: t("dropdown.change_provider")},
         {run: () => setShowStorageDialog(true), icon: faHardDrive, text: t("dropdown.storage")},
@@ -201,7 +164,6 @@ const DropdownComponent = ({isOpen, switchDropdown}) => {
         {hr: true, key: 2},
         {run: handleThemeToggle, icon: isDarkMode ? faSun : faMoon, text: t(isDarkMode ? "dropdown.light_mode" : "dropdown.dark_mode"), allowView: true},
         {run: () => setShowLanguageDialog(true), icon: faGlobeEurope, text: t("dropdown.language"), allowView: true},
-        {run: showCredits, icon: faInfo, text: t("dropdown.info"), allowView: true, previewHidden: true},
         {run: showProviderDetails, icon: faInfo, text: t("dropdown.provider"), previewShown: true}
     ];
 
@@ -211,6 +173,7 @@ const DropdownComponent = ({isOpen, switchDropdown}) => {
             {showLanguageDialog && <LanguageDialog onClose={() => setShowLanguageDialog(false)}/>}
             {showProviderDialog && <ProviderDialog onClose={() => setShowProviderDialog(false)}/>}
             {showStorageDialog && <StorageDialog onClose={() => setShowStorageDialog(false)}/>}
+            {showOptimalValuesDialog && <OptimalValuesDialog onClose={() => setShowOptimalValuesDialog(false)}/>}
             <div className={`dropdown ${isOpen ? '' : 'dropdown-invisible'}`} ref={ref}>
                 <div className="dropdown-content">
                     <h2>{t("dropdown.settings")}</h2>

@@ -5,7 +5,12 @@ const tests = require("../controller/speedtests");
 const axios = require("axios");
 
 async function generateOpenGraphImage(req) {
-  const test = await tests.listStatistics(1);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  const formatDate = (d) => d.toISOString().split('T')[0];
+  const test = await tests.listStatistics(formatDate(yesterday), formatDate(today));
 
   if (!test.download.avg || !test.upload.avg || !test.ping.avg) {
     throw new Error("Error fetching OpenGraph data");
