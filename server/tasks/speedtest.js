@@ -5,7 +5,6 @@ const controller = require("../controller/recommendations");
 const parseData = require('../util/providers/parseData');
 let {setState, sendRunning, sendError, sendFinished} = require("./integrations");
 const serverController = require("../controller/servers");
-const cloudflareTask = require("./cloudflare");
 
 let isRunning = false;
 
@@ -48,14 +47,7 @@ module.exports.run = async (retryAuto = false) => {
     if (serverId === "none")
         serverId = undefined;
 
-    let speedtest;
-    if (mode === "cloudflare") {
-        const startTime = new Date().getTime();
-        speedtest = await cloudflareTask();
-        speedtest = {...speedtest, elapsed: (new Date().getTime() - startTime) / 1000};
-    } else {
-        speedtest = await (retryAuto ? speedTest(mode) : speedTest(mode, serverId));
-    }
+    let speedtest = await (retryAuto ? speedTest(mode) : speedTest(mode, serverId));
 
     if (mode === "ookla" && speedtest.server) {
         if (serverId === undefined) await config.updateValue("ooklaId", speedtest.server?.id);
