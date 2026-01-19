@@ -59,8 +59,8 @@
 
 .dialog-buttons
   display: flex
-  margin-top: 8px
-  justify-content: right
+  margin-top: 1rem
+  justify-content: flex-end
   gap: 0.5rem
 
 .dialog-text
@@ -91,23 +91,28 @@
   color: $accent-danger
 
 .dialog-btn
-  font-size: 16pt
-  padding: 8px 15px
-  border: none
-  font-weight: 700
-  border-radius: 5px
-  color: $dark-gray
-  background-color: $green
+  display: flex
+  align-items: center
+  justify-content: center
+  gap: 0.5rem
+  padding: 10px 16px
+  background-color: $darker-gray
+  border: 1px solid $light-gray
+  border-radius: 0.5rem
+  color: $white
+  font-size: 12pt
+  font-weight: 600
   cursor: pointer
-  margin-left: 5px
-  margin-right: 5px
-  transition: all 0.2s
+  transition: all 0.15s ease
 
-.dialog-btn:hover
-  filter: brightness(0.8)
+  &:hover
+    border-color: $accent-primary
+    color: $accent-primary
+
+  svg
+    font-size: 0.9rem
 
 .dialog-secondary
-  background-color: $red
-
-.dialog-secondary:hover
-  background-color: $red
+  &:hover
+    border-color: $accent-danger
+    color: $accent-danger
