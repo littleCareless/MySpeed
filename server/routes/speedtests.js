@@ -9,15 +9,26 @@ app.get("/", password(true), async (req, res) => {
     if (req.query.limit && /[^0-9]/.test(req.query.limit))
         return res.status(400).json({message: "You need to provide a correct number in the limit parameter"});
 
-    res.json(await tests.listTests(req.query.hours || 24, req.query.start, req.query.limit));
-});
+    if (req.query.afterId && /[^0-9]/.test(req.query.afterId))
+        return res.status(400).json({message: "You need to provide a correct number in the afterId parameter"});
 
-app.get("/averages", password(true), async (req, res) => {
-    res.json(await tests.listAverage(req.query.days || 7));
+    res.json(await tests.listTests(req.query.afterId, req.query.limit));
 });
 
 app.get("/statistics", password(true), async (req, res) => {
-    res.json(await tests.listStatistics(req.query.days || 1));
+    const { from, to } = req.query;
+
+    if (!from || !to) {
+        return res.status(400).json({ message: "Both 'from' and 'to' date parameters are required" });
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(from)) {
+        return res.status(400).json({ message: "Invalid 'from' date format. Use YYYY-MM-DD" });
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(to)) {
+        return res.status(400).json({ message: "Invalid 'to' date format. Use YYYY-MM-DD" });
+    }
+    
+    res.json(await tests.listStatistics(from, to));
 });
 
 app.post("/run", password(false), async (req, res) => {

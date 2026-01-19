@@ -1,4 +1,4 @@
-import React, {useContext, useRef} from "react";
+import React, {forwardRef, useContext, useRef, useImperativeHandle} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
     faArrowDown, faArrowUp, faClockRotateLeft, faClose,
@@ -10,18 +10,19 @@ import {deleteRequest} from "@/common/utils/RequestUtil";
 import "./styles.sass";
 import {averageResultDialog, resultDialog} from "@/pages/Home/components/Speedtest/utils/infos";
 import {errors} from "@/pages/Home/components/Speedtest/utils/errors";
-import {tooltips} from "@/pages/Home/components/Speedtest/utils/tooltips";
 import {t} from "i18next";
 import {ConfigContext} from "@/common/contexts/Config";
 import {ToastNotificationContext} from "@/common/contexts/ToastNotification";
 
-function SpeedtestComponent(props) {
+const SpeedtestComponent = forwardRef((props, forwardedRef) => {
     const [setDialog] = useContext(InputDialogContext);
     const updateToast = useContext(ToastNotificationContext);
     const [config] = useContext(ConfigContext);
-    const updateTests = useContext(SpeedtestContext)[1];
+    const {deleteTest} = useContext(SpeedtestContext);
 
     const ref = useRef();
+
+    useImperativeHandle(forwardedRef, () => ref.current);
 
     let errorMessage = t("test.unknown_error") + " " + props.error;
 
@@ -46,7 +47,7 @@ function SpeedtestComponent(props) {
         if (ref.current == null) return;
         ref.current.classList.add("speedtest-hidden");
         updateToast(t("test.deleted"), "green", faTrashCan);
-        setTimeout(() => updateTests(), 300);
+        setTimeout(() => deleteTest(props.id), 300);
     }
 
     const showInfoDialog = () => {
@@ -64,14 +65,10 @@ function SpeedtestComponent(props) {
     }
 
     return (
-        <div className="speedtest" ref={ref}>
+        <div className="speedtest" ref={ref} onClick={props.error ? showErrorDialog : showInfoDialog}>
             <div className="date">
-                <div className="tooltip-element">
-                    <FontAwesomeIcon icon={props.error ? faInfo : faClockRotateLeft}
-                                     className={"container-icon help-icon icon-" + (props.error ? "error" : "blue")}
-                                     onClick={props.error ? showErrorDialog : showInfoDialog}/>
-                    <span className="tooltip">{tooltips()[props.type]}</span>
-                </div>
+                <FontAwesomeIcon icon={props.error ? faInfo : faClockRotateLeft}
+                                 className={"container-icon icon-" + (props.error ? "error" : "blue")}/>
                 <h2 className="date-text">{(t("time." + (isAverage ? "on" : "at"))) + " " + timeString}</h2>
             </div>
             <div className="speedtest-row">
@@ -91,6 +88,6 @@ function SpeedtestComponent(props) {
             </div>
         </div>
     );
-}
+});
 
 export default SpeedtestComponent;

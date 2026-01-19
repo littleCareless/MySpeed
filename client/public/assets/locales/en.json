@@ -46,13 +46,13 @@
     "changes_applied": "Your changes have been saved.",
     "language_changed": "The language has been changed.",
     "provider_changed": "The provider has been changed.",
-    "view_changed": "The view has been changed.",
     "changes_unsaved": "Your changes were not applied. Check your input.",
     "invalid": "Input invalid",
     "ping": "Optimal ping",
     "upload": "Optimal up-speed",
     "download": "Optimal down-speed",
     "recommendations": "Recommendations",
+    "optimal_values": "Optimal values",
     "change_provider": "Change provider",
     "password": "Change password",
     "cron": "Set frequency",
@@ -61,18 +61,23 @@
     "pause_tests": "Pause tests",
     "resume_tests": "Resume tests",
     "language": "Change language",
-    "view": "Switch view",
-    "info": "About the project",
+    "light_mode": "Light mode",
+    "dark_mode": "Dark mode",
+    "theme_switched_light": "Switched to light mode",
+    "theme_switched_dark": "Switched to dark mode",
     "provider": "About the provider",
     "integrations": "Integrations"
   },
+  "about": {
+    "title": "About MySpeed",
+    "description": "MySpeed is an open-source speedtest analysis software that records your internet speed for up to 30 days.",
+    "github": "GitHub",
+    "website": "Website",
+    "donate": "Donate",
+    "translate": "Translate",
+    "made_by": "Made with"
+  },
   "options": {
-    "time": {
-      "24hours": "24 hours (default)",
-      "2days": "2 days (Total)",
-      "7days": "7 days (average)",
-      "30days": "30 days (average)"
-    },
     "cron": {
       "continuous": "Continuous (every minute)",
       "frequent": "Very often (every 30 minutes)",
@@ -84,6 +89,10 @@
       "no_access": "No Access",
       "read_access": "Read-only Access"
     }
+  },
+  "page": {
+    "overview": "Overview",
+    "statistics": "Statistics"
   },
   "update": {
     "ping_title": "Set optimal ping (ms)",
@@ -122,6 +131,7 @@
     "paused": "Speedtests are currently paused. Please continue them if you want to do one.",
     "running": "A speedtest is already running. Please wait a moment.",
     "admin_login": "Admin Login",
+    "servers": "Servers",
     "beta": {
       "title": "Beta Version",
       "description": "This feature is still in beta. If you find any bugs, please report them <Link>here</Link>."
@@ -165,7 +175,6 @@
     "before": "before"
   },
   "info": {
-    "credits": "<MSpeed>MySpeed</MSpeed> is a open source project provided by GNMYT. Leave a star on <Github>GitHub</Github> or <Donate>donate</Donate> to support the project.",
     "recommendations_error": "You have to do at least 10 tests to get an average. It doesn't matter if the tests were done manually or automatically.",
     "recommendations_info": "Based on the last 10 tests, it was found that the optimal ping was <Bold>{{ping}} ms</Bold>, the download at <Bold>{{down}} Mbps</Bold> and the upload at <Bold>{{up}} Mbps</Bold>. It is best to orientate yourself on your internet contract and only adopt it if it matches that.",
     "update": "An update to version {{version}} is available. See <Changes>the changes</Changes> and <DLLink>download the update</DLLink>.",
@@ -199,6 +208,8 @@
   "test": {
     "not_available": "There are currently no tests available",
     "no_latest": "There is no current test available. Please perform a test or wait until the next test is performed.",
+    "loading_more": "Loading more tests...",
+    "no_more_tests": "No more tests to load",
     "unknown_error": "Unknown error:",
     "failed": "Test failed",
     "recheck": "Please check as far as possible if this happens often.",
@@ -214,21 +225,8 @@
       "from_you": "by you",
       "automatic": "automatically"
     },
-    "tooltips": {
-      "custom": "Custom",
-      "average": "Average",
-      "auto": "Automated"
-    },
-    "views": {
-      "list": "Test Overview",
-      "statistic": "Test statistics"
-    },
     "overview": {
-      "title": "Test overview of the last {{amount}}",
-      "1": "24 hours",
-      "2": "2 days",
-      "3": "7 days",
-      "4": "30 days"
+      "title_range": "Test overview from {{from}} to {{to}}"
     }
   },
   "errors": {
@@ -243,6 +241,7 @@
     "invalid_view": "Invalid view"
   },
   "statistics": {
+    "average": "Average",
     "overview": {
       "total_title": "Total tests",
       "total_description": "The number of executed tests",
@@ -275,7 +274,41 @@
       "avg": "Average",
       "down": "Download values",
       "up": "Upload values"
+    },
+    "hourly": {
+      "title": "Speed by Time of Day",
+      "sample_count": "Tests"
+    },
+    "consistency": {
+      "title": "Connection Stability",
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor",
+      "ping_variance": "Ping variance"
+    },
+    "aggregation": {
+      "daily": "Showing daily averages",
+      "weekly": "Showing weekly averages"
     }
+  },
+  "calendar": {
+    "select_range": "Select date range",
+    "select_start": "Select start date",
+    "select_end": "Select end date",
+    "from": "From",
+    "to": "To",
+    "last_7_days": "Last 7 days",
+    "last_30_days": "Last 30 days",
+    "last_90_days": "Last 90 days",
+    "last_year": "Last year",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat",
+    "sun": "Sun"
   },
   "nodes": {
     "add": "Add server",
@@ -396,5 +429,23 @@
         "send_config_updates": "Send configuration updates"
       }
     }
+  },
+  "common": {
+    "back_to_top": "Back to top"
+  },
+  "not_found": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "back_home": "Back to Home"
+  },
+  "route_error": {
+    "title": "Oops!",
+    "subtitle": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again or go back to the home page.",
+    "reload": "Reload Page"
+  },
+  "optimal_values": {
+    "title": "Optimal Values",
+    "use_recommended": "Use recommended"
   }
 }

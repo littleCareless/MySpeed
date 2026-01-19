@@ -1,16 +1,30 @@
-@import "@/common/styles/colors"
+@use "@/common/styles/colors" as *
 
 .speedtest
   margin-bottom: 2rem
   display: flex
   padding: 1.5rem 2rem
-  border: $darker-white 1px solid
-  border-radius: 15px
+  border: 1px solid $light-gray
+  background-color: var(--glass-bg)
+  backdrop-filter: blur(16px)
+  -webkit-backdrop-filter: blur(16px)
+  border-radius: 1rem
   justify-content: space-between
-  width: 80rem
+  width: 100%
   flex-wrap: wrap
-  transition: all 0.5s
-  animation: fadeIn 0.5s
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1)
+  animation: fadeIn 0.5s ease-out
+  cursor: pointer
+  user-select: none
+  box-sizing: border-box
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1)
+  position: relative
+  overflow: hidden
+
+.speedtest:hover
+  border-color: var(--accent-primary)
+  transform: translateY(-4px)
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(16, 185, 129, 0.1)
 
 .speedtest-hidden
   visibility: hidden
@@ -28,14 +42,14 @@
 .date-text
   margin: 0 0 0 1rem
   font-size: 24pt
-  font-weight: 900
-  color: $darker-white
+  font-weight: 700
+  color: $subtext
 
 .speedtest-text
   margin: 0
   font-size: 28pt
-  font-weight: 900
-  color: $darker-white
+  font-weight: 700
+  color: $subtext
 
 .tooltip-element
   position: relative
@@ -49,7 +63,7 @@
   left: 50%
   margin-left: -60px
   background-color: $dark-gray
-  color: $darker-white
+  color: $subtext
   text-align: center
   border-radius: 6px
   padding: 5px 10px
@@ -69,18 +83,6 @@
 .tooltip-element:hover .tooltip
   opacity: 1
 
-@media (max-width: 1351px)
-  .speedtest
-    width: 70rem
-
-@media (max-width: 1200px)
-  .speedtest
-    width: 60rem
-
-@media (max-width: 1050px)
-  .speedtest
-    width: 40rem
-
 @media (max-width: 900px)
   .tooltip-element .tooltip
     font-size: 14pt
@@ -88,12 +90,9 @@
 @media (max-width: 730px)
   .tooltip-element .tooltip
     font-size: 11pt
-  .speedtest
-    width: 33rem
 
 @media (max-width: 605px)
   .speedtest
-    width: 25rem
     flex-direction: column
   .date-text
     font-size: 32pt
@@ -104,9 +103,3 @@
   .tooltip-element .tooltip
     font-size: 12pt
     padding: 5px 4px
-  .speedtest
-    width: 18rem
-
-@media (max-width: 360px)
-  .speedtest
-    width: 16rem

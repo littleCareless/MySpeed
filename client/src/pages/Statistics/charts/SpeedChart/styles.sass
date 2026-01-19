@@ -1,0 +1,53 @@
+@use "@/common/styles/colors" as *
+
+.chart-container
+  display: flex
+  flex-direction: column
+  min-width: 16rem
+  border: 1px solid $light-gray
+  background-color: var(--glass-bg)
+  backdrop-filter: blur(16px)
+  -webkit-backdrop-filter: blur(16px)
+  border-radius: 1rem
+  cursor: pointer
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1)
+  animation: 0.3s fadeIn ease-out
+  flex: 1 0 30%
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1)
+
+  &:hover
+    border-color: $accent-primary
+    transform: translateY(-4px)
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15)
+
+.chart-header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding: 1rem 1.25rem 0.75rem 1.25rem
+
+.chart-title
+  color: $white
+  font-size: 15pt
+  font-weight: 600
+  margin: 0
+  letter-spacing: -0.01em
+
+.chart-body
+  flex: 1
+  min-height: 14rem
+  padding: 0 1.25rem 1.25rem 1.25rem
+  position: relative
+
+@media screen and (max-width: 900px)
+  .chart-container
+    min-width: 100%
+    flex: 1 0 100%
+
+@media screen and (max-width: 500px)
+  .chart-container
+    padding: 0.5rem
+    border-radius: 0.75rem
+
+  .chart-body
+    min-height: 180px
