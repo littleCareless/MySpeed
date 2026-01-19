@@ -3,7 +3,7 @@ import {faDocker, faLinux, faWindows} from "@fortawesome/free-brands-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheck, faCopy} from "@fortawesome/free-solid-svg-icons";
 import {useState} from "react";
-import {DOCUMENTATION_BASE} from "@/main.jsx";
+import {DOCUMENTATION_BASE} from "@/common/utils/constants";
 
 export const INSTALL_CMD = "bash <(curl -sSL https://install.myspeed.dev)";
 
