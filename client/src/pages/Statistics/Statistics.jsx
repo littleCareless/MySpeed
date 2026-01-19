@@ -26,6 +26,32 @@ import i18n, {t} from "i18next";
 import "./styles.sass";
 
 ChartJS.register(ArcElement, Tooltip, CategoryScale, LinearScale, PointElement, LineElement, Title, Legend, BarElement, RadialLinearScale, Filler);
+
+const crosshairPlugin = {
+    id: 'crosshair',
+    afterDraw: (chart) => {
+        if (chart.tooltip?._active?.length) {
+            const ctx = chart.ctx;
+            const activePoint = chart.tooltip._active[0];
+            const x = activePoint.element.x;
+            const topY = chart.scales.y.top;
+            const bottomY = chart.scales.y.bottom;
+
+            ctx.save();
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(x, topY);
+            ctx.lineTo(x, bottomY);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'hsla(215, 20%, 65%, 0.6)';
+            ctx.stroke();
+            ctx.restore();
+        }
+    }
+};
+
+ChartJS.register(crosshairPlugin);
+
 ChartJS.defaults.color = "hsl(215, 20%, 55%)";
 ChartJS.defaults.font.color = "hsl(215, 20%, 55%)";
 ChartJS.defaults.font.family = "Inter, sans-serif";
