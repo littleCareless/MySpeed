@@ -65,9 +65,17 @@
     "dark_mode": "Dark mode",
     "theme_switched_light": "Switched to light mode",
     "theme_switched_dark": "Switched to dark mode",
-    "info": "About the project",
     "provider": "About the provider",
     "integrations": "Integrations"
+  },
+  "about": {
+    "title": "About MySpeed",
+    "description": "MySpeed is an open-source speedtest analysis software that records your internet speed for up to 30 days.",
+    "github": "GitHub",
+    "website": "Website",
+    "donate": "Donate",
+    "translate": "Translate",
+    "made_by": "Made with"
   },
   "options": {
     "cron": {
@@ -123,6 +131,7 @@
     "paused": "Speedtests are currently paused. Please continue them if you want to do one.",
     "running": "A speedtest is already running. Please wait a moment.",
     "admin_login": "Admin Login",
+    "servers": "Servers",
     "beta": {
       "title": "Beta Version",
       "description": "This feature is still in beta. If you find any bugs, please report them <Link>here</Link>."
@@ -166,7 +175,6 @@
     "before": "before"
   },
   "info": {
-    "credits": "<MSpeed>MySpeed</MSpeed> is a open source project provided by GNMYT. Leave a star on <Github>GitHub</Github> or <Donate>donate</Donate> to support the project.",
     "recommendations_error": "You have to do at least 10 tests to get an average. It doesn't matter if the tests were done manually or automatically.",
     "recommendations_info": "Based on the last 10 tests, it was found that the optimal ping was <Bold>{{ping}} ms</Bold>, the download at <Bold>{{down}} Mbps</Bold> and the upload at <Bold>{{up}} Mbps</Bold>. It is best to orientate yourself on your internet contract and only adopt it if it matches that.",
     "update": "An update to version {{version}} is available. See <Changes>the changes</Changes> and <DLLink>download the update</DLLink>.",
@@ -425,8 +433,19 @@
   "common": {
     "back_to_top": "Back to top"
   },
+  "not_found": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or has been moved.",
+    "back_home": "Back to Home"
+  },
+  "route_error": {
+    "title": "Oops!",
+    "subtitle": "Something went wrong",
+    "description": "An unexpected error occurred. Please try again or go back to the home page.",
+    "reload": "Reload Page"
+  },
   "optimal_values": {
     "title": "Optimal Values",
-    "apply_recommendations": "Apply recommended values"
+    "use_recommended": "Use recommended"
   }
 }
