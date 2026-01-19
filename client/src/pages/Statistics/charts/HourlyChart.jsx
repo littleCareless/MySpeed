@@ -1,9 +1,12 @@
 import { Bar } from "react-chartjs-2";
-import { useMemo } from "react";
+import { useMemo, useContext } from "react";
 import { t } from "i18next";
+import { ThemeContext } from "@/common/contexts/Theme";
 import "./SpeedChart/styles.sass";
 
 const HourlyChart = (props) => {
+    const [isDarkMode] = useContext(ThemeContext);
+
     const chartData = useMemo(() => {
         if (!props.hourlyAverages) return { labels: [], datasets: [] };
 
@@ -35,15 +38,22 @@ const HourlyChart = (props) => {
         };
     }, [props.hourlyAverages]);
 
+    const gridColor = isDarkMode ? 'rgba(42, 52, 65, 0.6)' : 'rgba(203, 213, 225, 0.8)';
+    const tickColor = isDarkMode ? 'hsl(215, 20%, 50%)' : 'hsl(215, 25%, 40%)';
+    const tooltipBg = isDarkMode ? 'hsl(215, 28%, 10%)' : 'hsl(0, 0%, 100%)';
+    const tooltipTitle = isDarkMode ? 'hsl(210, 40%, 96%)' : 'hsl(215, 25%, 20%)';
+    const tooltipBody = isDarkMode ? 'hsl(215, 20%, 65%)' : 'hsl(215, 15%, 40%)';
+    const tooltipBorder = isDarkMode ? 'hsl(215, 25%, 22%)' : 'hsl(215, 20%, 85%)';
+
     const chartOptions = {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
             tooltip: {
-                backgroundColor: 'hsl(215, 28%, 10%)',
-                titleColor: 'hsl(210, 40%, 96%)',
-                bodyColor: 'hsl(215, 20%, 65%)',
-                borderColor: 'hsl(215, 25%, 22%)',
+                backgroundColor: tooltipBg,
+                titleColor: tooltipTitle,
+                bodyColor: tooltipBody,
+                borderColor: tooltipBorder,
                 borderWidth: 1,
                 padding: 14,
                 cornerRadius: 10,
@@ -64,6 +74,7 @@ const HourlyChart = (props) => {
                     usePointStyle: true,
                     pointStyle: 'rect',
                     padding: 20,
+                    color: tickColor,
                     font: {
                         size: 12,
                         weight: 500
@@ -74,28 +85,28 @@ const HourlyChart = (props) => {
         scales: {
             x: {
                 grid: {
-                    color: 'hsla(215, 25%, 22%, 0.4)',
+                    color: gridColor,
                     drawBorder: false
                 },
                 border: {
                     display: false
                 },
                 ticks: {
-                    color: 'hsl(215, 20%, 50%)',
+                    color: tickColor,
                     maxRotation: 0
                 }
             },
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: 'hsla(215, 25%, 22%, 0.4)',
+                    color: gridColor,
                     drawBorder: false
                 },
                 border: {
                     display: false
                 },
                 ticks: {
-                    color: 'hsl(215, 20%, 50%)'
+                    color: tickColor
                 }
             }
         }

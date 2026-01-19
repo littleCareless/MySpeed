@@ -19,13 +19,6 @@ export const ConsistencyChart = (props) => {
         return 'icon-red';
     };
 
-    const getConsistencyLabel = (value) => {
-        if (value >= 90) return t("statistics.consistency.excellent");
-        if (value >= 70) return t("statistics.consistency.good");
-        if (value >= 50) return t("statistics.consistency.fair");
-        return t("statistics.consistency.poor");
-    };
-
     return (
         <StatisticContainer title={t("statistics.consistency.title")} onClick={props.onClick}>
             <div className="consistency-container">
@@ -33,7 +26,7 @@ export const ConsistencyChart = (props) => {
                     <div className="consistency-info">
                         <h2>{t("latest.down")}</h2>
                         <p className={getConsistencyColor(data.download.consistency)}>
-                            {data.download.consistency}% - {getConsistencyLabel(data.download.consistency)}
+                            {data.download.consistency}%
                         </p>
                         <span className="consistency-detail">±{data.download.stdDev} {t("latest.speed_unit")}</span>
                     </div>
@@ -44,7 +37,7 @@ export const ConsistencyChart = (props) => {
                     <div className="consistency-info">
                         <h2>{t("latest.up")}</h2>
                         <p className={getConsistencyColor(data.upload.consistency)}>
-                            {data.upload.consistency}% - {getConsistencyLabel(data.upload.consistency)}
+                            {data.upload.consistency}%
                         </p>
                         <span className="consistency-detail">±{data.upload.stdDev} {t("latest.speed_unit")}</span>
                     </div>
