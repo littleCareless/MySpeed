@@ -146,7 +146,7 @@ const LatestTestComponent = () => {
             <div className="inner-container">
                 <div className="container-header">
                     <FontAwesomeIcon onClick={() => setDialog(latestTestInfo(latest))} icon={faClockRotateLeft}
-                                     className="container-icon icon-green help-icon"/>
+                                     className="container-icon icon-blue help-icon"/>
                     <h2 className="container-text">{t("latest.latest")}<span
                         className="container-subtext">{t("latest.before")}</span></h2>
                 </div>
