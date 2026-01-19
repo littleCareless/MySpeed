@@ -93,15 +93,14 @@ export const Dialog = () => {
                                value={upload} onChange={(e) => setUpload(e.target.value)}/>
                     </div>
                 </div>
-
-                {recommendations && (
-                    <div className="optimal-values-recommendation" onClick={applyRecommendations}>
-                        <FontAwesomeIcon icon={faWandMagicSparkles}/>
-                        <span>{t("optimal_values.apply_recommendations")}</span>
-                    </div>
-                )}
             </div>
             <div className="dialog-buttons">
+                {recommendations && (
+                    <button className="dialog-btn" onClick={applyRecommendations}>
+                        <FontAwesomeIcon icon={faWandMagicSparkles}/>
+                        <span>{t("optimal_values.use_recommended")}</span>
+                    </button>
+                )}
                 <button className="dialog-btn" onClick={update}>{t("dialog.update")}</button>
             </div>
         </>
