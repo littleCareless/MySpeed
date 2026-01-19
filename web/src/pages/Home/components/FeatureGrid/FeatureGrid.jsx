@@ -1,54 +1,64 @@
 import "./styles.sass";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faGlobe, faLayerGroup, faBell, faClock} from "@fortawesome/free-solid-svg-icons";
-
-export const TRANSLATIONS_LINK = "https://crowdin.com/project/myspeed";
+import {faGlobe, faLayerGroup, faBell, faClock, faShieldHalved, faChartLine} from "@fortawesome/free-solid-svg-icons";
 
 const features = [
     {
         icon: faGlobe,
         title: "Multilingual",
-        description: "Available in multiple languages including English and German. Help translate on Crowdin.",
-        link: TRANSLATIONS_LINK
+        description: "Available in multiple languages with community translations from around the world.",
+        color: "blue"
     },
     {
         icon: faLayerGroup,
         title: "Multiple Views",
-        description: "Choose between different visualization options to display your speed data the way you prefer."
+        description: "Choose from list, graph, or compact views to visualize your speed data.",
+        color: "purple"
     },
     {
         icon: faBell,
         title: "Integrations",
-        description: "Connect with Discord, Telegram, HealthChecks, custom webhooks, and more notification services."
+        description: "Get notified via Discord, Telegram, Pushover, webhooks and more.",
+        color: "orange"
     },
     {
         icon: faClock,
         title: "Flexible Scheduling",
-        description: "Configure tests to run every 5 minutes or every 5 hours. You decide what works for you."
+        description: "Run tests at any interval - from every 5 minutes to every 5 hours.",
+        color: "green"
+    },
+    {
+        icon: faShieldHalved,
+        title: "Privacy First",
+        description: "Self-hosted solution. Your data stays on your server, always.",
+        color: "red"
+    },
+    {
+        icon: faChartLine,
+        title: "Detailed Analytics",
+        description: "Track trends over time and export your data whenever you need.",
+        color: "cyan"
     }
 ];
 
 export const FeatureGrid = () => {
     return (
         <section className="feature-grid-section">
-            <div className="section-header">
-                <span className="section-label">Features</span>
-                <h2>Built for your workflow</h2>
+            <div className="feature-grid-header">
+                <span className="feature-grid-label">Why MySpeed?</span>
+                <h2>Everything you need to monitor your connection</h2>
+                <p>Powerful features packed into a lightweight, self-hosted application.</p>
             </div>
-            
             <div className="feature-grid">
                 {features.map((feature, index) => (
-                    <div key={index} className="feature-card">
+                    <div key={index} className={`feature-card feature-card--${feature.color}`}>
                         <div className="feature-icon">
                             <FontAwesomeIcon icon={feature.icon}/>
                         </div>
-                        <h3>{feature.title}</h3>
-                        <p>
-                            {feature.description}
-                            {feature.link && (
-                                <> <a href={feature.link} target="_blank" rel="noopener noreferrer">Learn more →</a></>
-                            )}
-                        </p>
+                        <div className="feature-text">
+                            <h3>{feature.title}</h3>
+                            <p>{feature.description}</p>
+                        </div>
                     </div>
                 ))}
             </div>

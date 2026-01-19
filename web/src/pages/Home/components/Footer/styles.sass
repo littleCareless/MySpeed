@@ -2,97 +2,69 @@
 
 .footer
   margin-top: 4rem
-  padding: 4rem 6rem 2rem
+  padding: 2rem 6rem
   border-top: 1px solid $border-color
 
 .footer-content
   display: flex
-  justify-content: space-between
-  gap: 4rem
-  margin-bottom: 3rem
-
-.footer-brand
-  max-width: 280px
-  
-  p
-    font-size: 0.9375rem
-    color: $text-secondary
-    line-height: 1.6
-    margin-top: 1rem
-
-.footer-logo
-  display: flex
   align-items: center
-  gap: 0.75rem
-  text-decoration: none
-  
-  img
-    width: 2rem
-    height: 2rem
-    
-  span
-    font-size: 1.25rem
-    font-weight: 700
-    color: $text
+  justify-content: space-between
+
+.footer-left p
+  font-size: 0.875rem
+  color: $text-muted
 
 .footer-links
   display: flex
-  gap: 4rem
+  align-items: center
+  gap: 2rem
 
-.footer-column
-  display: flex
-  flex-direction: column
-  gap: 0.75rem
-  
-  h4
-    font-size: 0.875rem
-    font-weight: 600
-    color: $text
-    margin-bottom: 0.5rem
-    text-transform: uppercase
-    letter-spacing: 0.05em
-    
   a
-    font-size: 0.9375rem
+    font-size: 0.875rem
     color: $text-secondary
     transition: color 0.2s
-    display: flex
-    align-items: center
-    gap: 0.5rem
-    
+
     &:hover
       color: $text
-      
-    svg
-      font-size: 1rem
 
-.footer-bottom
-  padding-top: 2rem
-  border-top: 1px solid $border-color
-  
-  p
-    font-size: 0.875rem
-    color: $text-muted
+.footer-right .github-link
+  display: flex
+  align-items: center
+  justify-content: center
+  width: 2.25rem
+  height: 2.25rem
+  background: $background-lighter
+  border: 1px solid $border-color
+  border-radius: 8px
+  color: $text-secondary
+  transition: all 0.2s
 
-@media (max-width: 968px)
+  &:hover
+    color: $text
+    border-color: $border-hover
+
+  svg
+    font-size: 1rem
+
+@media (max-width: 900px)
   .footer
-    padding: 3rem 2rem 2rem
-    
+    padding: 2rem
+
   .footer-content
     flex-direction: column
-    gap: 3rem
-    
-  .footer-brand
-    max-width: 100%
-    
+    gap: 1.5rem
+
   .footer-links
     flex-wrap: wrap
-    gap: 2rem
+    justify-content: center
+    gap: 1.5rem
 
 @media (max-width: 640px)
   .footer
-    padding: 2rem 1.5rem 1.5rem
-    
+    padding: 1.5rem
+
   .footer-links
-    flex-direction: column
-    gap: 2rem
+    gap: 1rem
+
+    a
+      font-size: 0.8125rem

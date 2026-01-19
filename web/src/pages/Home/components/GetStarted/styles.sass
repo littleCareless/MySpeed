@@ -1,87 +1,37 @@
 @use "@/common/styles/colors" as *
 
 .cta-section
-  position: relative
+  display: flex
+  align-items: center
+  justify-content: space-between
   margin: 4rem 6rem 0
-  padding: 5rem
+  padding: 2rem 2.5rem
   background: $background-lighter
   border: 1px solid $border-color
-  border-radius: 24px
-  overflow: hidden
+  border-radius: 12px
 
-.cta-content
-  position: relative
-  z-index: 1
-  text-align: center
-  display: flex
-  flex-direction: column
-  align-items: center
-  gap: 1rem
-  
   h2
-    font-size: 2.5rem
-    font-weight: 700
-    
-  p
-    font-size: 1.125rem
-    color: $text-secondary
-    max-width: 500px
+    font-size: 1.25rem
+    font-weight: 600
 
 .cta-actions
   display: flex
-  gap: 1rem
-  margin-top: 1.5rem
+  gap: 0.75rem
 
-.cta-decoration
-  position: absolute
-  inset: 0
-  pointer-events: none
-  
-  .glow-orb
-    position: absolute
-    border-radius: 50%
-    filter: blur(80px)
-    opacity: 0.4
-    
-  .glow-1
-    width: 300px
-    height: 300px
-    background: $primary
-    top: -100px
-    right: -50px
-    
-  .glow-2
-    width: 200px
-    height: 200px
-    background: $blue
-    bottom: -80px
-    left: -50px
-
-@media (max-width: 968px)
+@media (max-width: 700px)
   .cta-section
-    margin: 3rem 2rem 0
-    padding: 4rem 2rem
-    
-  .cta-content h2
-    font-size: 2rem
-
-@media (max-width: 640px)
-  .cta-section
-    margin: 2rem 1.5rem 0
-    padding: 3rem 1.5rem
-    border-radius: 16px
-    
-  .cta-content
-    h2
-      font-size: 1.75rem
-      
-    p
-      font-size: 1rem
-      
-  .cta-actions
     flex-direction: column
+    gap: 1.5rem
+    margin: 2rem 1.5rem 0
+    padding: 2rem
+    text-align: center
+
+    h2
+      font-size: 1.125rem
+
+  .cta-actions
     width: 100%
-    
+
     .btn
-      width: 100%
+      flex: 1
       justify-content: center
