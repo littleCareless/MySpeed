@@ -205,10 +205,6 @@ export const DateRangePicker = ({ from, to, onChange, minDate, maxDate }) => {
 
             {isOpen && (
                 <div className="date-range-popover" ref={popoverRef}>
-                    <div className="selection-hint">
-                        {selecting === "from" ? t("calendar.select_start") : t("calendar.select_end")}
-                    </div>
-                    
                     <div className="calendar-nav">
                         <button className="nav-btn" onClick={prevMonth}>
                             <FontAwesomeIcon icon={faChevronLeft} />
