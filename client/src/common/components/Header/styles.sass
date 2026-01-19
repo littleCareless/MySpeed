@@ -41,29 +41,25 @@ header
   margin: 0
 
 .header-main h2
+  display: flex
+  align-items: center
+  gap: 1rem
   padding: 0.5rem 1rem
   border-radius: 0.75rem
   margin: 0
-
-.header-main .h2-click
-  display: flex
-  gap: 1rem
-  align-items: center
-  cursor: pointer
-  user-select: none
-  transition: all 0.2s ease
-
-  svg
-    margin-right: 0.3rem
 
 .header-logo
   width: 32px
   height: 32px
   border-radius: 6px
 
-.header-main .h2-click:hover
-  color: $accent-primary
-  background-color: $dark-gray
+.header-about
+  cursor: help
+  user-select: none
+  transition: color 0.2s ease
+
+  &:hover
+    color: $accent-primary
 
 .header-icon
   cursor: pointer
@@ -109,29 +105,16 @@ header
 @media (max-width: 530px)
   .header-left div
     margin-right: 0
-  .header-left .h2-click
-    margin-left: 0
-    font-size: 22pt
   .header-icon
     width: 25px
     height: 25px
 
 @media (max-width: 480px)
-  .header-left .h2-click
-    font-size: 14pt
-    text-overflow: ellipsis
-    overflow: hidden
-  .header-left svg
-    font-size: 14pt
   .header-icon
     width: 20px
     height: 20px
 
 @media screen and (max-width: 365px)
-  .header-main .h2-click
-    gap: 0
-  .header-left svg
-    margin-right: 0
   .demo-info
     font-size: 12pt
     padding: 0

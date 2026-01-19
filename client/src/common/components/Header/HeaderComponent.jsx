@@ -5,7 +5,8 @@ import {
     faGaugeHigh,
     faGear,
     faLock,
-    faClose
+    faClose,
+    faServer
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useEffect, useState } from "react";
 import DropdownComponent from "../Dropdown/DropdownComponent";
@@ -21,6 +22,7 @@ import { WEB_URL } from "@/index";
 import { Trans } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import Pagination from "./components/Pagination";
+import AboutDialog from "@/common/components/AboutDialog";
 
 const HeaderComponent = () => {
     const findNode = useContext(NodeContext)[4];
@@ -35,6 +37,7 @@ const HeaderComponent = () => {
     const [config, reloadConfig, checkConfig] = useContext(ConfigContext);
     const [updateAvailable, setUpdateAvailable] = useState("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [showAboutDialog, setShowAboutDialog] = useState(false);
 
     const switchDropdown = () => {
         setIsDropdownOpen(!isDropdownOpen);
@@ -98,10 +101,11 @@ const HeaderComponent = () => {
 
     return (
         <header>
+            {showAboutDialog && <AboutDialog onClose={() => setShowAboutDialog(false)}/>}
             <div className="header-main">
                 <div className="header-left">
                     {config.viewMode && <h2>{t("header.title")}</h2>}
-                    {!config.viewMode && <h2 onClick={() => navigate("/nodes")} className="h2-click"><img src="/assets/img/logo192.png" alt="MySpeed Logo" className="header-logo" /> {getNodeName()}</h2>}
+                    {!config.viewMode && <h2 className="header-about" onClick={() => setShowAboutDialog(true)}><img src="/assets/img/logo192.png" alt="MySpeed Logo" className="header-logo" /> {getNodeName()}</h2>}
 
                     {config.previewMode && <h2 className="demo-info" onClick={showDemoDialog}>{t("preview.info")}</h2>}
                 </div>
@@ -133,6 +137,11 @@ const HeaderComponent = () => {
                         <FontAwesomeIcon icon={faDownload} className={"header-icon"} onClick={openDownloadPage} />
                         <span className="tooltip">{t("header.download")}</span>
                     </div> : <></>)}
+
+                    {!config.viewMode && <div className="tooltip-element tooltip-bottom">
+                        <FontAwesomeIcon icon={faServer} className="header-icon" onClick={() => navigate("/nodes")} />
+                        <span className="tooltip">{t("header.servers")}</span>
+                    </div>}
 
                     <div className="tooltip-element tooltip-bottom" id="open-header">
                         <FontAwesomeIcon icon={icon} className="header-icon" onClick={switchDropdown} />
