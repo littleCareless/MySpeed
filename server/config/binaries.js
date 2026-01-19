@@ -40,7 +40,7 @@ module.exports.libreList = [
     {os: 'freebsd', arch: 'arm64', suffix: 'freebsd_arm64.tar.gz'}
 ];
 
-module.exports.cloudflareVersion = "1.3.4";
+module.exports.cloudflareVersion = "2.1.0";
 module.exports.cloudflareList = [
     // MacOS
     {os: 'darwin', arch: 'x64', suffix: 'cfspeedtest-x86_64-apple-darwin.tar.gz'},
