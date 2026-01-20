@@ -20,6 +20,7 @@ const configDefaults = {
     provider: "none",
     ooklaId: "none",
     libreId: "none",
+    libreUrl: "none",
     password: "none",
     passwordLevel: "none",
     interface: "none"
@@ -88,6 +89,14 @@ module.exports.validateInput = async (key, value) => {
 
     if ((key === "ooklaId" || key === "libreId") && (/[^0-9]/.test(value) && value !== "none"))
         return "You need to provide a number in order to change this";
+
+    if (key === "libreUrl" && value !== "none") {
+        try {
+            new URL(value);
+        } catch (e) {
+            return "You need to provide a valid URL";
+        }
+    }
 
     if (key === "passwordLevel" && !["none", "read"].includes(value))
         return "You need to provide either none or read-access";
