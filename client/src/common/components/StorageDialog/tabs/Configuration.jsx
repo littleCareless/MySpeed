@@ -1,13 +1,11 @@
 import React, {useContext, useState} from "react";
 import {deleteRequest, downloadRequest, putRequest} from "@/common/utils/RequestUtil";
-import {DialogContext} from "@/common/contexts/Dialog";
 import {ToastNotificationContext} from "@/common/contexts/ToastNotification";
 import {ConfigContext} from "@/common/contexts/Config";
 import {t} from "i18next";
 import {faClockRotateLeft, faFileExport, faFileImport} from "@fortawesome/free-solid-svg-icons";
 
-export default () => {
-    const close = useContext(DialogContext);
+export default ({close}) => {
     const [deleteWarning, setDeleteWarning] = useState(false);
     const updateConfig = useContext(ConfigContext)[1];
     const updateToast = useContext(ToastNotificationContext);
