@@ -12,7 +12,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import React, {useContext, useEffect, useState} from "react";
 import {NodeContext} from "@/common/contexts/Node";
-import {InputDialogContext} from "@/common/contexts/InputDialog";
+import {useAlert} from "@/common/contexts/Alert";
 import {ToastNotificationContext} from "@/common/contexts/ToastNotification";
 import {baseRequest} from "@/common/utils/RequestUtil";
 import {t} from "i18next";
@@ -26,7 +26,7 @@ export const NodeContainer = (node) => {
     const updateCurrentNode = useContext(NodeContext)[3];
     const reloadConfig = useContext(ConfigContext)[1];
     const updateToast = useContext(ToastNotificationContext);
-    const [setDialog] = useContext(InputDialogContext);
+    const alert = useAlert();
     const [nodeData, setNodeData] = useState(null);
     const [nodeError, setNodeError] = useState(undefined);
 
@@ -62,26 +62,26 @@ export const NodeContainer = (node) => {
         });
     }
 
-    const updatePassword = (wrong = false) => {
-        setDialog({
-            title: t("nodes.password_outdated"),
-            type: "password",
+    const updatePassword = async (wrong = false) => {
+        const result = await alert.openInput(t("nodes.password_outdated"), {
+            inputType: "password",
             description: wrong ?
                 <span className="icon-red">{t("dialog.password.wrong")}</span> : t("nodes.update_password"),
             placeholder: t("dialog.password.placeholder"),
-            buttonText: t("dialog.update"),
-            onSuccess: async (password) => {
-                const res = await (await baseRequest(`/nodes/${node.id}/password`, "PATCH", {password: password})).json();
-
-                if (res.type === "PASSWORD_UPDATED") {
-                    updateData().catch(() => setNodeError("SERVER_NOT_REACHABLE"));
-                    updateToast(t("nodes.password_updated"), "green", faKey);
-                } else {
-                    updatePassword(true);
-                }
-            }
+            buttonText: t("dialog.update")
         });
-    }
+
+        if (result) {
+            const res = await (await baseRequest(`/nodes/${node.id}/password`, "PATCH", {password: result})).json();
+
+            if (res.type === "PASSWORD_UPDATED") {
+                updateData().catch(() => setNodeError("SERVER_NOT_REACHABLE"));
+                updateToast(t("nodes.password_updated"), "green", faKey);
+            } else {
+                updatePassword(true);
+            }
+        }
+    };
 
     useEffect(() => {
         updateData().catch(() => setNodeError("SERVER_NOT_REACHABLE"));
@@ -100,22 +100,27 @@ export const NodeContainer = (node) => {
         reloadConfig();
     }
 
-    const onContext = (event) => {
+    const onContext = async (event) => {
         event.preventDefault();
 
         if (node.currentNode) return;
-        setDialog({
-            title: t("nodes.delete.title"),
-            description: <Trans components={{Bold: <span className="dialog-value"/>}}
-                                values={node}>nodes.delete.description</Trans>,
-            buttonText: t("nodes.delete.yes"),
-            mainRed: true,
-            onSuccess: () => baseRequest("/nodes/" + node.id, "DELETE").then(() => {
-                updateToast(t("nodes.delete.success"), "green", faServer);
-                updateNodes();
-            })
-        });
-    }
+        
+        const confirmed = await alert.openConfirm(
+            t("nodes.delete.title"),
+            <Trans components={{Bold: <span className="dialog-value"/>}}
+                   values={node}>nodes.delete.description</Trans>,
+            {
+                buttonText: t("nodes.delete.yes"),
+                danger: true
+            }
+        );
+
+        if (confirmed) {
+            await baseRequest("/nodes/" + node.id, "DELETE");
+            updateToast(t("nodes.delete.success"), "green", faServer);
+            updateNodes();
+        }
+    };
 
     return (
         <div className={"node-item hover-" + (nodeError ? "red" : (nodeData ? "green" : "orange"))} key={node.id}
