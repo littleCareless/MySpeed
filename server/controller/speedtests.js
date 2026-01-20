@@ -2,8 +2,8 @@ const tests = require('../models/Speedtests');
 const {Op, Sequelize} = require("sequelize");
 const {mapFixed, mapRounded} = require("../util/helpers");
 
-module.exports.create = async (ping, download, upload, time, serverId, type = "auto", resultId = null, error = null) => {
-    return (await tests.create({ping, download, upload, error, serverId, type, resultId, time, created: new Date().toISOString()})).id;
+module.exports.create = async (ping, download, upload, time, serverId, type = "auto", resultId = null, error = null, jitter = null) => {
+    return (await tests.create({ping, jitter, download, upload, error, serverId, type, resultId, time, created: new Date().toISOString()})).id;
 }
 
 module.exports.getOne = async (id) => {
@@ -100,13 +100,13 @@ module.exports.listStatistics = async (fromDate, toDate) => {
     }
 
     let data = {};
-    ["ping", "download", "upload", "time"].forEach(item => {
+    ["ping", "jitter", "download", "upload", "time"].forEach(item => {
         data[item] = notFailed.map(entry => entry[item]);
     });
 
     const hourlyData = {};
     for (let i = 0; i < 24; i++) {
-        hourlyData[i] = { download: [], upload: [], ping: [] };
+        hourlyData[i] = { download: [], upload: [], ping: [], jitter: [] };
     }
     
     notFailed.forEach(entry => {
@@ -114,6 +114,7 @@ module.exports.listStatistics = async (fromDate, toDate) => {
         hourlyData[hour].download.push(entry.download);
         hourlyData[hour].upload.push(entry.upload);
         hourlyData[hour].ping.push(entry.ping);
+        if (entry.jitter !== null) hourlyData[hour].jitter.push(entry.jitter);
     });
 
     const hourlyAverages = Object.keys(hourlyData).map(hour => ({
@@ -126,6 +127,9 @@ module.exports.listStatistics = async (fromDate, toDate) => {
             : null,
         ping: hourlyData[hour].ping.length > 0
             ? Math.round(hourlyData[hour].ping.reduce((a, b) => a + b, 0) / hourlyData[hour].ping.length)
+            : null,
+        jitter: hourlyData[hour].jitter.length > 0
+            ? parseFloat((hourlyData[hour].jitter.reduce((a, b) => a + b, 0) / hourlyData[hour].jitter.length).toFixed(2))
             : null,
         count: hourlyData[hour].download.length
     }));
@@ -182,10 +186,11 @@ module.exports.listStatistics = async (fromDate, toDate) => {
             }
             
             if (!aggregated[key]) {
-                aggregated[key] = { ping: [], download: [], upload: [], time: [], count: 0 };
+                aggregated[key] = { ping: [], jitter: [], download: [], upload: [], time: [], count: 0 };
             }
             
             aggregated[key].ping.push(entry.ping);
+            if (entry.jitter !== null) aggregated[key].jitter.push(entry.jitter);
             aggregated[key].download.push(entry.download);
             aggregated[key].upload.push(entry.upload);
             aggregated[key].time.push(entry.time);
@@ -202,6 +207,7 @@ module.exports.listStatistics = async (fromDate, toDate) => {
         });
         chartData = {
             ping: sortedKeys.map(key => Math.round(aggregated[key].ping.reduce((a, b) => a + b, 0) / aggregated[key].ping.length)),
+            jitter: sortedKeys.map(key => aggregated[key].jitter.length > 0 ? parseFloat((aggregated[key].jitter.reduce((a, b) => a + b, 0) / aggregated[key].jitter.length).toFixed(2)) : null),
             download: sortedKeys.map(key => parseFloat((aggregated[key].download.reduce((a, b) => a + b, 0) / aggregated[key].download.length).toFixed(2))),
             upload: sortedKeys.map(key => parseFloat((aggregated[key].upload.reduce((a, b) => a + b, 0) / aggregated[key].upload.length).toFixed(2))),
             time: sortedKeys.map(key => Math.round(aggregated[key].time.reduce((a, b) => a + b, 0) / aggregated[key].time.length))
@@ -214,6 +220,7 @@ module.exports.listStatistics = async (fromDate, toDate) => {
             failed: dbEntries.length - notFailed.length
         },
         ping: mapRounded(notFailed, "ping"),
+        jitter: mapFixed(notFailed.filter(e => e.jitter !== null), "jitter"),
         download: mapFixed(notFailed, "download"),
         upload: mapFixed(notFailed, "upload"),
         time: mapRounded(notFailed, "time"),
