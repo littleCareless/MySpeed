@@ -28,6 +28,13 @@ export const Dialog = ({open, onClose, className, disableClose, children}) => {
         dialogRef.current?.classList.add("dialog-hidden");
     }, [disableClose]);
 
+    const forceClose = useCallback(() => {
+        if (isClosingRef.current) return;
+        isClosingRef.current = true;
+        areaRef.current?.classList.add("dialog-area-hidden");
+        dialogRef.current?.classList.add("dialog-hidden");
+    }, []);
+
     const handleAnimationEnd = (e) => {
         if (e.animationName === "fadeOut") {
             setVisible(false);
@@ -58,7 +65,7 @@ export const Dialog = ({open, onClose, className, disableClose, children}) => {
         <div className="dialog-area" ref={areaRef} onClick={handleBackdropClick}>
             <div className={`dialog${className ? ` ${className}` : ""}`} ref={dialogRef}
                  onAnimationEnd={handleAnimationEnd}>
-                {typeof children === "function" ? children({close: handleClose}) : children}
+                {typeof children === "function" ? children({close: handleClose, forceClose}) : children}
             </div>
         </div>,
         document.body
