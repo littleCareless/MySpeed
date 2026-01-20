@@ -1,7 +1,7 @@
 import {Dialog, DialogHeader, DialogBody, DialogFooter} from "@/common/contexts/Dialog";
 import {t} from "i18next";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck, faServer, faNetworkWired} from "@fortawesome/free-solid-svg-icons";
+import {faCheck, faServer, faNetworkWired, faLink} from "@fortawesome/free-solid-svg-icons";
 import "./styles.sass";
 import React, {useContext, useEffect, useState} from "react";
 import OoklaImage from "./assets/img/ookla.webp";
@@ -27,6 +27,7 @@ export const ProviderDialog = ({open, onClose}) => {
     const [ooklaServers, setOoklaServers] = useState({});
     const [libreServers, setLibreServers] = useState({});
     const [serverId, setServerId] = useState("none");
+    const [libreUrl, setLibreUrl] = useState(config.libreUrl || "none");
 
     useEffect(() => {
         if (!open) return;
@@ -37,16 +38,34 @@ export const ProviderDialog = ({open, onClose}) => {
 
     useEffect(() => {
         if (config[provider + "Id"]) setServerId(config[provider + "Id"]);
+        if (config.libreUrl) setLibreUrl(config.libreUrl);
     }, [provider, config]);
 
     useEffect(() => {
         if (serverId === "") setServerId("none");
     }, [serverId]);
 
+    useEffect(() => {
+        if (libreUrl === "") setLibreUrl("none");
+    }, [libreUrl]);
+
+    const handleLibreUrlChange = (value) => {
+        setLibreUrl(value);
+        if (value && value !== "none") setServerId("none");
+    };
+
+    const handleServerIdChange = (value) => {
+        setServerId(value);
+        if (provider === "libre" && value && value !== "none") setLibreUrl("none");
+    };
+
     const update = async (close) => {
         await patchRequest("/config/provider", {value: provider});
         if (serverId !== config[provider + "Id"] && provider !== "cloudflare") {
             await patchRequest("/config/" + provider + "Id", {value: serverId});
+        }
+        if (provider === "libre" && libreUrl !== config.libreUrl) {
+            await patchRequest("/config/libreUrl", {value: libreUrl});
         }
         if (currentInterface !== config.interface) {
             await patchRequest("/config/interface", {value: currentInterface});
@@ -56,8 +75,10 @@ export const ProviderDialog = ({open, onClose}) => {
         close();
     };
 
+    const isUsingCustomUrl = provider === "libre" && libreUrl && libreUrl !== "none";
+
     return (
-        <Dialog open={open} onClose={onClose} className="provider-dialog">
+        <Dialog open={open} onClose={onClose} className="provider-dialog-wrapper">
             {({close}) => (
                 <>
                     <DialogHeader onClose={close}>{t("update.provider_title")}</DialogHeader>
@@ -87,14 +108,14 @@ export const ProviderDialog = ({open, onClose}) => {
                                     </select>
                                 </div>
 
-                                {provider !== "cloudflare" && (
+                                {provider !== "cloudflare" && !isUsingCustomUrl && (
                                     <div className="provider-setting">
                                         <div className="provider-setting-label">
                                             <FontAwesomeIcon icon={faServer}/>
                                             <h3>{t("dialog.provider.server")}</h3>
                                         </div>
                                         <select className="dialog-input provider-input" value={serverId}
-                                                onChange={(e) => setServerId(e.target.value)}>
+                                                onChange={(e) => handleServerIdChange(e.target.value)}>
                                             <option value="none">{t("dialog.provider.choose_automatically")}</option>
                                             {provider === "ookla" && Object.keys(ooklaServers).map((current, index) => (
                                                 <option key={index} value={current}>{ooklaServers[current]}</option>
@@ -106,14 +127,27 @@ export const ProviderDialog = ({open, onClose}) => {
                                     </div>
                                 )}
 
-                                {provider !== "cloudflare" && serverId !== "none" && (
+                                {provider !== "cloudflare" && serverId !== "none" && !isUsingCustomUrl && (
                                     <div className="provider-setting">
                                         <div className="provider-setting-label">
                                             <h3>{t("dialog.provider.server_id")}</h3>
                                         </div>
                                         <input type="text" className="dialog-input provider-input"
                                                value={serverId === "none" ? "" : serverId}
-                                               onChange={(e) => setServerId(e.target.value)}/>
+                                               onChange={(e) => handleServerIdChange(e.target.value)}/>
+                                    </div>
+                                )}
+
+                                {provider === "libre" && (
+                                    <div className="provider-setting">
+                                        <div className="provider-setting-label">
+                                            <FontAwesomeIcon icon={faLink}/>
+                                            <h3>{t("dialog.provider.custom_url")}</h3>
+                                        </div>
+                                        <input type="text" className="dialog-input provider-input"
+                                               placeholder={t("dialog.provider.custom_url_placeholder")}
+                                               value={libreUrl === "none" ? "" : libreUrl}
+                                               onChange={(e) => handleLibreUrlChange(e.target.value || "none")}/>
                                     </div>
                                 )}
                             </div>
