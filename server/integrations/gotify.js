@@ -2,7 +2,7 @@ const axios = require("axios");
 const {replaceVariables} = require("../util/helpers");
 
 const defaults = {
-    finished: "A speedtest is finished:\nPing: %ping% ms\nUpload: %upload% Mbps\nDownload: %download% Mbps",
+    finished: "A speedtest is finished:\nPing: %ping% ms (±%jitter% ms)\nUpload: %upload% Mbps\nDownload: %download% Mbps",
     failed: "A speedtest has failed. Reason: %error%"
 }
 

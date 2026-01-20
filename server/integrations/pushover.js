@@ -4,7 +4,7 @@ const {replaceVariables} = require("../util/helpers");
 const BASE_URL = "https://api.pushover.net/1";
 
 const defaults = {
-    finished: "A speedtest is finished:\nPing: %ping% ms\nUpload: %upload% Mbps\nDownload: %download% Mbps",
+    finished: "A speedtest is finished:\nPing: %ping% ms (±%jitter% ms)\nUpload: %upload% Mbps\nDownload: %download% Mbps",
     failed: "A speedtest has failed. Reason: %error%"
 }
 

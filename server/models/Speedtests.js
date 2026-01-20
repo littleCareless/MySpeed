@@ -15,6 +15,11 @@ module.exports = db.define("speedtests", {
         type: Sequelize.INTEGER,
         allowNull: false
     },
+    jitter: {
+        type: Sequelize.DOUBLE,
+        allowNull: true,
+        defaultValue: null
+    },
     download: {
         type: Sequelize.DOUBLE,
         allowNull: false

@@ -8,11 +8,12 @@ const PingChart = (props) => {
     const [isDarkMode] = useContext(ThemeContext);
 
     const filteredData = useMemo(() => {
-        if (!props.data?.ping || !props.labels) return { labels: [], data: [], average: 0 };
+        if (!props.data?.ping || !props.labels) return { labels: [], data: [], jitter: [], average: 0, jitterAverage: 0 };
 
         const filtered = props.labels.map((label, index) => ({
             label,
             value: props.data.ping[index],
+            jitter: props.data.jitter?.[index],
             date: new Date(label)
         })).filter(item => item.value !== null && item.value !== undefined);
 
@@ -21,12 +22,21 @@ const PingChart = (props) => {
             ? Math.round((validValues.reduce((a, b) => a + b, 0) / validValues.length) * 100) / 100
             : 0;
 
+        const validJitter = filtered.filter(item => item.jitter !== null && item.jitter !== undefined).map(item => item.jitter);
+        const jitterAverage = validJitter.length > 0
+            ? Math.round((validJitter.reduce((a, b) => a + b, 0) / validJitter.length) * 100) / 100
+            : null;
+
         return {
             labels: filtered.map(item => item.label),
             data: filtered.map(item => item.value),
-            average
+            jitter: filtered.map(item => item.jitter),
+            average,
+            jitterAverage
         };
     }, [props.labels, props.data]);
+
+    const hasJitterData = filteredData.jitter.some(j => j !== null && j !== undefined);
 
     const gridColor = isDarkMode ? 'rgba(42, 52, 65, 0.6)' : 'rgba(203, 213, 225, 0.8)';
     const tickColor = isDarkMode ? 'hsl(215, 20%, 50%)' : 'hsl(215, 25%, 40%)';
@@ -137,6 +147,22 @@ const PingChart = (props) => {
                 pointBorderColor: 'hsl(38, 92%, 50%)',
                 order: 1
             },
+            ...(hasJitterData ? [{
+                label: t("latest.jitter"),
+                data: filteredData.jitter,
+                borderColor: 'hsl(280, 70%, 55%)',
+                backgroundColor: (context) => {
+                    const ctx = context.chart.ctx;
+                    const gradient = ctx.createLinearGradient(0, 0, 0, context.chart.height);
+                    gradient.addColorStop(0, 'hsla(280, 70%, 55%, 0.15)');
+                    gradient.addColorStop(1, 'hsla(280, 70%, 55%, 0.01)');
+                    return gradient;
+                },
+                fill: true,
+                pointBackgroundColor: 'hsl(280, 70%, 55%)',
+                pointBorderColor: 'hsl(280, 70%, 55%)',
+                order: 2
+            }] : []),
             {
                 label: t("statistics.average"),
                 data: filteredData.labels.map(() => filteredData.average),
@@ -147,7 +173,7 @@ const PingChart = (props) => {
                 pointRadius: 0,
                 pointHoverRadius: 0,
                 fill: false,
-                order: 2
+                order: 3
             }
         ],
     };

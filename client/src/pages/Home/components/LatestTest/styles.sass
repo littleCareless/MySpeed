@@ -66,7 +66,7 @@ $purple-glow: rgba(139, 92, 246, 0.4)
 .container-text
   margin: 0 0 0 25px
   color: $white
-  font-weight: 600
+  font-weight: 500
   font-size: 24pt
   white-space: nowrap
 
@@ -74,7 +74,7 @@ $purple-glow: rgba(139, 92, 246, 0.4)
   color: $subtext
   font-size: 15pt
   margin-left: 10px
-  font-weight: 500
+  font-weight: 400
 
 .container-main
   text-align: center
@@ -82,8 +82,32 @@ $purple-glow: rgba(139, 92, 246, 0.4)
 
   h2
     font-size: 28pt
-    font-weight: 700
+    font-weight: 600
     margin: 1rem
+    display: flex
+    align-items: center
+    justify-content: center
+
+.jitter-suffix
+  font-size: 14pt
+  font-weight: 400
+  color: $subtext
+  cursor: pointer
+  transition: opacity 0.2s ease
+  padding-left: 0.4rem
+  margin-left: 0.4rem
+  border-left: 2px solid $light-gray
+  opacity: 0.7
+  display: flex
+  align-items: center
+  gap: 0.25rem
+
+  &:hover
+    opacity: 1
+
+  .jitter-icon
+    width: 0.9rem
+    height: 0.9rem
 
 @media (max-width: 1351px)
   .inner-container

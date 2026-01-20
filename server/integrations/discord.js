@@ -2,7 +2,7 @@ const axios = require("axios");
 const {replaceVariables} = require("../util/helpers");
 
 const defaults = {
-    finished: ":sparkles: **A speedtest is finished**\n > :ping_pong: `Ping`: %ping% ms\n > :arrow_up: `Upload`: %upload% Mbps\n > :arrow_down: `Download`: %download% Mbps",
+    finished: ":sparkles: **A speedtest is finished**\n > :ping_pong: `Ping`: %ping% ms (±%jitter% ms)\n > :arrow_up: `Upload`: %upload% Mbps\n > :arrow_down: `Download`: %download% Mbps",
     failed: ":x: **A speedtest has failed**\n > `Reason`: %error%"
 }
 

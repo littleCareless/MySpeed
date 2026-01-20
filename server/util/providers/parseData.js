@@ -2,17 +2,28 @@ const roundSpeed = (bandwidth) => {
     return Math.round(bandwidth / 1250) / 100;
 }
 
+const calculateJitter = (latencyMeasurements) => {
+    if (!latencyMeasurements || latencyMeasurements.length < 2) return null;
+    let totalDiff = 0;
+    for (let i = 1; i < latencyMeasurements.length; i++) {
+        totalDiff += Math.abs(latencyMeasurements[i] - latencyMeasurements[i - 1]);
+    }
+    return parseFloat((totalDiff / (latencyMeasurements.length - 1)).toFixed(2));
+}
+
 module.exports.parseOokla = (test) => {
     let ping = Math.round(test.ping.latency);
+    let jitter = test.ping.jitter ? parseFloat(test.ping.jitter.toFixed(2)) : null;
     let download = roundSpeed(test.download.bandwidth);
     let upload = roundSpeed(test.upload.bandwidth);
     let time = Math.round((test.download.elapsed + test.upload.elapsed) / 1000);
 
-    return {ping, download, upload, time, resultId: test.result?.id};
+    return {ping, jitter, download, upload, time, resultId: test.result?.id};
 }
 
-module.exports.parseLibre = (test) => ({...test, ping: Math.round(test.ping), time: Math.round(test.elapsed / 1000),
-    resultId: null});
+module.exports.parseLibre = (test) => ({...test, ping: Math.round(test.ping), 
+    jitter: test.jitter ? parseFloat(parseFloat(test.jitter).toFixed(2)) : null,
+    time: Math.round(test.elapsed / 1000), resultId: null});
 
 module.exports.parseCloudflare = (test) => {
     if (test && test.latency_measurement && test.speed_measurements) {
@@ -26,14 +37,15 @@ module.exports.parseCloudflare = (test) => {
         const upload = uploadSpeeds.length > 0 ? Math.max(...uploadSpeeds) : 0;
 
         const ping = Math.round(test.latency_measurement.avg_latency_ms || 0);
+        const jitter = calculateJitter(test.latency_measurement.latency_measurements);
 
         const time = Math.round((test.elapsed || 30000) / 1000);
         
-        return {ping, download: parseFloat(download.toFixed(2)),
+        return {ping, jitter, download: parseFloat(download.toFixed(2)),
             upload: parseFloat(upload.toFixed(2)), time, resultId: null};
     }
 
-    return {ping: 0, download: 0, upload: 0, time: 0, resultId: null};
+    return {ping: 0, jitter: null, download: 0, upload: 0, time: 0, resultId: null};
 };
 
 module.exports.parseData = (provider, data) => {

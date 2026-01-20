@@ -79,7 +79,7 @@ module.exports.create = async (type = "auto", retried = false) => {
         if (process.env.PREVIEW_MODE === "true") {
             await new Promise(resolve => setTimeout(resolve, 5000));
             test = {
-                ping: {latency: Math.floor(Math.random() * 25) + 5},
+                ping: {latency: Math.floor(Math.random() * 25) + 5, jitter: Math.random() * 5 + 0.5},
                 download: {bandwidth: 125 * 100000 * (Math.random() + 0.5), elapsed: 10000},
                 upload: {bandwidth: 125 * 100000 * (Math.random() + 0.5), elapsed: 10000},
             }
@@ -87,14 +87,14 @@ module.exports.create = async (type = "auto", retried = false) => {
             test = await this.run(retried);
         }
 
-        let {ping, download, upload, time, resultId} = await parseData.parseData(process.env.PREVIEW_MODE === "true" ?
+        let {ping, jitter, download, upload, time, resultId} = await parseData.parseData(process.env.PREVIEW_MODE === "true" ?
             "ookla" : mode, test);
 
-        let testResult = await tests.create(ping, download, upload, time, test.serverId, type, resultId);
-        console.log(`Test #${testResult} was executed successfully in ${time}s. 🏓 ${ping} ⬇ ${download}️ ⬆ ${upload}️`);
+        let testResult = await tests.create(ping, download, upload, time, test.serverId, type, resultId, null, jitter);
+        console.log(`Test #${testResult} was executed successfully in ${time}s. 🏓 ${ping} (±${jitter || 'N/A'}) ⬇ ${download}️ ⬆ ${upload}️`);
         createRecommendations().then(() => "");
         setRunning(false);
-        sendFinished({ping, download, upload, time}).then(() => "");
+        sendFinished({ping, jitter, download, upload, time}).then(() => "");
     } catch (e) {
         console.log(e)
         if (!retried) return this.create(type, true);
