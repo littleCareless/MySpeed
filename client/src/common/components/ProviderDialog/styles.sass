@@ -1,6 +1,6 @@
 @use "@/common/styles/colors" as *
 
-.provider-dialog
+.provider-dialog-wrapper
   width: 28rem
   max-width: 95vw
 
@@ -13,12 +13,14 @@
 
 .provider-list
   display: flex
+  flex-wrap: wrap
   gap: 0.5rem
   margin-bottom: 1rem
 
 .provider-item
   display: flex
-  flex: 1
+  flex: 1 1 auto
+  min-width: 7rem
   align-items: center
   justify-content: center
   gap: 0.5rem

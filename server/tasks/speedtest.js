@@ -43,24 +43,31 @@ module.exports.run = async (retryAuto = false) => {
     }
 
     let serverId = mode === "cloudflare" ? 0 : await config.getValue(mode + "Id");
+    let serverUrl = mode === "libre" ? await config.getValue("libreUrl") : undefined;
 
     if (serverId === "none")
         serverId = undefined;
+    
+    if (serverUrl === "none")
+        serverUrl = undefined;
 
-    let speedtest = await (retryAuto ? speedTest(mode) : speedTest(mode, serverId));
+    if (mode === "libre" && serverUrl)
+        serverId = undefined;
+
+    let speedtest = await (retryAuto ? speedTest(mode) : speedTest(mode, serverId, serverUrl));
 
     if (mode === "ookla" && speedtest.server) {
         if (serverId === undefined) await config.updateValue("ooklaId", speedtest.server?.id);
         serverId = speedtest.server?.id;
     }
 
-    if (mode === "libre" && speedtest.server) {
-        let server = Object.entries(serverController.getLibreServers())
-            .filter(([, value]) => value === speedtest.server.name)[0][0];
+    if (mode === "libre" && speedtest.server && !serverUrl) {
+        let serverEntry = Object.entries(serverController.getLibreServers())
+            .filter(([, value]) => value === speedtest.server.name)[0];
 
-        if (server) {
-            if (serverId === undefined) await config.updateValue("libreId", server);
-            serverId = parseInt(server);
+        if (serverEntry) {
+            if (serverId === undefined) await config.updateValue("libreId", serverEntry[0]);
+            serverId = parseInt(serverEntry[0]);
         }
     }
 

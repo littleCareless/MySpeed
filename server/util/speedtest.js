@@ -1,8 +1,10 @@
 const {spawn} = require('child_process');
 const interfaces = require('../util/loadInterfaces');
 const config = require('../controller/config');
+const fs = require('fs');
+const path = require('path');
 
-module.exports = async (mode, serverId) => {
+module.exports = async (mode, serverId, serverUrl) => {
     const binaryPath = mode === "ookla" ? './bin/speedtest' + (process.platform === "win32" ? ".exe" : "")
         : mode === "libre" ? './bin/librespeed-cli' + (process.platform === "win32" ? ".exe" : "")
             : './bin/cfspeedtest' + (process.platform === "win32" ? ".exe" : "");
@@ -27,7 +29,23 @@ module.exports = async (mode, serverId) => {
         if (serverId) args.push(`--server-id=${serverId}`);
     } else if (mode === "libre") {
         args = ['--json', '--duration=5', '--source=' + interfaceIp];
-        if (serverId) args.push(`--server=${serverId}`);
+        if (serverUrl) {
+            const customServerConfig = [{
+                id: 1,
+                name: "Custom Server",
+                server: serverUrl,
+                dlURL: "garbage.php",
+                ulURL: "empty.php",
+                pingURL: "empty.php",
+                getIpURL: "getIP.php"
+            }];
+            const tempJsonPath = path.join('data', 'servers', 'libre_custom.json');
+            fs.writeFileSync(tempJsonPath, JSON.stringify(customServerConfig));
+            args.push(`--local-json=${tempJsonPath}`);
+            args.push('--server=1');
+        } else if (serverId) {
+            args.push(`--server=${serverId}`);
+        }
     } else if (mode === "cloudflare") {
         args = ['--output-format=json'];
 
