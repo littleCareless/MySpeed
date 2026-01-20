@@ -1,5 +1,5 @@
 import {useContext, useEffect, useState, useRef, useMemo} from "react";
-import {faArrowDown, faArrowUp, faClockRotateLeft, faPingPongPaddleBall} from "@fortawesome/free-solid-svg-icons";
+import {faArrowDown, faArrowUp, faClockRotateLeft, faPingPongPaddleBall, faWaveSquare} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {generateRelativeTime} from "./utils";
 import {StatusContext} from "@/common/contexts/Status";
@@ -128,7 +128,7 @@ const LatestTestComponent = () => {
                         )}
                         {latest.jitter !== null && latest.jitter !== undefined && (
                             <span className="jitter-suffix" onClick={showJitterInfo} title={t("latest.jitter")}>
-                                ±{latest.jitter}
+                                <FontAwesomeIcon icon={faWaveSquare} className="jitter-icon" />{latest.jitter}
                             </span>
                         )}
                     </h2>

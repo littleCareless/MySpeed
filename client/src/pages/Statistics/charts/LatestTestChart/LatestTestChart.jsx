@@ -24,7 +24,7 @@ export const LatestTestChart = (props) => {
                         <h2>{t("latest.ping")}</h2>
                         <p className={"icon-" + getIconBySpeed(props.test.ping, config.ping, false)}>
                             {(props.test.ping === -1 ? "N/A" : props.test.ping) + " " + t("latest.ping_unit")}
-                            {hasJitter && <span className="jitter-value"> ±{props.test.jitter}</span>}
+                            {hasJitter && <span className="jitter-value"><FontAwesomeIcon icon={faWaveSquare} className="jitter-icon" />{props.test.jitter}</span>}
                         </p>
                     </div>
                     <FontAwesomeIcon icon={faPingPongPaddleBall}

@@ -2,7 +2,7 @@ import React, {forwardRef, useContext, useRef, useImperativeHandle} from "react"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {
     faArrowDown, faArrowUp, faClockRotateLeft, faClose,
-    faInfo, faPingPongPaddleBall, faTrashCan
+    faInfo, faPingPongPaddleBall, faTrashCan, faWaveSquare
 } from "@fortawesome/free-solid-svg-icons";
 import {useAlert} from "@/common/contexts/Alert";
 import {SpeedtestContext} from "@/common/contexts/Speedtests";
@@ -87,7 +87,7 @@ const SpeedtestComponent = forwardRef((props, forwardedRef) => {
                 <h2 className="speedtest-text">
                     {props.error ? "" : props.ping}
                     {!props.error && props.jitter !== null && props.jitter !== undefined && (
-                        <span className="jitter-suffix">±{props.jitter}</span>
+                        <span className="jitter-suffix"><FontAwesomeIcon icon={faWaveSquare} className="jitter-icon" />{props.jitter}</span>
                     )}
                 </h2>
             </div>
