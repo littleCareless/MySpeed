@@ -51,46 +51,6 @@
   font-weight: 700
   color: $subtext
 
-.tooltip-element
-  position: relative
-
-.tooltip-element .tooltip
-  user-select: none
-  pointer-events: none
-  font-size: 16pt
-  opacity: 0
-  bottom: 120%
-  left: 50%
-  margin-left: -60px
-  background-color: $dark-gray
-  color: $subtext
-  text-align: center
-  border-radius: 6px
-  padding: 5px 10px
-  height: fit-content
-
-  z-index: 90
-  position: absolute
-  transition: opacity 0.2s
-
-.tooltip-bottom .tooltip
-  bottom: 0
-  top: 120%
-
-.tooltip-element .tooltip-invisible
-  visibility: hidden
-
-.tooltip-element:hover .tooltip
-  opacity: 1
-
-@media (max-width: 900px)
-  .tooltip-element .tooltip
-    font-size: 14pt
-
-@media (max-width: 730px)
-  .tooltip-element .tooltip
-    font-size: 11pt
-
 @media (max-width: 605px)
   .speedtest
     flex-direction: column
@@ -98,8 +58,3 @@
     font-size: 32pt
   .speedtest-text
     font-size: 32pt
-
-@media (max-width: 475px)
-  .tooltip-element .tooltip
-    font-size: 12pt
-    padding: 5px 4px
