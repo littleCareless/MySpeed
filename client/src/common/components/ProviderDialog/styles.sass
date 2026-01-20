@@ -1,96 +1,108 @@
 @use "@/common/styles/colors" as *
 
-.provider-dialog-content
-  display: flex
+.provider-dialog
+  width: 28rem
+  max-width: 95vw
+
+  .dialog-main
+    display: block
+
+.provider-content
   margin: 1rem 0.5rem
   user-select: none
-  flex-direction: column
 
-  .provider-header
-    display: flex
-    gap: 1rem
+.provider-list
+  display: flex
+  gap: 0.5rem
+  margin-bottom: 1rem
 
-  .provider-item
-    display: flex
-    align-items: center
-    padding: 0.3rem 0.5rem
-    gap: 0.5rem
-    border-radius: 0.8rem
-    border: 2px solid $light-gray
+.provider-item
+  display: flex
+  flex: 1
+  align-items: center
+  justify-content: center
+  gap: 0.5rem
+  padding: 0.6rem 0.8rem
+  border-radius: 0.5rem
+  border: 1px solid $light-gray
+  cursor: pointer
+  transition: background-color 0.15s
+
+  &:hover
+    background-color: $darker-gray
+
+  img
+    width: 2rem
+    height: 2rem
+    border-radius: 0.4rem
+
+  h3
+    margin: 0
+    font-size: 0.95rem
     color: $subtext
-    cursor: pointer
 
-    img
-      width: 2.5rem
-      height: 2.5rem
+.provider-item-active
+  background-color: $light-gray
 
-    h3
-      margin: 0
+  h3
+    color: $white
 
-    &:hover
-      background-color: $darker-gray
-
-  .provider-item-active
+  &:hover
     background-color: $light-gray
 
-    &:hover
-      background-color: $light-gray
+.provider-settings
+  margin-top: 1rem
+  padding-top: 1rem
+  border-top: 1px solid $light-gray
+  display: flex
+  flex-direction: column
+  gap: 0.5rem
 
-  .provider-content
-    display: flex
-    flex-direction: column
-    margin-top: 1rem
-
-
-  .provider-setting
-    display: flex
-    gap: 1rem
-    align-items: center
-    justify-content: space-between
-
-    .provider-input
-      width: 16rem
-      box-sizing: border-box
-      margin-top: 0.5rem
-      margin-bottom: 0.5rem
-      font-size: 0.9rem
-      text-align: left
-
-    h3
-      color: $subtext
-
-  .cloudflare-provider-info
-    color: $subtext
-    text-align: center
-
-.provider-dialog-footer
+.provider-setting
   display: flex
   align-items: center
   justify-content: space-between
+  gap: 1rem
 
-  .provider-license-box
+  &-label
     display: flex
     align-items: center
     gap: 0.5rem
 
-    input
-      border: 2px solid $light-gray
-
-    .cb-error
-      border-color: $red
-
-    label
+    svg
       color: $subtext
-      max-width: 16rem
-      flex: 1
+      font-size: 1rem
 
+    h3
+      margin: 0
+      font-size: 0.95rem
+      color: $subtext
 
-@media screen and (max-width: 610px)
-  .provider-dialog-content
-    .provider-header
-      flex-direction: column
+.provider-input
+  width: 14rem
+  box-sizing: border-box
+  margin: 0 !important
+  padding: 0.5rem 0.7rem
+  font-size: 0.9rem
+  text-align: left
+
+.provider-license
+  margin: 0
+  margin-top: 1rem
+  padding-top: 1rem
+  border-top: 1px solid $light-gray
+  color: $subtext
+  font-size: 0.8rem
+  line-height: 1.4
+
+  a
+    color: $accent-primary
 
 @media screen and (max-width: 520px)
-  .provider-dialog-content
-    .provider-setting .provider-input
-      width: 60%
+  .provider-setting
+    flex-direction: column
+    align-items: flex-start
+    gap: 0.5rem
+
+  .provider-input
+    width: 100%
