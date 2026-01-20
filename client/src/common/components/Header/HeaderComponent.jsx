@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useEffect, useState } from "react";
 import DropdownComponent from "../Dropdown/DropdownComponent";
-import { InputDialogContext } from "@/common/contexts/InputDialog";
+import { useAlert } from "@/common/contexts/Alert";
 import { StatusContext } from "@/common/contexts/Status";
 import { SpeedtestContext } from "@/common/contexts/Speedtests";
 import { jsonRequest, postRequest } from "@/common/utils/RequestUtil";
@@ -23,6 +23,7 @@ import { Trans } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import Pagination from "./components/Pagination";
 import AboutDialog from "@/common/components/AboutDialog";
+import Tooltip from "@/common/components/Tooltip";
 
 const HeaderComponent = () => {
     const findNode = useContext(NodeContext)[4];
@@ -30,7 +31,7 @@ const HeaderComponent = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [setDialog] = useContext(InputDialogContext);
+    const alert = useAlert();
     const [icon, setIcon] = useState(faGear);
     const [status, updateStatus, setRunning] = useContext(StatusContext);
     const {updateTests} = useContext(SpeedtestContext);
@@ -44,35 +45,38 @@ const HeaderComponent = () => {
         setIcon(isDropdownOpen ? faGear : faClose);
     }
 
-    const showDemoDialog = () => setDialog({
-        title: t("preview.title"),
-        description: <Trans components={{ Link: <a href={WEB_URL + "/install"} target="_blank" /> }}>preview.description</Trans>,
-        buttonText: t("dialog.okay")
-    });
+    const showDemoDialog = () => alert.openAlert(
+        t("preview.title"),
+        <Trans components={{ Link: <a href={WEB_URL + "/install"} target="_blank" /> }}>preview.description</Trans>,
+        { buttonText: t("dialog.okay") }
+    );
 
-    const showPasswordDialog = () => setDialog({
-        title: t("header.admin_login"),
-        placeholder: t("dialog.password.placeholder"),
-        description: localStorage.getItem("password") ? <span className="icon-red">{t("dialog.password.wrong")}</span> : "",
-        type: "password",
-        buttonText: t("dialog.login"),
-        onSuccess: (value) => {
-            localStorage.setItem("password", value);
+    const showPasswordDialog = async () => {
+        const result = await alert.openInput(t("header.admin_login"), {
+            placeholder: t("dialog.password.placeholder"),
+            description: localStorage.getItem("password") ? <span className="icon-red">{t("dialog.password.wrong")}</span> : "",
+            inputType: "password",
+            buttonText: t("dialog.login")
+        });
+        
+        if (result) {
+            localStorage.setItem("password", result);
             reloadConfig();
-            checkConfig().then((config) => config?.viewMode ? showPasswordDialog() : false).catch(() => showPasswordDialog());
-        },
-        onClose: () => {
+            const newConfig = await checkConfig().catch(() => null);
+            if (newConfig?.viewMode) {
+                showPasswordDialog();
+            }
+        } else {
             localStorage.removeItem("password");
         }
-    });
+    };
 
     const startSpeedtest = async () => {
         await updateStatus();
-        if (status.paused) return setDialog({
-            title: t("failed"),
-            description: t("header.paused"),
-            buttonText: t("dialog.okay")
-        });
+        if (status.paused) {
+            alert.openAlert(t("failed"), t("header.paused"), { buttonText: t("dialog.okay") });
+            return;
+        }
 
         if (status.running) return;
 
@@ -101,7 +105,7 @@ const HeaderComponent = () => {
 
     return (
         <header>
-            {showAboutDialog && <AboutDialog onClose={() => setShowAboutDialog(false)}/>}
+            <AboutDialog open={showAboutDialog} onClose={() => setShowAboutDialog(false)}/>
             <div className="header-main">
                 <div className="header-left">
                     {config.viewMode && <h2>{t("header.title")}</h2>}
@@ -115,38 +119,43 @@ const HeaderComponent = () => {
                 <div className="header-right">
                     {updateAvailable ?
                         <div><FontAwesomeIcon icon={faCircleArrowUp} className="header-icon icon-orange update-icon"
-                                              onClick={() => setDialog({
-                                                  title: t("header.new_update"),
-                                                  buttonText: t("dialog.okay"),
-                                                  description: updateInfo(updateAvailable)
-                                              })} /></div> : <></>}
+                                              onClick={() => alert.openAlert(
+                                                  t("header.new_update"),
+                                                  updateInfo(updateAvailable),
+                                                  { buttonText: t("dialog.okay") }
+                                              )} /></div> : <></>}
 
-                    {!(status.paused || config.viewMode) ? <div className="tooltip-element tooltip-bottom">
-                        <FontAwesomeIcon icon={faGaugeHigh}
-                                         className={"header-icon " + (status.running ? "test-running" : "")}
-                                         onClick={startSpeedtest} />
-                        <span className="tooltip">{t("header." + (status.running ? "running_tooltip" : "start_tooltip"))}</span>
-                    </div> : <></>}
+                    {!(status.paused || config.viewMode) ? 
+                        <Tooltip content={t("header." + (status.running ? "running_tooltip" : "start_tooltip"))} position="bottom">
+                            <FontAwesomeIcon icon={faGaugeHigh}
+                                             className={"header-icon " + (status.running ? "test-running" : "")}
+                                             onClick={startSpeedtest} />
+                        </Tooltip>
+                    : <></>}
 
-                    {(config.viewMode ? <div className="tooltip-element tooltip-bottom">
-                        <FontAwesomeIcon icon={faLock} className={"header-icon"} onClick={showPasswordDialog} />
-                        <span className="tooltip">{t("header.admin_login")}</span>
-                    </div> : <></>)}
+                    {config.viewMode ? 
+                        <Tooltip content={t("header.admin_login")} position="bottom">
+                            <FontAwesomeIcon icon={faLock} className={"header-icon"} onClick={showPasswordDialog} />
+                        </Tooltip>
+                    : <></>}
 
-                    {(config.previewMode ? <div className="tooltip-element tooltip-bottom">
-                        <FontAwesomeIcon icon={faDownload} className={"header-icon"} onClick={openDownloadPage} />
-                        <span className="tooltip">{t("header.download")}</span>
-                    </div> : <></>)}
+                    {config.previewMode ? 
+                        <Tooltip content={t("header.download")} position="bottom">
+                            <FontAwesomeIcon icon={faDownload} className={"header-icon"} onClick={openDownloadPage} />
+                        </Tooltip>
+                    : <></>}
 
-                    {!config.viewMode && <div className="tooltip-element tooltip-bottom">
-                        <FontAwesomeIcon icon={faServer} className="header-icon" onClick={() => navigate("/nodes")} />
-                        <span className="tooltip">{t("header.servers")}</span>
-                    </div>}
+                    {!config.viewMode && 
+                        <Tooltip content={t("header.servers")} position="bottom">
+                            <FontAwesomeIcon icon={faServer} className="header-icon" onClick={() => navigate("/nodes")} />
+                        </Tooltip>
+                    }
 
-                    <div className="tooltip-element tooltip-bottom" id="open-header">
-                        <FontAwesomeIcon icon={icon} className="header-icon" onClick={switchDropdown} />
-                        <span className="tooltip">{t("dropdown.settings")}</span>
-                    </div>
+                    <Tooltip content={t("dropdown.settings")} position="bottom">
+                        <div id="open-header">
+                            <FontAwesomeIcon icon={icon} className="header-icon" onClick={switchDropdown} />
+                        </div>
+                    </Tooltip>
                 </div>
             </div>
             <DropdownComponent isOpen={isDropdownOpen} switchDropdown={switchDropdown} />
