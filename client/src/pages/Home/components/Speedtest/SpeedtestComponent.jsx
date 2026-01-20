@@ -84,7 +84,12 @@ const SpeedtestComponent = forwardRef((props, forwardedRef) => {
             <div className="speedtest-row">
                 <FontAwesomeIcon icon={props.error ? faClose : faPingPongPaddleBall}
                                  className={"speedtest-icon icon-" + props.pingLevel}/>
-                <h2 className="speedtest-text">{props.error ? "" : props.ping}</h2>
+                <h2 className="speedtest-text">
+                    {props.error ? "" : props.ping}
+                    {!props.error && props.jitter !== null && props.jitter !== undefined && (
+                        <span className="jitter-suffix">±{props.jitter}</span>
+                    )}
+                </h2>
             </div>
             <div className="speedtest-row">
                 <FontAwesomeIcon icon={props.error ? faClose : faArrowDown}

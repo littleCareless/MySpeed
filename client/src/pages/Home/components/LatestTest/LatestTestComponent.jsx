@@ -8,7 +8,7 @@ import {SpeedtestContext} from "@/common/contexts/Speedtests";
 import {ConfigContext} from "@/common/contexts/Config";
 import "./styles.sass";
 import {getIconBySpeed} from "@/common/utils/TestUtil";
-import {downloadInfo, latestTestInfo, pingInfo, uploadInfo} from "@/pages/Home/components/LatestTest/utils/dialogs";
+import {downloadInfo, jitterInfo, latestTestInfo, pingInfo, uploadInfo} from "@/pages/Home/components/LatestTest/utils/dialogs";
 import {t} from "i18next";
 
 const BORDER_RADIUS = 14;
@@ -89,6 +89,11 @@ const LatestTestComponent = () => {
         alert.openAlert(info.title, info.description, {buttonText: info.buttonText});
     };
 
+    const showJitterInfo = () => {
+        const info = jitterInfo();
+        alert.openAlert(info.title, info.description, {buttonText: info.buttonText});
+    };
+
     const showDownloadInfo = () => {
         const info = downloadInfo();
         alert.openAlert(info.title, info.description, {buttonText: info.buttonText});
@@ -120,6 +125,11 @@ const LatestTestComponent = () => {
                             <LoadingValue>{latest.ping === -1 ? "N/A" : latest.ping}</LoadingValue>
                         ) : (
                             latest.ping === -1 ? "N/A" : latest.ping
+                        )}
+                        {latest.jitter !== null && latest.jitter !== undefined && (
+                            <span className="jitter-suffix" onClick={showJitterInfo} title={t("latest.jitter")}>
+                                ±{latest.jitter}
+                            </span>
                         )}
                     </h2>
                 </div>

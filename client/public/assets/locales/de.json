@@ -158,6 +158,8 @@
   "latest": {
     "ping": "Ping",
     "ping_unit": "ms",
+    "jitter": "Jitter",
+    "jitter_unit": "ms",
     "down": "Download",
     "speed_unit": "Mbit/s",
     "up": "Upload",
@@ -176,6 +178,10 @@
     "ping": {
       "title": "Ping",
       "description": "Der Ping zeigt dir, wie schnell der jeweilige Anbieter antwortet. Umso kürzer die Zeit, desto besser."
+    },
+    "jitter": {
+      "title": "Jitter",
+      "description": "Der Jitter ist die Schwankung der Ping-Antwortzeiten. Ein niedriger Jitter bedeutet eine stabilere Verbindung, was wichtig ist für Echtzeitanwendungen wie Videoanrufe und Gaming."
     },
     "up": {
       "title": "Upload-Geschwindigkeit",
@@ -213,6 +219,7 @@
     "result": {
       "title": "Testergebnis",
       "description": "<Link>Bei diesem Test</Link> wurde eine maximale Download-Geschwindigkeit von <Bold>{{down}} Mbps</Bold> und eine maximale Upload-Geschwindigkeit von <Bold>{{up}} Mbps</Bold> erreicht. Er wurde erstellt <Bold>{{type}}</Bold> und dauerte <Bold>{{duration}} Sekunden</Bold>.",
+      "jitter": " Der Verbindungs-Jitter betrug <Bold>{{jitter}} ms</Bold>.",
       "from_you": "von dir",
       "automatic": "automatisch"
     },

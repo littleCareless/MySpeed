@@ -152,6 +152,7 @@ const TestArea = () => {
                             time={date}
                             ping={test.ping}
                             pingLevel={getIconBySpeed(test.ping, config.ping, false)}
+                            jitter={test.jitter}
                             down={test.download}
                             downLevel={getIconBySpeed(test.download, config.download, true)}
                             up={test.upload}
