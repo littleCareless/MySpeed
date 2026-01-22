@@ -2,11 +2,16 @@ name: Deploy documentation to GitHub
 on:
   push:
     branches: [ "development" ]
-    paths: [ "docs/**" ]
+    paths:
+      - "docs/**"
+      - ".github/workflows/upload_docs.yml"
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
     steps:
       - uses: actions/checkout@v4
         with:
@@ -16,12 +21,13 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          cache-dependency-path: docs/package-lock.json
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build documentation
-        run: npx vitepress build docs
+        run: npx vitepress build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
