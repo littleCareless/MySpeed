@@ -245,6 +245,9 @@
     "invalid_view": "Ungültige Ansicht"
   },
   "statistics": {
+    "export": {
+      "button": "Exportieren"
+    },
     "overview": {
       "total_title": "Insgesamte Tests",
       "total_description": "Die Anzahl der ausgeführten Tests",

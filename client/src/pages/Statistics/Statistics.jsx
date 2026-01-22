@@ -22,6 +22,7 @@ import OverviewChart from "@/pages/Statistics/charts/OverviewChart";
 import AverageChart from "@/pages/Statistics/charts/AverageChart";
 import HourlyChart from "@/pages/Statistics/charts/HourlyChart.jsx";
 import ConsistencyChart from "@/pages/Statistics/charts/ConsistencyChart";
+import ExportButton from "@/common/components/ExportButton";
 import i18n, {t} from "i18next";
 import "./styles.sass";
 
@@ -161,6 +162,7 @@ export const Statistics = () => {
                     to={dateRange.to} 
                     onChange={handleDateRangeChange}
                 />
+                <ExportButton dateRange={dateRange} />
             </div>
 
             <OverviewChart tests={statistics.tests} time={statistics.time} dateRange={dateRange} onClick={() => setExpandedChart('overview')}/>
