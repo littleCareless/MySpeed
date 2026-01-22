@@ -34,6 +34,7 @@ export const FrequencyDialog = ({open, onClose}) => {
         return preset ? preset.id : "custom";
     });
     const [customCron, setCustomCron] = useState(config.cron || "0 * * * *");
+    const [scheduleOffset, setScheduleOffset] = useState(config.scheduleOffset === "true");
     const [showAdvanced, setShowAdvanced] = useState(isCustomPreset);
     const [saving, setSaving] = useState(false);
 
@@ -47,10 +48,11 @@ export const FrequencyDialog = ({open, onClose}) => {
         if (!cronValue || !getNextRun(cronValue)) return;
         
         setSaving(true);
-        const res = await patchRequest("/config/cron", {value: cronValue});
+        const cronRes = await patchRequest("/config/cron", {value: cronValue});
+        const offsetRes = await patchRequest("/config/scheduleOffset", {value: scheduleOffset ? "true" : "false"});
         setSaving(false);
         
-        if (res.ok) {
+        if (cronRes.ok && offsetRes.ok) {
             updateToast(t("dropdown.changes_applied"), "green", faCheck);
             reloadConfig();
             close();
@@ -106,6 +108,16 @@ export const FrequencyDialog = ({open, onClose}) => {
                                     {nextRun && <p className="frequency-next-run">{t("update.cron_next_test")} {nextRun}</p>}
                                 </div>
                             )}
+                            
+                            <div className="frequency-option" onClick={() => setScheduleOffset(!scheduleOffset)}>
+                                <div className={`frequency-toggle${scheduleOffset ? " frequency-toggle-active" : ""}`}>
+                                    <div className="frequency-toggle-knob"/>
+                                </div>
+                                <div className="frequency-option-text">
+                                    <h3>{t("update.schedule_offset")}</h3>
+                                    <p>{t("update.schedule_offset_desc")}</p>
+                                </div>
+                            </div>
                         </div>
                     </DialogBody>
                     <DialogFooter>
