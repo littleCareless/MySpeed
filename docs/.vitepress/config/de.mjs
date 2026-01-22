@@ -17,6 +17,7 @@ export const de = defineConfig({
                 text: 'Anleitungen',
                 items: [
                     { text: 'Einrichten eines Reverse Proxys', link: 'de/guides/reverse-proxy' },
+                    { text: 'HTTPS einrichten', link: 'de/guides/https' },
                     { text: 'Statistiken & Diagramme', link: 'de/guides/statistics' }
                 ]
             },
