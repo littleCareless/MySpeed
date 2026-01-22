@@ -3,60 +3,53 @@ Hier beschreiben wir die Einrichtung für Windows.
 
 ## Installation von MySpeed
 
-1. NodeJS herunterladen  
-   Um MySpeed zu verwenden, benötigst du zuerst **NodeJS**. Du kannst den Installer ganz einfach [hier](https://nodejs.org/en/download/) herunterladen. Empfohlen wird die LTS-Version 18 von NodeJS.
+1. MySpeed herunterladen  
+   Lade die neueste Version von MySpeed von der [Releases-Seite](https://github.com/gnmyt/myspeed/releases/latest) herunter. Lade die Datei `myspeed-windows-x64.exe` herunter.
 
-2. MySpeed herunterladen  
-   Lade jetzt die neueste Version von MySpeed herunter. Die aktuellste Version findest du [hier](https://github.com/gnmyt/myspeed/releases/latest). Lade die Datei "MySpeed-x.x.x-zip" von hier herunter.
+2. Datei platzieren  
+   Verschiebe die heruntergeladene Datei in einen Ordner deiner Wahl (z.B. `C:\MySpeed`). Benenne sie der Einfachheit halber in `myspeed.exe` um.
 
-3. Datei entpacken  
-   Entpacke nun die heruntergeladene Datei an einen Ort deiner Wahl. Am besten an einen Ort, den du später wiederfindest 🌚.
-
-4. Installation testen  
-   Navigiere zuerst in den Ordner, wo du die Datei entpackt hast. Klicke in einen leeren Bereich dieses Ordners mit `Shift` + `Rechtsklick` und wähle "Öffnen in Powershell".  
-   Füge nun diesen Befehl in das Konsolenfenster ein und drücke `Enter`:
-   ```sh
-   npm install
-   ```
-
-   ::: warning Schlägt die NPM-Installation fehl?
-   Möglicherweise gibt es keine vorkompilierten Module für dein System. In diesem Fall musst du die Module selbst kompilieren.
-   Folge diesen Schritten:
-
-   1. Python herunterladen  
-      Um das Projekt zu "bauen", benötigst du auch Python. Du kannst es [hier](https://www.python.org/downloads/) herunterladen.
-
-   2. Visual Studio BuildTools herunterladen  
-      Das Tool "node-gyp" erfordert auch Visual Studio BuildTools, um das Projekt erfolgreich zu "bauen". So funktioniert es:
-      1. Klicke [auf diesen Link](https://visualstudio.microsoft.com/thank-you-downloading-visual-studio/?sku=BuildTools) und warte einen Moment, bis der Download startet.
-      2. Öffne die Datei und klicke auf "Weiter".
-      3. Wähle jetzt die optionale Workload "Desktopentwicklung mit C++" aus und bestätige deine Auswahl durch Klicken auf "Installieren".
-   3. Führe `npm install` erneut aus.
-      :::
-      Wenn alles erfolgreich durchläuft, hast du alles richtig gemacht! Herzlichen Glückwunsch. :)  
-      Du kannst MySpeed jetzt mit diesem Befehl in Powershell starten.
-
-5. MySpeed starten
+3. Installation testen  
+   Öffne PowerShell oder die Eingabeaufforderung im Ordner, in dem du die Datei platziert hast (Shift + Rechtsklick > "PowerShell-Fenster hier öffnen").  
+   Führe die ausführbare Datei aus:
    ```powershell
-   $env:NODE_ENV="production"; node server
+   .\myspeed.exe
    ```
+
+   Wenn alles erfolgreich durchläuft, hast du alles richtig gemacht! Herzlichen Glückwunsch. :)  
+   MySpeed ist jetzt auf Port 5216 verfügbar. Öffne http://localhost:5216 in deinem Browser.
 
 ## Automatischer Start mit dem Autostart-Ordner in Windows
 
 1. Autostart-Ordner in Windows öffnen  
    Drücke gleichzeitig die Tasten (`Windows` + `R`) auf deiner Tastatur, bis ein Ausführen-Dialog erscheint. Gib dann `%USERPROFILE%\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup` ein und drücke `Enter`.
 
-2. Autostart-Datei erstellen  
-   Stelle sicher, dass du [Dateinamenerweiterungen aktiviert](https://support.microsoft.com/en-us/windows/common-file-name-extensions-in-windows-da4a4430-8e76-89c5-59f7-1cdbbc75cb01) hast. Wenn das erledigt ist, erstelle ein neues Dokument mit `Rechtsklick` > `Neu` > `Textdokument`.  
-   Drücke dann `Strg` + `A` und benenne es als "MySpeed.bat". Drücke dann zweimal `Enter`.
+2. Verknüpfung erstellen  
+   Klicke mit der rechten Maustaste in den Ordner und wähle `Neu` > `Verknüpfung`. Navigiere zu deiner `myspeed.exe`-Datei und erstelle die Verknüpfung.
 
-3. Inhalt erstellen  
-   Klicke mit `Rechtsklick` und wähle `Bearbeiten`. Füge dann den folgenden Code ein und passe den Installationsort an:
-   ```batch
-   @echo off
-   cd "C:\Users\Desktop\MySpeed"
-   set NODE_ENV=production
-   node server
+3. Wenn alles funktioniert hat, sollte MySpeed jetzt automatisch starten, wenn das System hochfährt.
+
+## Alternative: Installation aus dem Quellcode
+::: warning Achtung
+Dieser Prozess installiert die neueste Entwicklungsversion von MySpeed. Fehler können auftreten.
+:::
+
+1. Deno herunterladen  
+   Um MySpeed aus dem Quellcode zu bauen, benötigst du **Deno**. Öffne PowerShell und führe aus:
+   ```powershell
+   irm https://deno.land/install.ps1 | iex
    ```
 
-4. Wenn alles funktioniert hat, sollte MySpeed jetzt automatisch starten, wenn das System hochfährt.
+2. MySpeed-Quellcode herunterladen  
+   Klone das Repository oder lade den Quellcode von [GitHub](https://github.com/gnmyt/myspeed) herunter.
+
+3. Abhängigkeiten installieren und bauen
+   ```powershell
+   deno install
+   cd client && npm install && npm run build && cd .. && move client\build build
+   ```
+
+4. MySpeed starten
+   ```powershell
+   deno run --allow-all server/index.js
+   ```
