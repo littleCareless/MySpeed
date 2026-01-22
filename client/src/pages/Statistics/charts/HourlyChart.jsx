@@ -1,4 +1,4 @@
-import { Bar } from "react-chartjs-2";
+import ChartWrapper from "@/common/components/ChartWrapper";
 import { useMemo, useContext, memo } from "react";
 import { t } from "i18next";
 import { ThemeContext } from "@/common/contexts/Theme";
@@ -141,7 +141,7 @@ const HourlyChart = memo((props) => {
                 <h3 className="chart-title">{t("statistics.hourly.title")}</h3>
             </div>
             <div className="chart-body">
-                <Bar data={chartData} options={chartOptions} />
+                <ChartWrapper type="bar" data={chartData} options={chartOptions} />
             </div>
         </div>
     );

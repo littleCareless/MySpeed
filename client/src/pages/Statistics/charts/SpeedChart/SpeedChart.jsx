@@ -1,4 +1,4 @@
-import { Line } from "react-chartjs-2";
+import ChartWrapper from "@/common/components/ChartWrapper";
 import { useMemo, useContext, memo } from "react";
 import { t } from "i18next";
 import { ThemeContext } from "@/common/contexts/Theme";
@@ -246,7 +246,7 @@ export const SpeedChart = memo(({ labels, data, dataKey, titleKey, color, onClic
                 <h3 className="chart-title">{t(titleKey)} ({t("latest.speed_unit")})</h3>
             </div>
             <div className="chart-body">
-                <Line data={chartData} options={chartOptions} />
+                <ChartWrapper type="line" data={chartData} options={chartOptions} />
             </div>
         </div>
     );
