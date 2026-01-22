@@ -8,7 +8,7 @@ RUN npm run build
 
 FROM denoland/deno:alpine
 
-RUN apk add --no-cache tzdata python3 make g++
+RUN apk add --no-cache tzdata python3 make g++ gcc musl-dev linux-headers
 
 ENV TZ=Etc/UTC
 
