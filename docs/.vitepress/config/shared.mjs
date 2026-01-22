@@ -10,6 +10,9 @@ export const shared = defineConfig({
     lastUpdated: true,
     cleanUrls: true,
     metaChunk: true,
+    ignoreDeadLinks: [
+        /^http:\/\/localhost/
+    ],
 
     sitemap: {
         hostname: 'https://myspeed.gnmyt.dev',
