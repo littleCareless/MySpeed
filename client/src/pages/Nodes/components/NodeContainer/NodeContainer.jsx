@@ -41,6 +41,7 @@ export const NodeContainer = (node) => {
     const updateData = async () => {
         const testRequest = await baseRequest(prefix + "/speedtests?limit=1");
 
+        if (testRequest.status === 401) return setNodeError("PASSWORD_CHANGED");
         if (!testRequest.ok) return setNodeError("SERVER_NOT_REACHABLE");
         const tests = await testRequest.json();
 
@@ -48,6 +49,7 @@ export const NodeContainer = (node) => {
 
         const configRequest = await baseRequest(prefix + "/config");
 
+        if (configRequest.status === 401) return setNodeError("PASSWORD_CHANGED");
         if (!configRequest.ok) return setNodeError("SERVER_NOT_REACHABLE");
         const config = await configRequest.json();
 
