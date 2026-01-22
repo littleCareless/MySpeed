@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const baseDir = process.cwd();
 
-const neededFolder = ["data", "bin", "data/logs", "data/servers"];
+const neededFolder = ["data", "bin", "data/logs", "data/servers", "data/certs"];
 
 neededFolder.forEach(folder => {
     const fullPath = path.join(baseDir, folder);

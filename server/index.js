@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'node:path';
 import fs from 'node:fs';
+import https from 'node:https';
 import { fileURLToPath } from 'node:url';
 import * as timerTask from './tasks/timer.js';
 import * as integrationTask from './tasks/integrations.js';
@@ -34,6 +35,13 @@ const app = express();
 app.disable('x-powered-by');
 
 const port = process.env.SERVER_PORT || 5216;
+const httpsPort = process.env.HTTPS_PORT || 5217;
+
+const certsDir = path.join(process.cwd(), 'data', 'certs');
+const certPath = path.join(certsDir, 'cert.pem');
+const keyPath = path.join(certsDir, 'key.pem');
+
+const hasSSLCerts = () => fs.existsSync(certPath) && fs.existsSync(keyPath);
 
 process.on('uncaughtException', err => errorHandler(err));
 
@@ -87,6 +95,21 @@ const run = async () => {
     }
 
     app.listen(port, () => console.log(`Server listening on port ${port}`));
+
+    if (hasSSLCerts()) {
+        try {
+            const sslOptions = {
+                cert: fs.readFileSync(certPath),
+                key: fs.readFileSync(keyPath)
+            };
+
+            https.createServer(sslOptions, app).listen(httpsPort, () =>
+                console.log(`HTTPS server listening on port ${httpsPort}`)
+            );
+        } catch (err) {
+            console.error(`Failed to start HTTPS server: ${err.message}`);
+        }
+    }
 }
 
 db.authenticate().then(() => {
