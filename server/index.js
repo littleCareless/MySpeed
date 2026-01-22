@@ -27,31 +27,7 @@ import { removeOld } from './tasks/speedtest.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const devModeHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width"/>
-    <link rel="icon" href="https://i.imgur.com/aCmA6rH.png" type="image/png"/>
-    <title>MySpeed [Dev Mode]</title>
-    <style>
-        body, html { font-family: sans-serif; color: #FEFEFE; background-color: #232835; padding: 0; margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; gap: 1rem; }
-        .logo { display: flex; gap: 1rem; align-items: center; user-select: none; }
-        .logo img { width: 4rem; height: 4rem; }
-        .logo span { color: #3EA95A; }
-        code { background-color: #1d2128; padding: 0.5rem; border-radius: 0.4rem; }
-        p { margin: 0.5rem; font-size: 16pt; }
-        button { background-color: #3EA95A; border: none; border-radius: 0.4rem; padding: 0.5rem 1rem; color: #1d2128; font-weight: bold; font-size: 13pt; cursor: pointer; }
-        .hidden { display: none; }
-    </style>
-</head>
-<body>
-    <div class="logo"><img src="https://i.imgur.com/aCmA6rH.png" alt="MySpeed Logo"/><h1>MySpeed <span>Dev Mode</span></h1></div>
-    <div><p>Your MySpeed instance is currently in development mode.</p><p>Please build the client or use a production binary.</p></div>
-    <button onclick="window.location.href='http://localhost:5173';" class="hidden">Go to development environment</button>
-    <script>fetch("http://localhost:5173").then(r=>{if(r.ok)document.querySelector("button").classList.remove("hidden");}).catch(()=>{});</script>
-</body>
-</html>`;
+const devModeHtml = fs.readFileSync(path.join(__dirname, 'templates', 'env.html'), 'utf-8');
 
 const app = express();
 

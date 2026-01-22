@@ -7,11 +7,11 @@
     "server": "deno run --allow-all --watch server/index.js",
     "build": "cd client && npm run build",
     "dev": "deno task server & deno task client",
-    "compile": "deno compile --allow-all --no-check --include build --output myspeed server/index.js",
-    "compile:linux": "deno compile --allow-all --no-check --include build --target x86_64-unknown-linux-gnu --output myspeed-linux server/index.js",
-    "compile:windows": "deno compile --allow-all --no-check --include build --target x86_64-pc-windows-msvc --output myspeed-windows.exe server/index.js",
-    "compile:macos": "deno compile --allow-all --no-check --include build --target x86_64-apple-darwin --output myspeed-macos server/index.js",
-    "compile:macos-arm": "deno compile --allow-all --no-check --include build --target aarch64-apple-darwin --output myspeed-macos-arm server/index.js"
+    "compile": "deno compile --allow-all --no-check --include build --include server/integrations --include server/templates --output myspeed server/index.js",
+    "compile:linux": "deno compile --allow-all --no-check --include build --include server/integrations --include server/templates --target x86_64-unknown-linux-gnu --output myspeed-linux server/index.js",
+    "compile:windows": "deno compile --allow-all --no-check --include build --include server/integrations --include server/templates --target x86_64-pc-windows-msvc --output myspeed-windows.exe server/index.js",
+    "compile:macos": "deno compile --allow-all --no-check --include build --include server/integrations --include server/templates --target x86_64-apple-darwin --output myspeed-macos server/index.js",
+    "compile:macos-arm": "deno compile --allow-all --no-check --include build --include server/integrations --include server/templates --target aarch64-apple-darwin --output myspeed-macos-arm server/index.js"
   },
   "imports": {
     "express": "npm:express@^5.2.1",

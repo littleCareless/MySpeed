@@ -40,7 +40,7 @@ jobs:
         run: Move-Item -Path client/build -Destination .
 
       - name: Compile binary
-        run: deno compile --allow-all --no-check --include build --include server/integrations --target x86_64-pc-windows-msvc --output MySpeed.exe server/index.js
+        run: deno compile --allow-all --no-check --include build --include server/integrations --include server/templates --target x86_64-pc-windows-msvc --output MySpeed.exe server/index.js
         env:
           RUST_MIN_STACK: 16777216
 
@@ -111,7 +111,7 @@ jobs:
         run: mv client/build .
 
       - name: Compile binary
-        run: deno compile --allow-all --no-check --include build --include server/integrations --target ${{ matrix.target }} --output MySpeed server/index.js
+        run: deno compile --allow-all --no-check --include build --include server/integrations --include server/templates --target ${{ matrix.target }} --output MySpeed server/index.js
         env:
           RUST_MIN_STACK: 8388608
 
@@ -171,7 +171,7 @@ jobs:
         run: mv client/build .
 
       - name: Compile binary
-        run: deno compile --allow-all --no-check --include build --include server/integrations --target ${{ matrix.target }} --output MySpeed server/index.js
+        run: deno compile --allow-all --no-check --include build --include server/integrations --include server/templates --target ${{ matrix.target }} --output MySpeed server/index.js
         env:
           RUST_MIN_STACK: 8388608
 
