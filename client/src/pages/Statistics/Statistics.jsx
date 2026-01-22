@@ -133,7 +133,7 @@ export const Statistics = () => {
             case 'overview':
                 return <OverviewChart tests={statistics.tests} time={statistics.time} dateRange={dateRange}/>;
             case 'latest':
-                return <LatestTestChart test={latestTest}/>;
+                return <LatestTestChart test={latestTest} expanded/>;
             case 'consistency':
                 return <ConsistencyChart consistency={statistics.consistency}/>;
             case 'download':

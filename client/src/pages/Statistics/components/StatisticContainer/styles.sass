@@ -14,11 +14,18 @@
   animation: 0.3s fadeIn ease-out
   flex: 1 0 15%
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1)
+  position: relative
 
 .stats-container:hover
   border-color: $accent-primary
   transform: translateY(-4px)
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15)
+
+.container-running
+  border-color: $light-gray
+  
+  &:hover
+    border-color: $light-gray
 
 .stats-header
   color: $white

@@ -5,11 +5,13 @@ import "./styles.sass";
 import {getIconBySpeed} from "@/common/utils/TestUtil";
 import {useContext} from "react";
 import {ConfigContext} from "@/common/contexts/Config";
+import {StatusContext} from "@/common/contexts/Status";
 import {t} from "i18next";
 
 export const LatestTestChart = (props) => {
 
     const [config] = useContext(ConfigContext);
+    const [status] = useContext(StatusContext);
 
     if (!props.test) return <></>;
     if (config === null) return <></>;
@@ -17,7 +19,7 @@ export const LatestTestChart = (props) => {
     const hasJitter = props.test.jitter !== null && props.test.jitter !== undefined;
 
     return (
-        <StatisticContainer title={t("latest.latest")} onClick={props.onClick}>
+        <StatisticContainer title={t("latest.latest")} onClick={props.onClick} running={status.running} expanded={props.expanded}>
             <div className="info-container">
                 <div className="test-container">
                     <div className="test-info">
