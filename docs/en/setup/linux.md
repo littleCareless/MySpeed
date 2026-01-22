@@ -4,7 +4,7 @@ Here the setup for Linux is described. MySpeed can be installed in several ways.
 ## Installation with Docker
 
 ::: tip Help
-   You don't know how to install Docker? Then check out [this guide](https://docs.docker.com/engine/install/#server)
+You don't know how to install Docker? Then check out [this guide](https://docs.docker.com/engine/install/#server)
 :::
 
 
@@ -56,30 +56,32 @@ curl -sSL https://raw.githubusercontent.com/gnmyt/myspeed/development/scripts/un
 
 ## Manual installation
 ```sh
-sudo apt-get install wget curl unzip -y #(1)
+sudo apt-get install wget curl -y #(1)
 
-# You only need to do this if you don't have NodeJS installed yet
-curl -sSL https://deb.nodesource.com/setup_18.x | bash
-sudo apt-get install nodejs -y #(2)
+mkdir /opt/myspeed && cd /opt/myspeed #(2)
 
-mkdir /opt/myspeed && cd /opt/myspeed #(3)
+# Detect architecture and download the appropriate binary
+ARCH=$(uname -m)
+if [ "$ARCH" = "x86_64" ]; then
+  ARCH="x64"
+elif [ "$ARCH" = "aarch64" ]; then
+  ARCH="arm64"
+fi
 
-wget $(curl -s https://api.github.com/repos/gnmyt/myspeed/releases/latest | grep browser_download_url | cut -d '"' -f 4) #(4)
+wget $(curl -s https://api.github.com/repos/gnmyt/myspeed/releases/latest \
+  | grep "browser_download_url.*linux-${ARCH}" | cut -d '"' -f 4) \
+  -O myspeed #(3)
 
-unzip MySpeed-*.zip && rm MySpeed-*.zip #(5)
+chmod +x myspeed #(4)
 
-npm install #(6)
-
-NODE_ENV=production node server #(7)
+./myspeed #(5)
 ```
 
 1. Here you install all necessary packages to install the project.
-2. This step installs the latest version of NodeJS.
-3. Now create the folder where you want to install MySpeed. In this case it is the folder `/opt/myspeed`.
-4. Now install the newest version of MySpeed.
-5. Now unzip the file you just downloaded (then you can delete it)
-6. Now install all dependencies.
-7. Now MySpeed is started. MySpeed is now available on port 5216.
+2. Now create the folder where you want to install MySpeed. In this case it is the folder `/opt/myspeed`.
+3. Download the pre-compiled binary for your architecture (x64 or arm64).
+4. Make the binary executable.
+5. Now MySpeed is started. MySpeed is now available on port 5216.
    If you plan to run MySpeed in the background, see the guide below.
 
 ## Install MySpeed from the source code
@@ -89,30 +91,31 @@ This process installs the latest development version of MySpeed. Errors may occu
 :::
 
 ```sh
-sudo apt-get install git curl -y #(1)
+sudo apt-get install git curl npm -y #(1)
 
-# You only need to run this if you don't have NodeJS installed yet
-curl -sSL https://deb.nodesource.com/setup_18.x | bash
-sudo apt-get install nodejs -y #(2)
+# Install Deno
+curl -fsSL https://deno.land/install.sh | sh
+export DENO_INSTALL="$HOME/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH" #(2)
 
 mkdir /opt/myspeed && cd /opt/myspeed #(3)
 
 git clone https://github.com/gnmyt/myspeed.git . #(4)
 
-npm install #(5)
+deno install #(5)
 
 cd client && npm install && npm run build && cd .. && mv client/build . #(6)
 
-NODE_ENV=production node server #(7)
+deno run --allow-all server/index.js #(7)
 ```
 
-1. here you install all necessary packages to install the project.
-2. this step installs the latest version of NodeJS.
-3. now create the folder where you want to install MySpeed. In this case this is the folder `/opt/myspeed`.
-4. clone the MySpeed repository to get access to the code.
-5. now install all dependencies of the server.
-6. now compile the interface of MySpeed and move it to the folder where MySpeed can read it.
-7. now start MySpeed. MySpeed is now accessible on port 5216.
+1. Here you install all necessary packages to install the project.
+2. This step installs the Deno runtime.
+3. Now create the folder where you want to install MySpeed. In this case this is the folder `/opt/myspeed`.
+4. Clone the MySpeed repository to get access to the code.
+5. Now install all dependencies of the server.
+6. Now compile the interface of MySpeed and move it to the folder where MySpeed can read it.
+7. Now start MySpeed. MySpeed is now accessible on port 5216.
    If you plan to run MySpeed in the background, see the guide below.
 
 
@@ -136,11 +139,10 @@ Installing as a system service is not even that hard. In this case we use `syste
 
    [Service]
    Type=simple
-   ExecStart=/usr/bin/node server
+   ExecStart=/opt/myspeed/myspeed
    Restart=always
    # \/ It is strongly recommended to create your own user here
    User=root
-   Environment=NODE_ENV=production
    # \/ Specify your installation location here
    WorkingDirectory=/opt/myspeed 
 
@@ -154,7 +156,7 @@ Installing as a system service is not even that hard. In this case we use `syste
    ```sh [nano]
     Press `CTRL` + `X`, then press `Y` and press `Enter` to save the file and exit the editor.
     ```
-    
+
     ```sh [vim]
     Press `ESC`, then type `:wq` and press `Enter` to save the file and exit the editor.
     ```

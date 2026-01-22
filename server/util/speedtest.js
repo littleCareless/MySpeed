@@ -1,18 +1,18 @@
-const {spawn} = require('child_process');
-const interfaces = require('../util/loadInterfaces');
-const config = require('../controller/config');
-const fs = require('fs');
-const path = require('path');
+import { spawn } from 'node:child_process';
+import * as interfacesModule from '../util/loadInterfaces.js';
+import * as config from '../controller/config.js';
+import fs from 'node:fs';
+import path from 'node:path';
 
-module.exports = async (mode, serverId, serverUrl) => {
+export default async (mode, serverId, serverUrl) => {
     const binaryPath = mode === "ookla" ? './bin/speedtest' + (process.platform === "win32" ? ".exe" : "")
         : mode === "libre" ? './bin/librespeed-cli' + (process.platform === "win32" ? ".exe" : "")
             : './bin/cfspeedtest' + (process.platform === "win32" ? ".exe" : "");
 
-    if (!interfaces.interfaces) throw new Error("No interfaces found");
+    if (!interfacesModule.interfaces) throw new Error("No interfaces found");
 
     const currentInterface = await config.getValue("interface");
-    const interfaceIp = interfaces.interfaces[currentInterface];
+    const interfaceIp = interfacesModule.interfaces[currentInterface];
 
     const startTime = new Date().getTime();
     let args;

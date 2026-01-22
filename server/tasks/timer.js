@@ -1,28 +1,29 @@
-const pauseController = require('../controller/pause');
-const schedule = require('node-schedule');
-const {isValidCron} = require("cron-validator");
+import * as pauseController from '../controller/pause.js';
+import schedule from 'node-schedule';
+import { isValidCron } from "cron-validator";
+import { create as createSpeedtest } from './speedtest.js';
 
 let job;
 
-module.exports.startTimer = (cron) => {
+export const startTimer = (cron) => {
     if (!isValidCron(cron)) return;
-    job = schedule.scheduleJob(cron, () => this.runTask());
-}
+    job = schedule.scheduleJob(cron, () => runTask());
+};
 
-module.exports.runTask = async () => {
+export const runTask = async () => {
     if (pauseController.currentState) {
         console.warn("Speedtests currently paused. Trying again later...");
         return;
     }
 
-    await require('./speedtest').create("auto");
-}
+    await createSpeedtest("auto");
+};
 
-module.exports.stopTimer = () => {
+export const stopTimer = () => {
     if (job !== undefined) {
         job.cancel();
         job = undefined;
     }
-}
+};
 
-module.exports.job = job;
+export { job };

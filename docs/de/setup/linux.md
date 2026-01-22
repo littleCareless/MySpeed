@@ -55,30 +55,32 @@ curl -sSL https://raw.githubusercontent.com/gnmyt/myspeed/development/scripts/un
 
 ## Manuelle Installation
 ```sh
-sudo apt-get install wget curl unzip -y #(1)
+sudo apt-get install wget curl -y #(1)
 
-# Dies ist nur erforderlich, wenn NodeJS noch nicht installiert ist
-curl -sSL https://deb.nodesource.com/setup_18.x | bash
-sudo apt-get install nodejs -y #(2)
+mkdir /opt/myspeed && cd /opt/myspeed #(2)
 
-mkdir /opt/myspeed && cd /opt/myspeed #(3)
+# Architektur erkennen und passende Binary herunterladen
+ARCH=$(uname -m)
+if [ "$ARCH" = "x86_64" ]; then
+  ARCH="x64"
+elif [ "$ARCH" = "aarch64" ]; then
+  ARCH="arm64"
+fi
 
-wget $(curl -s https://api.github.com/repos/gnmyt/myspeed/releases/latest | grep browser_download_url | cut -d '"' -f 4) #(4)
+wget $(curl -s https://api.github.com/repos/gnmyt/myspeed/releases/latest \
+  | grep "browser_download_url.*linux-${ARCH}" | cut -d '"' -f 4) \
+  -O myspeed #(3)
 
-unzip MySpeed-*.zip && rm MySpeed-*.zip #(5)
+chmod +x myspeed #(4)
 
-npm install #(6)
-
-NODE_ENV=production node server #(7)
+./myspeed #(5)
 ```
 
 1. Hier werden alle notwendigen Pakete für die Installation des Projekts installiert.
-2. Dieser Schritt installiert die neueste Version von NodeJS.
-3. Erstelle nun den Ordner, in dem du MySpeed installieren möchtest. In diesem Fall ist es der Ordner `/opt/myspeed`.
-4. Installiere nun die neueste Version von MySpeed.
-5. Entpacke die gerade heruntergeladene Datei (danach kannst du sie löschen).
-6. Installiere nun alle Abhängigkeiten.
-7. Starte nun MySpeed. MySpeed ist jetzt auf Port 5216 verfügbar.
+2. Erstelle nun den Ordner, in dem du MySpeed installieren möchtest. In diesem Fall ist es der Ordner `/opt/myspeed`.
+3. Lade die vorkompilierte Binary für deine Architektur (x64 oder arm64) herunter.
+4. Mache die Binary ausführbar.
+5. Starte nun MySpeed. MySpeed ist jetzt auf Port 5216 verfügbar.
    Wenn du planst, MySpeed im Hintergrund laufen zu lassen, siehe die Anleitung unten.
 
 ## Installation von MySpeed aus dem Quellcode
@@ -87,25 +89,26 @@ Dieser Prozess installiert die neuste Entwicklungsversion von MySpeed. Fehler k�
 :::
 
 ```sh
-sudo apt-get install git curl -y #(1)
+sudo apt-get install git curl npm -y #(1)
 
-# Dies ist nur erforderlich, wenn NodeJS noch nicht installiert ist
-curl -sSL https://deb.nodesource.com/setup_18.x | bash
-sudo apt-get install nodejs -y #(2)
+# Deno installieren
+curl -fsSL https://deno.land/install.sh | sh
+export DENO_INSTALL="$HOME/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH" #(2)
 
 mkdir /opt/myspeed && cd /opt/myspeed #(3)
 
 git clone https://github.com/gnmyt/myspeed.git . #(4)
 
-npm install #(5)
+deno install #(5)
 
 cd client && npm install && npm run build && cd .. && mv client/build . #(6)
 
-NODE_ENV=production node server #(7)
+deno run --allow-all server/index.js #(7)
 ```
 
 1. Hier installierst du alle notwendigen Pakete, um das Projekt zu installieren.
-2. Dieser Schritt installiert die neuste Version von NodeJS.
+2. Dieser Schritt installiert die Deno Runtime.
 3. Erstelle nun den Ordner, in welchen du MySpeed installieren möchtest. In diesem Fall ist das der Ordner `/opt/myspeed`.
 4. Klone nun das MySpeed Repository, um Zugriff auf den Code zu erhalten.
 5. Installiere nun alle Abhängigkeiten des Servers.
@@ -134,11 +137,10 @@ Die Installation als Systemdienst ist nicht schwer. In diesem Fall verwenden wir
 
    [Service]
    Type=simple
-   ExecStart=/usr/bin/node server
+   ExecStart=/opt/myspeed/myspeed
    Restart=always
    # \/ Es wird dringend empfohlen, hier deinen eigenen Benutzer zu erstellen
    User=root
-   Environment=NODE_ENV=production
    # \/ Gib hier deinen Installationsort an
    WorkingDirectory=/opt/myspeed 
 

@@ -1,19 +1,19 @@
-const tests = require('../models/Speedtests');
-const {Op, Sequelize} = require("sequelize");
-const {mapFixed, mapRounded} = require("../util/helpers");
+import tests from '../models/Speedtests.js';
+import { Op, Sequelize } from 'sequelize';
+import { mapFixed, mapRounded } from '../util/helpers.js';
 
-module.exports.create = async (ping, download, upload, time, serverId, type = "auto", resultId = null, error = null, jitter = null) => {
+export const create = async (ping, download, upload, time, serverId, type = "auto", resultId = null, error = null, jitter = null) => {
     return (await tests.create({ping, jitter, download, upload, error, serverId, type, resultId, time, created: new Date().toISOString()})).id;
 }
 
-module.exports.getOne = async (id) => {
+export const getOne = async (id) => {
     let speedtest = await tests.findByPk(id);
     if (speedtest === null) return null;
     if (speedtest.error === null) delete speedtest.error;
     return speedtest
 }
 
-module.exports.listAll = async () => {
+export const listAll = async () => {
     let dbEntries = await tests.findAll({order: [["created", "DESC"]]});
     for (let dbEntry of dbEntries) {
         if (dbEntry.error === null) delete dbEntry.error;
@@ -23,7 +23,7 @@ module.exports.listAll = async () => {
     return dbEntries;
 }
 
-module.exports.listTests = async (afterId, limit) => {
+export const listTests = async (afterId, limit) => {
     limit = parseInt(limit) || 10;
 
     let whereClause = {};
@@ -44,12 +44,12 @@ module.exports.listTests = async (afterId, limit) => {
     return dbEntries;
 }
 
-module.exports.deleteTests = async () => {
+export const deleteTests = async () => {
     await tests.destroy({where: {}});
     return true;
 }
 
-module.exports.importTests = async (data) => {
+export const importTests = async (data) => {
     if (!Array.isArray(data)) return false;
 
     for (let entry of data) {
@@ -69,7 +69,7 @@ module.exports.importTests = async (data) => {
     return true;
 }
 
-module.exports.listStatistics = async (fromDate, toDate) => {
+export const listStatistics = async (fromDate, toDate) => {
     const from = new Date(fromDate);
     const to = new Date(toDate);
     from.setHours(0, 0, 0, 0);
@@ -238,13 +238,13 @@ module.exports.listStatistics = async (fromDate, toDate) => {
     };
 }
 
-module.exports.deleteOne = async (id) => {
-    if (await this.getOne(id) === null) return false;
+export const deleteOne = async (id) => {
+    if (await getOne(id) === null) return false;
     await tests.destroy({where: {id: id}});
     return true;
 }
 
-module.exports.removeOld = async () => {
+export const removeOld = async () => {
     await tests.destroy({
         where: {
             created: process.env.DB_TYPE === "mysql"
@@ -255,7 +255,7 @@ module.exports.removeOld = async () => {
     return true;
 }
 
-module.exports.getLatest = async () => {
+export const getLatest = async () => {
     let latest = await tests.findOne({order: [["created", "DESC"]]});
     if (latest === null) return undefined;
     if (latest.error === null) delete latest.error;
