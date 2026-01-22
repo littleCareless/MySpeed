@@ -1,9 +1,11 @@
-const app = require('express').Router();
-const tests = require('../controller/speedtests');
-const pauseController = require('../controller/pause');
-const config = require('../controller/config');
-const testTask = require("../tasks/speedtest");
-const password = require('../middlewares/password');
+import express from 'express';
+import * as tests from '../controller/speedtests.js';
+import * as pauseController from '../controller/pause.js';
+import * as config from '../controller/config.js';
+import * as testTask from '../tasks/speedtest.js';
+import password from '../middlewares/password.js';
+
+const app = express.Router();
 
 app.get("/", password(true), async (req, res) => {
     if (req.query.limit && /[^0-9]/.test(req.query.limit))
@@ -72,4 +74,4 @@ app.delete("/:id", password(false), async (req, res) => {
     res.json({message: "Successfully deleted the provided speedtest"});
 });
 
-module.exports = app;
+export default app;

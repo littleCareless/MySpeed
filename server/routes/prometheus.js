@@ -1,9 +1,10 @@
-const express = require('express');
+import express from 'express';
+import * as testController from '../controller/speedtests.js';
+import promClient from 'prom-client';
+import * as config from '../controller/config.js';
+import bcrypt from 'bcrypt';
+
 const app = express.Router();
-const testController = require('../controller/speedtests');
-const promClient = require('prom-client');
-const config = require('../controller/config');
-const bcrypt = require('bcrypt');
 
 const pingGauge = new promClient.Gauge({name: 'myspeed_ping', help: 'Current ping in ms'});
 const jitterGauge = new promClient.Gauge({name: 'myspeed_jitter', help: 'Current jitter in ms'});
@@ -51,4 +52,4 @@ app.get('/metrics', async (req, res) => {
     res.end(await promClient.register.metrics());
 });
 
-module.exports = app;
+export default app;

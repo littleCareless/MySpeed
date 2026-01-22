@@ -1,7 +1,9 @@
-const app = require('express').Router();
-const config = require('../controller/config');
-const timer = require('../tasks/timer');
-const password = require('../middlewares/password');
+import express from 'express';
+import * as config from '../controller/config.js';
+import * as timer from '../tasks/timer.js';
+import password from '../middlewares/password.js';
+
+const app = express.Router();
 
 app.get("/", password(true), async (req, res) => {
     let configValues = {};
@@ -34,4 +36,4 @@ app.patch("/:key", password(false), async (req, res) => {
     res.json({message: `The key '${req.params.key}' has been successfully updated`});
 });
 
-module.exports = app;
+export default app;

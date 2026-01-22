@@ -1,16 +1,20 @@
-const config = require("../models/Config");
-const node = require("../models/Node");
-const test = require("../models/Speedtests");
-const recommendations = require("../models/Recommendations");
-const integration = require("../models/IntegrationData");
-const {triggerEvent} = require("./integrations");
-const bcrypt = require('bcrypt');
-const timer = require('../tasks/timer');
-const cron = require('cron-validator');
-const db = require("../config/database");
-const fs = require('fs');
-const path = require('path');
-const interfaces = require('../util/loadInterfaces');
+import config from '../models/Config.js';
+import node from '../models/Node.js';
+import test from '../models/Speedtests.js';
+import recommendations from '../models/Recommendations.js';
+import integration from '../models/IntegrationData.js';
+import { triggerEvent } from './integrations.js';
+import bcrypt from 'bcrypt';
+import * as timer from '../tasks/timer.js';
+import cron from 'cron-validator';
+import db from '../config/database.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import * as interfaces from '../util/loadInterfaces.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const configDefaults = {
     ping: "25",
@@ -26,7 +30,7 @@ const configDefaults = {
     interface: "none"
 }
 
-module.exports.insertDefaults = async () => {
+export const insertDefaults = async () => {
     let insert = [];
     for (let key in configDefaults) {
         if (key !== "interface" && !(await config.findOne({where: {key: key}})))
@@ -44,16 +48,16 @@ module.exports.insertDefaults = async () => {
     await config.bulkCreate(insert, {validate: true});
 }
 
-module.exports.listAll = async () => {
+export const listAll = async () => {
     return await config.findAll();
 }
 
-module.exports.getValue = async (key) => {
+export const getValue = async (key) => {
     return (await config.findByPk(key))?.value;
 }
 
-module.exports.updateValue = async (key, newValue) => {
-    if ((await this.getValue(key)) === undefined) return undefined;
+export const updateValue = async (key, newValue) => {
+    if ((await getValue(key)) === undefined) return undefined;
 
     triggerEvent("configUpdated", {key: key, value: key === "password" ? "protected" : newValue})
         .then(undefined);
@@ -61,7 +65,7 @@ module.exports.updateValue = async (key, newValue) => {
     return await config.update({value: newValue}, {where: {key: key}});
 }
 
-module.exports.getUsedStorage = async () => {
+export const getUsedStorage = async () => {
     let size = 0;
 
     if (process.env.DB_TYPE === "mysql") {
@@ -81,7 +85,7 @@ module.exports.getUsedStorage = async () => {
     return {size, testCount: await test.count()};
 }
 
-module.exports.validateInput = async (key, value) => {
+export const validateInput = async (key, value) => {
     if (!value?.toString()) return "You need to provide the new value";
 
     if ((key === "ping" || key === "download" || key === "upload") && /[^0-9.]/.test(value))
@@ -125,7 +129,7 @@ module.exports.validateInput = async (key, value) => {
     return {value: value};
 }
 
-module.exports.exportConfig = async () => {
+export const exportConfig = async () => {
     let obj = {};
     obj.config = {};
 
@@ -143,13 +147,13 @@ module.exports.exportConfig = async () => {
     return obj;
 }
 
-module.exports.importConfig = async (obj) => {
+export const importConfig = async (obj) => {
     let configValues = obj.config;
     for (let key in configValues) {
         if (configDefaults[key] === undefined) continue
         if (key === "password") continue;
 
-        const validate = await this.validateInput(key, configValues[key]);
+        const validate = await validateInput(key, configValues[key]);
         if (Object.keys(validate).length !== 1) return false;
 
         if (key === "cron") {
@@ -183,7 +187,7 @@ module.exports.importConfig = async (obj) => {
     return true;
 }
 
-module.exports.factoryReset = async () => {
+export const factoryReset = async () => {
     let configValues = await config.findAll();
     for (let i = 0; i < configValues.length; i++) {
         await config.update({value: configDefaults[configValues[i].key]}, {where: {key: configValues[i].key}});

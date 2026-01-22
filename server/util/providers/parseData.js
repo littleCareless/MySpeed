@@ -1,6 +1,6 @@
 const roundSpeed = (bandwidth) => {
     return Math.round(bandwidth / 1250) / 100;
-}
+};
 
 const calculateJitter = (latencyMeasurements) => {
     if (!latencyMeasurements || latencyMeasurements.length < 2) return null;
@@ -9,9 +9,9 @@ const calculateJitter = (latencyMeasurements) => {
         totalDiff += Math.abs(latencyMeasurements[i] - latencyMeasurements[i - 1]);
     }
     return parseFloat((totalDiff / (latencyMeasurements.length - 1)).toFixed(2));
-}
+};
 
-module.exports.parseOokla = (test) => {
+export const parseOokla = (test) => {
     let ping = Math.round(test.ping.latency);
     let jitter = test.ping.jitter ? parseFloat(test.ping.jitter.toFixed(2)) : null;
     let download = roundSpeed(test.download.bandwidth);
@@ -19,13 +19,13 @@ module.exports.parseOokla = (test) => {
     let time = Math.round((test.download.elapsed + test.upload.elapsed) / 1000);
 
     return {ping, jitter, download, upload, time, resultId: test.result?.id};
-}
+};
 
-module.exports.parseLibre = (test) => ({...test, ping: Math.round(test.ping), 
+export const parseLibre = (test) => ({...test, ping: Math.round(test.ping), 
     jitter: test.jitter ? parseFloat(parseFloat(test.jitter).toFixed(2)) : null,
     time: Math.round(test.elapsed / 1000), resultId: null});
 
-module.exports.parseCloudflare = (test) => {
+export const parseCloudflare = (test) => {
     if (test && test.latency_measurement && test.speed_measurements) {
         const downloadTests = test.speed_measurements.filter(t => t.test_type === "Download");
         const uploadTests = test.speed_measurements.filter(t => t.test_type === "Upload");
@@ -48,15 +48,15 @@ module.exports.parseCloudflare = (test) => {
     return {ping: 0, jitter: null, download: 0, upload: 0, time: 0, resultId: null};
 };
 
-module.exports.parseData = (provider, data) => {
+export const parseData = (provider, data) => {
     switch (provider) {
         case "ookla":
-            return this.parseOokla(data);
+            return parseOokla(data);
         case "libre":
-            return this.parseLibre(data);
+            return parseLibre(data);
         case "cloudflare":
-            return this.parseCloudflare(data);
+            return parseCloudflare(data);
         default:
             throw {message: "Invalid provider"};
     }
-}
+};

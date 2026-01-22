@@ -1,20 +1,20 @@
-const fs = require('fs');
-const path = require('path');
-const { get } = require('https');
-const decompress = require("decompress");
-const decompressTarGz = require('decompress-targz');
-const decompressUnzip = require('decompress-unzip');
-const { file } = require("tmp");
-const binaries = require('../../config/binaries');
+import fs from 'node:fs';
+import path from 'node:path';
+import { get } from 'node:https';
+import decompress from "decompress";
+import decompressTarGz from 'decompress-targz';
+import decompressUnzip from 'decompress-unzip';
+import { file } from "tmp";
+import { cloudflareVersion, cloudflareList } from '../../config/binaries.js';
 
 const binaryName = `cfspeedtest${process.platform === "win32" ? ".exe" : ""}`;
-const binaryDirectory = path.join(__dirname, "../../../bin");
+const binaryDirectory = path.join(process.cwd(), "bin");
 const binaryPath = path.join(binaryDirectory, binaryName);
-const downloadBaseURL = `https://github.com/code-inflation/cfspeedtest/releases/download/v${binaries.cloudflareVersion}/`;
+const downloadBaseURL = `https://github.com/code-inflation/cfspeedtest/releases/download/v${cloudflareVersion}/`;
 
 const binaryRegex = /cfspeedtest(.exe)?$/;
 
-module.exports.fileExists = async () => fs.existsSync(binaryPath);
+export const fileExists = async () => fs.existsSync(binaryPath);
 
 const downloadToFile = (url, destinationPath) => {
     return new Promise((resolve, reject) => {
@@ -31,7 +31,7 @@ const downloadToFile = (url, destinationPath) => {
             res.on('error', reject);
         }).on('error', reject);
     });
-}
+};
 
 const decompressBinary = async (archivePath) => {
     await decompress(archivePath, binaryDirectory, {
@@ -42,13 +42,13 @@ const decompressBinary = async (archivePath) => {
             return file;
         }
     });
-}
+};
 
-module.exports.downloadFile = async () => {
-    let binary = binaries.cloudflareList.find(b => b.os === process.platform && b.arch === process.arch);
+export const downloadFile = async () => {
+    let binary = cloudflareList.find(b => b.os === process.platform && b.arch === process.arch);
 
     if (!binary && process.platform === 'darwin') {
-        binary = binaries.cloudflareList.find(b => b.os === 'darwin' && b.arch === 'universal');
+        binary = cloudflareList.find(b => b.os === 'darwin' && b.arch === 'universal');
     }
 
     if (!binary) {
@@ -71,8 +71,8 @@ module.exports.downloadFile = async () => {
     });
 };
 
-module.exports.load = async () => {
-    if (!await module.exports.fileExists()) {
-        await module.exports.downloadFile();
+export const load = async () => {
+    if (!await fileExists()) {
+        await downloadFile();
     }
 };

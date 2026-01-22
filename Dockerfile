@@ -1,33 +1,25 @@
-FROM node:22-alpine AS build
-RUN apk add --no-cache g++ make cmake python3 py3-setuptools
+FROM node:20-alpine AS client-build
 
-WORKDIR /myspeed
-
-COPY ./client ./client
-COPY ./server ./server
-COPY ./package.json ./package.json
-
-RUN yarn install
-RUN cd client && yarn install --force
+WORKDIR /client
+COPY ./client/package*.json ./
+RUN npm install --force
+COPY ./client ./
 RUN npm run build
-RUN mv /myspeed/client/build /myspeed
 
-FROM node:22-alpine
+FROM denoland/deno:alpine
 
 RUN apk add --no-cache tzdata
 
-ENV NODE_ENV=production
 ENV TZ=Etc/UTC
 
 WORKDIR /myspeed
 
-COPY --from=build /myspeed/build /myspeed/build
-COPY --from=build /myspeed/server /myspeed/server
-COPY --from=build /myspeed/node_modules /myspeed/node_modules
-COPY --from=build /myspeed/package.json /myspeed/package.json
+COPY --from=client-build /client/build /myspeed/build
+COPY ./server /myspeed/server
+COPY ./deno.json /myspeed/deno.json
 
 VOLUME ["/myspeed/data"]
 
 EXPOSE 5216
 
-CMD ["node", "server"]
+CMD ["deno", "run", "--allow-all", "server/index.js"]
