@@ -8,15 +8,18 @@ RUN npm run build
 
 FROM denoland/deno:alpine
 
-RUN apk add --no-cache tzdata
+RUN apk add --no-cache tzdata python3 make g++
 
 ENV TZ=Etc/UTC
 
 WORKDIR /myspeed
 
-COPY --from=client-build /client/build /myspeed/build
 COPY ./server /myspeed/server
 COPY ./deno.json /myspeed/deno.json
+
+RUN deno install --allow-scripts
+
+COPY --from=client-build /client/build /myspeed/build
 
 VOLUME ["/myspeed/data"]
 
