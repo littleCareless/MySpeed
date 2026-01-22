@@ -125,3 +125,57 @@
   font-size: 0.85rem
   color: $subtext
   text-align: center
+
+.frequency-option
+  display: flex
+  align-items: center
+  gap: 0.875rem
+  margin-top: 1rem
+  padding: 0.875rem 1rem
+  border-radius: 0.75rem
+  border: 1px solid $light-gray
+  cursor: pointer
+  transition: all 0.15s ease
+
+  &:hover
+    background-color: $darker-gray
+
+.frequency-option-text
+  flex: 1
+
+  h3
+    margin: 0
+    font-size: 0.95rem
+    font-weight: 500
+    color: $subtext
+
+  p
+    margin: 0.15rem 0 0
+    font-size: 0.8rem
+    color: $subtext
+    opacity: 0.7
+
+.frequency-toggle
+  width: 42px
+  height: 24px
+  background-color: $light-gray
+  border-radius: 12px
+  position: relative
+  transition: background-color 0.2s ease
+  flex-shrink: 0
+
+.frequency-toggle-knob
+  width: 20px
+  height: 20px
+  background-color: $white
+  border-radius: 50%
+  position: absolute
+  top: 2px
+  left: 2px
+  transition: transform 0.2s ease
+
+.frequency-toggle-active
+  background-color: $accent-primary
+
+  .frequency-toggle-knob
+    transform: translateX(18px)
