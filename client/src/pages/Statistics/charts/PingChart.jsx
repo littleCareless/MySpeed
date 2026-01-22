@@ -4,20 +4,22 @@ import { t } from "i18next";
 import { ThemeContext } from "@/common/contexts/Theme";
 import "./SpeedChart/styles.sass";
 
-const PingChart = (props) => {
+const PingChart = ({ compact = false, ...props }) => {
     const [isDarkMode] = useContext(ThemeContext);
 
     const filteredData = useMemo(() => {
-        if (!props.data?.ping || !props.labels) return { labels: [], data: [], jitter: [], average: 0, jitterAverage: 0 };
+        if (!props.data?.ping || !props.labels) return { labels: [], data: [], jitter: [], average: 0, jitterAverage: 0, failed: [], errors: [], isSingleDay: false };
 
         const filtered = props.labels.map((label, index) => ({
             label,
             value: props.data.ping[index],
             jitter: props.data.jitter?.[index],
+            isFailed: props.failed?.[index] || false,
+            error: props.errors?.[index] || null,
             date: new Date(label)
-        })).filter(item => item.value !== null && item.value !== undefined);
+        }));
 
-        const validValues = filtered.filter(item => item.value > 0).map(item => item.value);
+        const validValues = filtered.filter(item => item.value !== null && item.value !== undefined && item.value > 0).map(item => item.value);
         const average = validValues.length > 0
             ? Math.round((validValues.reduce((a, b) => a + b, 0) / validValues.length) * 100) / 100
             : 0;
@@ -27,16 +29,31 @@ const PingChart = (props) => {
             ? Math.round((validJitter.reduce((a, b) => a + b, 0) / validJitter.length) * 100) / 100
             : null;
 
+        const dates = filtered.map(item => new Date(item.label).toDateString());
+        const uniqueDates = [...new Set(dates)];
+        const isSingleDay = uniqueDates.length === 1;
+
         return {
             labels: filtered.map(item => item.label),
             data: filtered.map(item => item.value),
             jitter: filtered.map(item => item.jitter),
+            failed: filtered.map(item => item.isFailed),
+            errors: filtered.map(item => item.error),
             average,
-            jitterAverage
+            jitterAverage,
+            isSingleDay
         };
-    }, [props.labels, props.data]);
+    }, [props.labels, props.data, props.failed, props.errors]);
 
     const hasJitterData = filteredData.jitter.some(j => j !== null && j !== undefined);
+
+    const failedMarkerData = useMemo(() => {
+        return filteredData.labels.map((_, index) => 
+            filteredData.failed[index] ? 0 : null
+        );
+    }, [filteredData]);
+
+    const hasFailedTests = failedMarkerData.some(v => v !== null);
 
     const gridColor = isDarkMode ? 'rgba(42, 52, 65, 0.6)' : 'rgba(203, 213, 225, 0.8)';
     const tickColor = isDarkMode ? 'hsl(215, 20%, 50%)' : 'hsl(215, 25%, 40%)';
@@ -59,8 +76,33 @@ const PingChart = (props) => {
                 cornerRadius: 10,
                 displayColors: true,
                 boxPadding: 8,
+                filter: (item) => item.dataset.label !== t("statistics.failed_test"),
                 callbacks: {
-                    label: (item) => `${item.dataset.label}: ${item.formattedValue} ${t("latest.ping_unit")}`
+                    title: (items) => {
+                        if (items.length > 0) {
+                            const date = new Date(filteredData.labels[items[0].dataIndex]);
+                            return date.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) + 
+                                   ' ' + date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+                        }
+                        return '';
+                    },
+                    label: (item) => {
+                        if (item.dataset.label === t("statistics.failed_test")) {
+                            const error = filteredData.errors[item.dataIndex];
+                            return error ? `${t("statistics.failed_test")}: ${error}` : t("statistics.failed_test");
+                        }
+                        return `${item.dataset.label}: ${item.formattedValue} ${t("latest.ping_unit")}`;
+                    },
+                    afterBody: (items) => {
+                        if (items.length > 0) {
+                            const index = items[0].dataIndex;
+                            if (filteredData.failed[index]) {
+                                const error = filteredData.errors[index];
+                                return error ? `\n⚠ ${t("statistics.failed_test")}: ${error}` : `\n⚠ ${t("statistics.failed_test")}`;
+                            }
+                        }
+                        return '';
+                    }
                 }
             },
             legend: {
@@ -73,7 +115,8 @@ const PingChart = (props) => {
                     font: {
                         size: 12,
                         weight: 500
-                    }
+                    },
+                    filter: (item) => item.text !== t("statistics.failed_test")
                 }
             }
         },
@@ -89,9 +132,12 @@ const PingChart = (props) => {
                 },
                 ticks: {
                     color: tickColor,
-                    maxTicksLimit: 5,
+                    maxTicksLimit: filteredData.isSingleDay ? 12 : 5,
                     callback: function(value, index) {
                         const date = new Date(filteredData.labels[index]);
+                        if (filteredData.isSingleDay) {
+                            return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        }
                         return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + 
                                date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                     }
@@ -145,6 +191,9 @@ const PingChart = (props) => {
                 fill: true,
                 pointBackgroundColor: 'hsl(38, 92%, 50%)',
                 pointBorderColor: 'hsl(38, 92%, 50%)',
+                pointRadius: compact ? 0 : 3,
+                pointHoverRadius: compact ? 0 : 5,
+                spanGaps: true,
                 order: 1
             },
             ...(hasJitterData ? [{
@@ -161,6 +210,9 @@ const PingChart = (props) => {
                 fill: true,
                 pointBackgroundColor: 'hsl(280, 70%, 55%)',
                 pointBorderColor: 'hsl(280, 70%, 55%)',
+                pointRadius: compact ? 0 : 3,
+                pointHoverRadius: compact ? 0 : 5,
+                spanGaps: true,
                 order: 2
             }] : []),
             {
@@ -173,8 +225,23 @@ const PingChart = (props) => {
                 pointRadius: 0,
                 pointHoverRadius: 0,
                 fill: false,
-                order: 3
-            }
+                order: 4
+            },
+            ...(hasFailedTests ? [{
+                label: t("statistics.failed_test"),
+                data: failedMarkerData,
+                borderColor: 'transparent',
+                backgroundColor: 'hsl(0, 72%, 51%)',
+                pointBackgroundColor: 'hsl(0, 72%, 51%)',
+                pointBorderColor: 'hsl(0, 84%, 60%)',
+                pointBorderWidth: compact ? 1 : 2,
+                pointRadius: compact ? 3 : 6,
+                pointHoverRadius: compact ? 4 : 8,
+                pointStyle: 'crossRot',
+                showLine: false,
+                fill: false,
+                order: 0
+            }] : [])
         ],
     };
 

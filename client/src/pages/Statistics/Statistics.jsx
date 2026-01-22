@@ -137,11 +137,11 @@ export const Statistics = () => {
             case 'consistency':
                 return <ConsistencyChart consistency={statistics.consistency}/>;
             case 'download':
-                return <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 94%, 43%)" />;
+                return <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 94%, 43%)" failed={statistics.failed} errors={statistics.errors} />;
             case 'upload':
-                return <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="upload" titleKey="latest.up" color="hsl(258, 90%, 66%)" />;
+                return <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="upload" titleKey="latest.up" color="hsl(258, 90%, 66%)" failed={statistics.failed} errors={statistics.errors} />;
             case 'ping':
-                return <PingChart labels={statistics.labels} data={statistics.data}/>;
+                return <PingChart labels={statistics.labels} data={statistics.data} failed={statistics.failed} errors={statistics.errors}/>;
             case 'hourly':
                 return <HourlyChart hourlyAverages={statistics.hourlyAverages}/>;
             case 'avgDownload':
@@ -161,20 +161,15 @@ export const Statistics = () => {
                     to={dateRange.to} 
                     onChange={handleDateRangeChange}
                 />
-                {statistics.aggregated && (
-                    <span className="aggregation-info">
-                        {t(`statistics.aggregation.${statistics.aggregationType}`)}
-                    </span>
-                )}
             </div>
 
             <OverviewChart tests={statistics.tests} time={statistics.time} dateRange={dateRange} onClick={() => setExpandedChart('overview')}/>
             <LatestTestChart test={latestTest} onClick={() => setExpandedChart('latest')}/>
             <ConsistencyChart consistency={statistics.consistency} onClick={() => setExpandedChart('consistency')}/>
 
-            <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 94%, 43%)" onClick={() => setExpandedChart('download')}/>
-            <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="upload" titleKey="latest.up" color="hsl(258, 90%, 66%)" onClick={() => setExpandedChart('upload')}/>
-            <PingChart labels={statistics.labels} data={statistics.data} onClick={() => setExpandedChart('ping')}/>
+            <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 94%, 43%)" failed={statistics.failed} errors={statistics.errors} onClick={() => setExpandedChart('download')} compact/>
+            <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="upload" titleKey="latest.up" color="hsl(258, 90%, 66%)" failed={statistics.failed} errors={statistics.errors} onClick={() => setExpandedChart('upload')} compact/>
+            <PingChart labels={statistics.labels} data={statistics.data} failed={statistics.failed} errors={statistics.errors} onClick={() => setExpandedChart('ping')} compact/>
 
             <HourlyChart hourlyAverages={statistics.hourlyAverages} onClick={() => setExpandedChart('hourly')}/>
 

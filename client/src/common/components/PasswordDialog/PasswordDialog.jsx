@@ -9,7 +9,8 @@ import {
     faKey,
     faShieldHalved,
     faLock,
-    faBookOpen
+    faBookOpen,
+    faLockOpen
 } from "@fortawesome/free-solid-svg-icons";
 import "./styles.sass";
 import React, {useContext, useState} from "react";
@@ -63,6 +64,28 @@ export const PasswordDialog = ({open, onClose}) => {
             updateToast(t("dropdown.changes_unsaved"), "red", faExclamationTriangle);
         }
     };
+
+    const removePassword = async (close) => {
+        try {
+            await patchRequest("/config/password", {value: "none"});
+            if (currentNode !== 0) {
+                await baseRequest("/nodes/" + currentNode + "/password", "PATCH", {password: "none"});
+                updateNodes();
+            } else {
+                localStorage.removeItem("password");
+            }
+
+            reloadConfig();
+            updateToast(t("update.password_removed"), "green", faCheck);
+            handleClose(close);
+        } catch (e) {
+            updateToast(t("dropdown.changes_unsaved"), "red", faExclamationTriangle);
+        }
+    };
+
+    const isPasswordSet = currentNode !== 0 
+        ? findNode(currentNode)?.password 
+        : localStorage.getItem("password") != null;
 
     return (
         <Dialog open={open} onClose={onClose} className="password-dialog">
@@ -125,6 +148,12 @@ export const PasswordDialog = ({open, onClose}) => {
                         </div>
                     </DialogBody>
                     <DialogFooter>
+                        {isPasswordSet && (
+                            <button className="dialog-btn dialog-btn-danger" onClick={() => removePassword(close)}>
+                                <FontAwesomeIcon icon={faLockOpen}/>
+                                {t("dialog.password.unlock")}
+                            </button>
+                        )}
                         <button className="dialog-btn" onClick={() => save(close)}>{t("dialog.update")}</button>
                     </DialogFooter>
                 </>

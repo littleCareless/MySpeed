@@ -4,29 +4,44 @@ import { t } from "i18next";
 import { ThemeContext } from "@/common/contexts/Theme";
 import "./styles.sass";
 
-export const SpeedChart = ({ labels, data, dataKey, titleKey, color, onClick }) => {
+export const SpeedChart = ({ labels, data, dataKey, titleKey, color, onClick, failed, errors, compact = false }) => {
     const [isDarkMode] = useContext(ThemeContext);
 
     const filteredData = useMemo(() => {
-        if (!data?.[dataKey] || !labels) return { labels: [], data: [], average: 0 };
+        if (!data?.[dataKey] || !labels) return { labels: [], data: [], average: 0, failed: [], errors: [], isSingleDay: false };
 
         const filtered = labels.map((label, index) => ({
             label,
             value: data[dataKey][index],
+            isFailed: failed?.[index] || false,
+            error: errors?.[index] || null,
             date: new Date(label)
-        })).filter(item => item.value !== null && item.value !== undefined);
+        }));
 
-        const validValues = filtered.filter(item => item.value > 0).map(item => item.value);
+        const validValues = filtered.filter(item => item.value !== null && item.value !== undefined && item.value > 0).map(item => item.value);
         const average = validValues.length > 0
             ? Math.round((validValues.reduce((a, b) => a + b, 0) / validValues.length) * 100) / 100
             : 0;
 
+        const dates = filtered.map(item => new Date(item.label).toDateString());
+        const uniqueDates = [...new Set(dates)];
+        const isSingleDay = uniqueDates.length === 1;
+
         return {
             labels: filtered.map(item => item.label),
             data: filtered.map(item => item.value),
-            average
+            failed: filtered.map(item => item.isFailed),
+            errors: filtered.map(item => item.error),
+            average,
+            isSingleDay
         };
-    }, [labels, data, dataKey]);
+    }, [labels, data, dataKey, failed, errors]);
+
+    const failedMarkerData = useMemo(() => {
+        return filteredData.labels.map((_, index) => 
+            filteredData.failed[index] ? 0 : null
+        );
+    }, [filteredData]);
 
     const gridColor = isDarkMode ? 'rgba(42, 52, 65, 0.6)' : 'rgba(203, 213, 225, 0.8)';
     const tickColor = isDarkMode ? 'hsl(215, 20%, 50%)' : 'hsl(215, 25%, 40%)';
@@ -49,8 +64,33 @@ export const SpeedChart = ({ labels, data, dataKey, titleKey, color, onClick }) 
                 cornerRadius: 10,
                 displayColors: true,
                 boxPadding: 8,
+                filter: (item) => item.dataset.label !== t("statistics.failed_test"),
                 callbacks: {
-                    label: (item) => `${item.dataset.label}: ${item.formattedValue} ${t("latest.speed_unit")}`
+                    title: (items) => {
+                        if (items.length > 0) {
+                            const date = new Date(filteredData.labels[items[0].dataIndex]);
+                            return date.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) + 
+                                   ' ' + date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+                        }
+                        return '';
+                    },
+                    label: (item) => {
+                        if (item.dataset.label === t("statistics.failed_test")) {
+                            const error = filteredData.errors[item.dataIndex];
+                            return error ? `${t("statistics.failed_test")}: ${error}` : t("statistics.failed_test");
+                        }
+                        return `${item.dataset.label}: ${item.formattedValue} ${t("latest.speed_unit")}`;
+                    },
+                    afterBody: (items) => {
+                        if (items.length > 0) {
+                            const index = items[0].dataIndex;
+                            if (filteredData.failed[index]) {
+                                const error = filteredData.errors[index];
+                                return error ? `\n⚠ ${t("statistics.failed_test")}: ${error}` : `\n⚠ ${t("statistics.failed_test")}`;
+                            }
+                        }
+                        return '';
+                    }
                 }
             },
             legend: {
@@ -63,7 +103,8 @@ export const SpeedChart = ({ labels, data, dataKey, titleKey, color, onClick }) 
                     font: {
                         size: 12,
                         weight: 500
-                    }
+                    },
+                    filter: (item) => item.text !== t("statistics.failed_test")
                 }
             }
         },
@@ -79,9 +120,12 @@ export const SpeedChart = ({ labels, data, dataKey, titleKey, color, onClick }) 
                 },
                 ticks: {
                     color: tickColor,
-                    maxTicksLimit: 5,
+                    maxTicksLimit: filteredData.isSingleDay ? 12 : 5,
                     callback: function(value, index) {
                         const date = new Date(filteredData.labels[index]);
+                        if (filteredData.isSingleDay) {
+                            return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        }
                         return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + 
                                date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                     }
@@ -119,6 +163,8 @@ export const SpeedChart = ({ labels, data, dataKey, titleKey, color, onClick }) 
         }
     };
 
+    const hasFailedTests = failedMarkerData.some(v => v !== null);
+
     const chartData = {
         labels: filteredData.labels,
         datasets: [
@@ -136,6 +182,9 @@ export const SpeedChart = ({ labels, data, dataKey, titleKey, color, onClick }) 
                 fill: true,
                 pointBackgroundColor: color,
                 pointBorderColor: color,
+                pointRadius: compact ? 0 : 3,
+                pointHoverRadius: compact ? 0 : 5,
+                spanGaps: true,
                 order: 1
             },
             {
@@ -148,8 +197,23 @@ export const SpeedChart = ({ labels, data, dataKey, titleKey, color, onClick }) 
                 pointRadius: 0,
                 pointHoverRadius: 0,
                 fill: false,
-                order: 2
-            }
+                order: 3
+            },
+            ...(hasFailedTests ? [{
+                label: t("statistics.failed_test"),
+                data: failedMarkerData,
+                borderColor: 'transparent',
+                backgroundColor: 'hsl(0, 72%, 51%)',
+                pointBackgroundColor: 'hsl(0, 72%, 51%)',
+                pointBorderColor: 'hsl(0, 84%, 60%)',
+                pointBorderWidth: compact ? 1 : 2,
+                pointRadius: compact ? 3 : 6,
+                pointHoverRadius: compact ? 4 : 8,
+                pointStyle: 'crossRot',
+                showLine: false,
+                fill: false,
+                order: 0
+            }] : [])
         ],
     };
 

@@ -35,7 +35,7 @@ export const shared = defineConfig({
     themeConfig: {
         logo: '/logo.png',
         footer: {
-            copyright: '© 2024 Mathias Wagner',
+            copyright: '© 2026 Mathias Wagner',
         },
         search: {
             provider: 'local'

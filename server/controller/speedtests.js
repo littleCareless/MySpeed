@@ -70,10 +70,11 @@ export const importTests = async (data) => {
 }
 
 export const listStatistics = async (fromDate, toDate) => {
-    const from = new Date(fromDate);
-    const to = new Date(toDate);
-    from.setHours(0, 0, 0, 0);
-    to.setHours(23, 59, 59, 999);
+    const [fromYear, fromMonth, fromDay] = fromDate.split('-').map(Number);
+    const [toYear, toMonth, toDay] = toDate.split('-').map(Number);
+    
+    const from = new Date(fromYear, fromMonth - 1, fromDay, 0, 0, 0, 0);
+    const to = new Date(toYear, toMonth - 1, toDay, 23, 59, 59, 999);
     
     const dbEntries = (await tests.findAll({order: [["created", "DESC"]]}))
         .filter((entry) => {
@@ -84,20 +85,8 @@ export const listStatistics = async (fromDate, toDate) => {
     let notFailed = dbEntries.filter((entry) => entry.error === null);
 
     const daysDiff = Math.ceil((to - from) / (1000 * 60 * 60 * 24));
-    const dataPointCount = notFailed.length;
-
-    const MAX_CHART_POINTS = 100;
-    
-    let aggregationType = 'none';
-    if (dataPointCount > MAX_CHART_POINTS) {
-        if (daysDiff > 180 || dataPointCount > MAX_CHART_POINTS * 10) {
-            aggregationType = 'weekly';
-        } else if (daysDiff > 7 || dataPointCount > MAX_CHART_POINTS * 3) {
-            aggregationType = 'daily';
-        } else {
-            aggregationType = 'hourly';
-        }
-    }
+    const dataPointCount = dbEntries.length;
+    const TARGET_CHART_POINTS = 300;
 
     let data = {};
     ["ping", "jitter", "download", "upload", "time"].forEach(item => {
@@ -165,53 +154,101 @@ export const listStatistics = async (fromDate, toDate) => {
 
     let chartData = data;
     let chartLabels = notFailed.map((entry) => new Date(entry.created).toISOString());
+    let chartFailed = notFailed.map(() => false);
+    let chartErrors = notFailed.map(() => null);
+    const allEntriesSorted = [...dbEntries].sort((a, b) => new Date(a.created) - new Date(b.created));
     
-    if (aggregationType !== 'none' && notFailed.length > 0) {
-        const aggregated = {};
-        
-        notFailed.forEach(entry => {
-            const date = new Date(entry.created);
-            let key;
-            
-            if (aggregationType === 'weekly') {
-                const day = date.getDay();
-                const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-                const weekStart = new Date(date);
-                weekStart.setDate(diff);
-                key = weekStart.toISOString().split('T')[0];
-            } else if (aggregationType === 'daily') {
-                key = date.toISOString().split('T')[0];
-            } else {
-                key = date.toISOString().substring(0, 13);
-            }
-            
-            if (!aggregated[key]) {
-                aggregated[key] = { ping: [], jitter: [], download: [], upload: [], time: [], count: 0 };
-            }
-            
-            aggregated[key].ping.push(entry.ping);
-            if (entry.jitter !== null) aggregated[key].jitter.push(entry.jitter);
-            aggregated[key].download.push(entry.download);
-            aggregated[key].upload.push(entry.upload);
-            aggregated[key].time.push(entry.time);
-            aggregated[key].count++;
-        });
-
-        const sortedKeys = Object.keys(aggregated).sort((a, b) => new Date(a) - new Date(b));
-        
-        chartLabels = sortedKeys.map(key => {
-            if (aggregationType === 'hourly') {
-                return new Date(key + ':00:00.000Z').toISOString();
-            }
-            return new Date(key).toISOString();
-        });
+    if (allEntriesSorted.length <= TARGET_CHART_POINTS) {
+        chartLabels = allEntriesSorted.map((entry) => new Date(entry.created).toISOString());
+        chartFailed = allEntriesSorted.map((entry) => entry.error !== null);
+        chartErrors = allEntriesSorted.map((entry) => entry.error);
         chartData = {
-            ping: sortedKeys.map(key => Math.round(aggregated[key].ping.reduce((a, b) => a + b, 0) / aggregated[key].ping.length)),
-            jitter: sortedKeys.map(key => aggregated[key].jitter.length > 0 ? parseFloat((aggregated[key].jitter.reduce((a, b) => a + b, 0) / aggregated[key].jitter.length).toFixed(2)) : null),
-            download: sortedKeys.map(key => parseFloat((aggregated[key].download.reduce((a, b) => a + b, 0) / aggregated[key].download.length).toFixed(2))),
-            upload: sortedKeys.map(key => parseFloat((aggregated[key].upload.reduce((a, b) => a + b, 0) / aggregated[key].upload.length).toFixed(2))),
-            time: sortedKeys.map(key => Math.round(aggregated[key].time.reduce((a, b) => a + b, 0) / aggregated[key].time.length))
+            ping: allEntriesSorted.map(entry => entry.error === null ? entry.ping : null),
+            jitter: allEntriesSorted.map(entry => entry.error === null ? entry.jitter : null),
+            download: allEntriesSorted.map(entry => entry.error === null ? entry.download : null),
+            upload: allEntriesSorted.map(entry => entry.error === null ? entry.upload : null),
+            time: allEntriesSorted.map(entry => entry.error === null ? entry.time : null)
         };
+    } else {
+        const bucketCount = TARGET_CHART_POINTS;
+        const timeRange = to.getTime() - from.getTime();
+        const bucketSize = timeRange / bucketCount;
+        
+        const buckets = [];
+        for (let i = 0; i < bucketCount; i++) {
+            buckets.push({
+                startTime: from.getTime() + (i * bucketSize),
+                endTime: from.getTime() + ((i + 1) * bucketSize),
+                entries: [],
+                failed: 0,
+                errors: []
+            });
+        }
+        
+        allEntriesSorted.forEach(entry => {
+            const entryTime = new Date(entry.created).getTime();
+            const bucketIndex = Math.min(Math.floor((entryTime - from.getTime()) / bucketSize), bucketCount - 1);
+            if (bucketIndex >= 0 && bucketIndex < bucketCount) {
+                buckets[bucketIndex].entries.push(entry);
+                if (entry.error !== null) {
+                    buckets[bucketIndex].failed++;
+                    buckets[bucketIndex].errors.push(entry.error);
+                }
+            }
+        });
+        
+        chartLabels = [];
+        chartFailed = [];
+        chartErrors = [];
+        chartData = { ping: [], jitter: [], download: [], upload: [], time: [] };
+        
+        buckets.forEach((bucket, index) => {
+            const validEntries = bucket.entries.filter(e => e.error === null);
+            
+            if (validEntries.length === 0) {
+                if (bucket.failed > 0) {
+                    chartLabels.push(new Date(bucket.startTime + bucketSize / 2).toISOString());
+                    chartFailed.push(true);
+                    chartErrors.push(bucket.errors.join('; '));
+                    chartData.ping.push(null);
+                    chartData.jitter.push(null);
+                    chartData.download.push(null);
+                    chartData.upload.push(null);
+                    chartData.time.push(null);
+                }
+                return;
+            }
+            
+            const midTime = bucket.startTime + bucketSize / 2;
+            let closestEntry = validEntries[0];
+            let closestDiff = Math.abs(new Date(closestEntry.created).getTime() - midTime);
+            
+            validEntries.forEach(entry => {
+                const diff = Math.abs(new Date(entry.created).getTime() - midTime);
+                if (diff < closestDiff) {
+                    closestDiff = diff;
+                    closestEntry = entry;
+                }
+            });
+            
+            const avgPing = Math.round(validEntries.reduce((sum, e) => sum + e.ping, 0) / validEntries.length);
+            const jitterEntries = validEntries.filter(e => e.jitter !== null);
+            const avgJitter = jitterEntries.length > 0 
+                ? parseFloat((jitterEntries.reduce((sum, e) => sum + e.jitter, 0) / jitterEntries.length).toFixed(2))
+                : null;
+            const avgDownload = parseFloat((validEntries.reduce((sum, e) => sum + e.download, 0) / validEntries.length).toFixed(2));
+            const avgUpload = parseFloat((validEntries.reduce((sum, e) => sum + e.upload, 0) / validEntries.length).toFixed(2));
+            const avgTime = Math.round(validEntries.reduce((sum, e) => sum + e.time, 0) / validEntries.length);
+            
+            chartLabels.push(new Date(midTime).toISOString());
+            chartFailed.push(bucket.failed > 0);
+            chartErrors.push(bucket.failed > 0 ? `${bucket.failed} failed in period` : null);
+            chartData.ping.push(avgPing);
+            chartData.jitter.push(avgJitter);
+            chartData.download.push(avgDownload);
+            chartData.upload.push(avgUpload);
+            chartData.time.push(avgTime);
+        });
     }
 
     return {
@@ -226,10 +263,13 @@ export const listStatistics = async (fromDate, toDate) => {
         time: mapRounded(notFailed, "time"),
         data: chartData,
         labels: chartLabels,
+        failed: chartFailed,
+        errors: chartErrors,
         hourlyAverages,
         consistency,
-        aggregated: aggregationType !== 'none',
-        aggregationType,
+        dataPoints: chartLabels.length,
+        rawDataPoints: dataPointCount,
+        downsampled: dataPointCount > TARGET_CHART_POINTS,
         dateRange: {
             from: fromDate,
             to: toDate,
@@ -248,8 +288,8 @@ export const removeOld = async () => {
     await tests.destroy({
         where: {
             created: process.env.DB_TYPE === "mysql"
-                ? {[Op.lte]: new Date(new Date().getTime() - 30 * 24 * 3600000)} // MySQL
-                : {[Op.lte]: Sequelize.literal(`datetime('now', '-30 days')`)} // SQLite
+                ? {[Op.lte]: new Date(new Date().getTime() - 30 * 24 * 3600000)}
+                : {[Op.lte]: Sequelize.literal(`datetime('now', '-30 days')`)}
         }
     });
     return true;
