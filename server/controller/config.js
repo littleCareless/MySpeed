@@ -21,6 +21,7 @@ const configDefaults = {
     download: "100",
     upload: "50",
     cron: "0 * * * *",
+    scheduleOffset: "true",
     provider: "none",
     ooklaId: "none",
     libreId: "none",
@@ -116,6 +117,9 @@ export const validateInput = async (key, value) => {
 
     if (key === "cron" && !cron.isValidCron(value.toString()))
         return "Not a valid cron expression";
+
+    if (key === "scheduleOffset" && !["true", "false"].includes(value))
+        return "You need to provide either true or false";
 
     if (key === "interface" && !Object.keys(interfaces.interfaces).includes(value))
         return "The provided interface does not exist";
