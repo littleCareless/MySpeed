@@ -8,7 +8,7 @@ export const SpeedChart = ({ labels, data, dataKey, titleKey, color, onClick, fa
     const [isDarkMode] = useContext(ThemeContext);
 
     const filteredData = useMemo(() => {
-        if (!data?.[dataKey] || !labels) return { labels: [], data: [], average: 0, failed: [], errors: [] };
+        if (!data?.[dataKey] || !labels) return { labels: [], data: [], average: 0, failed: [], errors: [], isSingleDay: false };
 
         const filtered = labels.map((label, index) => ({
             label,
@@ -23,12 +23,17 @@ export const SpeedChart = ({ labels, data, dataKey, titleKey, color, onClick, fa
             ? Math.round((validValues.reduce((a, b) => a + b, 0) / validValues.length) * 100) / 100
             : 0;
 
+        const dates = filtered.map(item => new Date(item.label).toDateString());
+        const uniqueDates = [...new Set(dates)];
+        const isSingleDay = uniqueDates.length === 1;
+
         return {
             labels: filtered.map(item => item.label),
             data: filtered.map(item => item.value),
             failed: filtered.map(item => item.isFailed),
             errors: filtered.map(item => item.error),
-            average
+            average,
+            isSingleDay
         };
     }, [labels, data, dataKey, failed, errors]);
 
@@ -115,9 +120,12 @@ export const SpeedChart = ({ labels, data, dataKey, titleKey, color, onClick, fa
                 },
                 ticks: {
                     color: tickColor,
-                    maxTicksLimit: 5,
+                    maxTicksLimit: filteredData.isSingleDay ? 12 : 5,
                     callback: function(value, index) {
                         const date = new Date(filteredData.labels[index]);
+                        if (filteredData.isSingleDay) {
+                            return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        }
                         return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + 
                                date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                     }

@@ -8,7 +8,7 @@ const PingChart = ({ compact = false, ...props }) => {
     const [isDarkMode] = useContext(ThemeContext);
 
     const filteredData = useMemo(() => {
-        if (!props.data?.ping || !props.labels) return { labels: [], data: [], jitter: [], average: 0, jitterAverage: 0, failed: [], errors: [] };
+        if (!props.data?.ping || !props.labels) return { labels: [], data: [], jitter: [], average: 0, jitterAverage: 0, failed: [], errors: [], isSingleDay: false };
 
         const filtered = props.labels.map((label, index) => ({
             label,
@@ -29,6 +29,10 @@ const PingChart = ({ compact = false, ...props }) => {
             ? Math.round((validJitter.reduce((a, b) => a + b, 0) / validJitter.length) * 100) / 100
             : null;
 
+        const dates = filtered.map(item => new Date(item.label).toDateString());
+        const uniqueDates = [...new Set(dates)];
+        const isSingleDay = uniqueDates.length === 1;
+
         return {
             labels: filtered.map(item => item.label),
             data: filtered.map(item => item.value),
@@ -36,7 +40,8 @@ const PingChart = ({ compact = false, ...props }) => {
             failed: filtered.map(item => item.isFailed),
             errors: filtered.map(item => item.error),
             average,
-            jitterAverage
+            jitterAverage,
+            isSingleDay
         };
     }, [props.labels, props.data, props.failed, props.errors]);
 
@@ -127,9 +132,12 @@ const PingChart = ({ compact = false, ...props }) => {
                 },
                 ticks: {
                     color: tickColor,
-                    maxTicksLimit: 5,
+                    maxTicksLimit: filteredData.isSingleDay ? 12 : 5,
                     callback: function(value, index) {
                         const date = new Date(filteredData.labels[index]);
+                        if (filteredData.isSingleDay) {
+                            return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        }
                         return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + 
                                date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                     }
