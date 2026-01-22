@@ -16,11 +16,16 @@ export const updatePassword = async (nodeId, password) => await nodes.update({pa
 
 export const checkStatus = async (url, password) => {
     if (password === "none") password = undefined;
-    const api = await axios.get(url + "/api/config", {headers: {password: password}}).catch(() => {
+    const api = await axios.get(url + "/api/config", {
+        headers: {password: password},
+        validateStatus: (status) => status < 500
+    }).catch(() => {
         return "INVALID_URL";
     });
 
-    if (api === "INVALID_URL" || api.status !== 200) return "INVALID_URL";
+    if (api === "INVALID_URL") return "INVALID_URL";
+    if (api.status === 401) return "PASSWORD_REQUIRED";
+    if (api.status !== 200) return "INVALID_URL";
 
     if (!api.data.ping) return "INVALID_URL";
 
@@ -35,7 +40,7 @@ export const proxyRequest = async (url, req, res) => {
         headers: req.headers,
         data: req.method === "GET" ? undefined : JSON.stringify(req.body),
         signal: req.signal,
-        validateStatus: (status) => status >= 200 && status < 400
+        validateStatus: (status) => status < 500
     }).catch(() => "INVALID_URL");
 
     if (response === "INVALID_URL")
