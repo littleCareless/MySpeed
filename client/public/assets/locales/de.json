@@ -303,6 +303,11 @@
       "yes": "Ja, löschen",
       "success": "Der Server wurde erfolgreich gelöscht"
     },
+    "rename": {
+      "title": "Server umbenennen",
+      "placeholder": "Neuer Servername",
+      "success": "Der Server wurde erfolgreich umbenannt"
+    },
     "messages": {
       "not_reachable": "Server ist nicht erreichbar",
       "password_changed": "Passwort wurde geändert",
