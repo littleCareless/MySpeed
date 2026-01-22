@@ -22,15 +22,19 @@ export const LanguageDialog = ({open, onClose}) => {
                 <>
                     <DialogHeader onClose={close}>{t("update.language")}</DialogHeader>
                     <DialogBody>
-                        <div className="language-chooser-dialog">
-                            {languages.map((language, index) => (
-                                <div key={index}
-                                     className={"language-chooser-item" + (selectedLanguage === language.code ? " language-selected" : "")}
-                                     onClick={() => setSelectedLanguage(language.code)}>
-                                    <img src={language.flag} alt={language.name}/>
-                                    <p>{language.name}</p>
-                                </div>
-                            ))}
+                        <div className="language-content">
+                            <div className="language-list">
+                                {languages.map((language) => (
+                                    <div 
+                                        key={language.code}
+                                        className={`language-item${selectedLanguage === language.code ? " language-item-active" : ""}`}
+                                        onClick={() => setSelectedLanguage(language.code)}
+                                    >
+                                        <img src={language.flag} alt={language.name} className="language-flag"/>
+                                        <span className="language-name">{language.name}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </DialogBody>
                     <DialogFooter>

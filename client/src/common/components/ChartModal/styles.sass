@@ -1,156 +1,157 @@
 @use "@/common/styles/colors" as *
 
 .chart-modal-backdrop
-    position: fixed
-    top: 0
-    left: 0
-    right: 0
-    bottom: 0
-    background-color: rgba(0, 0, 0, 0.85)
-    display: flex
-    align-items: center
-    justify-content: center
-    z-index: 1000
-    padding: 2rem
-    animation: modalFadeIn 0.25s ease-out
-    backdrop-filter: blur(4px)
+  position: fixed
+  top: 0
+  left: 0
+  right: 0
+  bottom: 0
+  background-color: rgba(0, 0, 0, 0.7)
+  display: flex
+  align-items: center
+  justify-content: center
+  z-index: 1000
+  padding: 1.5rem
+  animation: modalFadeIn 0.25s ease-out
+  backdrop-filter: blur(4px)
 
 .chart-modal-content
-    position: relative
-    width: fit-content
-    min-width: 400px
-    max-width: 1400px
-    max-height: 90vh
-    background-color: $dark-gray
-    backdrop-filter: blur(4px)
-    -webkit-backdrop-filter: blur(4px)
-    border: 1px solid $light-gray
-    border-radius: 1rem
-    overflow: hidden
-    animation: scaleIn 0.25s ease-out
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4)
+  position: relative
+  width: fit-content
+  min-width: 400px
+  max-width: 1400px
+  max-height: 90vh
+  background-color: $dark-gray
+  backdrop-filter: blur(4px)
+  -webkit-backdrop-filter: blur(4px)
+  border: 1px solid $light-gray
+  border-radius: 1rem
+  overflow: hidden
+  animation: scaleIn 0.25s ease-out
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3)
 
-    &.modal-chart
-        width: 100%
+  &.modal-chart
+    width: 100%
 
 .chart-modal-close
-    position: absolute
-    top: 1rem
-    right: 1rem
-    background: $darker-gray
-    border: 1px solid $light-gray
-    border-radius: 0.5rem
-    color: $subtext
-    width: 2.5rem
-    height: 2.5rem
-    display: flex
-    align-items: center
-    justify-content: center
-    cursor: pointer
-    transition: all 0.2s ease
-    z-index: 10
-    font-size: 1.25rem
+  position: absolute
+  top: 1rem
+  right: 1rem
+  background: transparent
+  border: none
+  color: $subtext
+  width: 2rem
+  height: 2rem
+  display: flex
+  align-items: center
+  justify-content: center
+  cursor: pointer
+  transition: color 0.15s ease
+  z-index: 10
+  font-size: 1.1rem
+  padding: 0
 
-    &:hover
-        background: $light-gray
-        color: $white
-        border-color: $accent-primary
+  &:hover
+    color: $accent-danger
 
 .chart-modal-body
-    padding: 1.5rem
-    padding-top: 3.5rem
+  padding: 1.25rem
 
-    .chart-container,
-    .stats-container
-        width: 100%
-        border: none
-        transform: none !important
-        cursor: default
-        box-shadow: none
+  .chart-container,
+  .stats-container
+    width: 100%
+    border: none
+    transform: none !important
+    cursor: default
+    box-shadow: none
 
-        &:hover
-            border: none
-            transform: none !important
-            box-shadow: none
+    &:hover
+      border: none
+      transform: none !important
+      box-shadow: none
 
-    &.modal-body-chart
-        .chart-container
-            min-height: 70vh
+  &.modal-body-chart
+    .chart-container
+      min-height: 70vh
             
-        .chart-body
-            min-height: 60vh
+    .chart-body
+      min-height: 60vh
 
-    .stats-content
-        height: auto
-        min-height: auto
+  .stats-header
+    padding: 0.5rem 0 0.75rem 0.25rem
 
-    .consistency-container
-        gap: 2rem
+  .stats-content
+    height: auto
+    min-height: auto
+    padding: 0 0.25rem 0.5rem
+
+  .consistency-container
+    gap: 2rem
         
-        .consistency-item
-            svg
-                width: 3rem
-                height: 3rem
-            .consistency-info
-                h2
-                    font-size: 1.25rem
-                p
-                    font-size: 1.25rem
-                .consistency-detail
-                    font-size: 0.95rem
+    .consistency-item
+      svg
+        width: 3rem
+        height: 3rem
+      .consistency-info
+        h2
+          font-size: 1.25rem
+        p
+          font-size: 1.25rem
+        .consistency-detail
+          font-size: 0.95rem
 
-    .overview-items
-        gap: 1.5rem
+  .overview-items
+    gap: 1.5rem
         
-        .overview-item
-            .info-area
-                svg
-                    width: 3rem
-                    height: 3rem
-                .text-area
-                    h2
-                        font-size: 1.25rem
-                    p
-                        font-size: 0.9rem
-            h2
-                font-size: 1.75rem
+    .overview-item
+      .info-area
+        svg
+          width: 3rem
+          height: 3rem
+        .text-area
+          h2
+            font-size: 1.25rem
+          p
+            font-size: 0.9rem
+      h2
+        font-size: 1.75rem
 
-    .info-container
-        gap: 2rem
+  .info-container
+    gap: 2rem
         
-        .test-container
-            svg
-                width: 3rem
-                height: 3rem
-            .test-info
-                h2
-                    font-size: 1.25rem
-                p
-                    font-size: 1.1rem
+    .test-container
+      svg
+        width: 3rem
+        height: 3rem
+      .test-info
+        h2
+          font-size: 1.25rem
+        p
+          font-size: 1.1rem
 
-    .value-container
-        gap: 2rem
+  .value-container
+    gap: 2rem
         
-        .value-item
-            svg
-                width: 3rem
-                height: 3rem
-            .value-info
-                h2
-                    font-size: 1.25rem
-                p
-                    font-size: 1.1rem
+    .value-item
+      svg
+        width: 3rem
+        height: 3rem
+      .value-info
+        h2
+          font-size: 1.25rem
+        p
+          font-size: 1.1rem
 
 @keyframes modalFadeIn
-    from
-        opacity: 0
-    to
-        opacity: 1
+  from
+    opacity: 0
+  to
+    opacity: 1
 
 @keyframes scaleIn
-    from
-        opacity: 0
-        transform: scale(0.96)
-    to
-        opacity: 1
-        transform: scale(1)
+  from
+    opacity: 0
+    transform: scale(0.96)
+  to
+    opacity: 1
+    transform: scale(1)

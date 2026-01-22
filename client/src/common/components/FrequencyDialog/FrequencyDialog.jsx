@@ -1,7 +1,7 @@
 import React, {useState, useContext} from "react";
 import {Dialog, DialogHeader, DialogBody, DialogFooter} from "@/common/contexts/Dialog";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck, faQuestionCircle, faBolt, faGauge, faClock, faLeaf, faSeedling} from "@fortawesome/free-solid-svg-icons";
+import {faCheck, faQuestionCircle, faBolt, faGauge, faClock, faLeaf, faSeedling, faChevronDown} from "@fortawesome/free-solid-svg-icons";
 import {t} from "i18next";
 import {patchRequest} from "@/common/utils/RequestUtil";
 import {ConfigContext} from "@/common/contexts/Config";
@@ -28,11 +28,13 @@ const getNextRun = (cron) => {
 export const FrequencyDialog = ({open, onClose}) => {
     const [config, reloadConfig] = useContext(ConfigContext);
     const updateToast = useContext(ToastNotificationContext);
+    const isCustomPreset = !PRESETS.find(p => p.cron === config.cron);
     const [selected, setSelected] = useState(() => {
         const preset = PRESETS.find(p => p.cron === config.cron);
         return preset ? preset.id : "custom";
     });
     const [customCron, setCustomCron] = useState(config.cron || "0 * * * *");
+    const [showAdvanced, setShowAdvanced] = useState(isCustomPreset);
     const [saving, setSaving] = useState(false);
 
     const handlePresetClick = (preset) => {
@@ -80,20 +82,30 @@ export const FrequencyDialog = ({open, onClose}) => {
                                     </div>
                                 ))}
                             </div>
-                            <div className="frequency-custom">
-                                <div className="frequency-custom-header">
-                                    <h3>{t("update.custom_cron")}</h3>
-                                    <a href="https://crontab.guru/" target="_blank" rel="noreferrer">
-                                        <FontAwesomeIcon icon={faQuestionCircle}/>
-                                    </a>
+                            
+                            <button 
+                                className={`frequency-advanced-toggle${showAdvanced ? " frequency-advanced-open" : ""}`}
+                                onClick={() => setShowAdvanced(!showAdvanced)}
+                            >
+                                <span>{t("update.custom_cron")}</span>
+                                <FontAwesomeIcon icon={faChevronDown}/>
+                            </button>
+                            
+                            {showAdvanced && (
+                                <div className="frequency-custom">
+                                    <div className="frequency-custom-input">
+                                        <input type="text" 
+                                            className={`dialog-input frequency-input${selected === "custom" && !isCustomValid ? " input-error" : ""}`}
+                                            value={customCron} 
+                                            onChange={(e) => { setCustomCron(e.target.value); setSelected("custom"); }}
+                                            placeholder="0 * * * *"/>
+                                        <a href="https://crontab.guru/" target="_blank" rel="noreferrer" className="frequency-help">
+                                            <FontAwesomeIcon icon={faQuestionCircle}/>
+                                        </a>
+                                    </div>
+                                    {nextRun && <p className="frequency-next-run">{t("update.cron_next_test")} {nextRun}</p>}
                                 </div>
-                                <input type="text" 
-                                    className={`dialog-input frequency-input${selected === "custom" && !isCustomValid ? " input-error" : ""}`}
-                                    value={customCron} 
-                                    onChange={(e) => { setCustomCron(e.target.value); setSelected("custom"); }}
-                                    placeholder="0 * * * *"/>
-                                {nextRun && <p className="frequency-next-run">{t("update.cron_next_test")} {nextRun}</p>}
-                            </div>
+                            )}
                         </div>
                     </DialogBody>
                     <DialogFooter>

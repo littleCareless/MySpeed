@@ -117,8 +117,8 @@ export const PasswordDialog = ({open, onClose}) => {
                                 </div>
                             </div>
 
-                            <div className="password-section">
-                                <div className="password-label">
+                            <div className="access-section">
+                                <div className="access-label">
                                     <FontAwesomeIcon icon={faShieldHalved}/>
                                     <h3>{t("update.level_title")}</h3>
                                 </div>

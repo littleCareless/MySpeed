@@ -3,7 +3,8 @@ import {deleteRequest, downloadRequest, putRequest} from "@/common/utils/Request
 import {SpeedtestContext} from "@/common/contexts/Speedtests";
 import {ToastNotificationContext} from "@/common/contexts/ToastNotification";
 import {t} from "i18next";
-import {faFileExport, faFileImport, faTrashCan} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faFileExport, faFileImport, faTrashCan, faChartLine} from "@fortawesome/free-solid-svg-icons";
 
 export default ({tests, close}) => {
     const [deleteWarning, setDeleteWarning] = useState(false);
@@ -63,13 +64,19 @@ export default ({tests, close}) => {
     return (
         <>
             <div className="storage-row">
-                <h3>{t("storage.stored_tests")}</h3>
-                <h3>{tests} {t("storage.tests")}</h3>
+                <div className="storage-row-label">
+                    <FontAwesomeIcon icon={faChartLine}/>
+                    <h3>{t("storage.stored_tests")}</h3>
+                </div>
+                <p className="storage-row-value">{tests} {t("storage.tests")}</p>
             </div>
 
             <div className="storage-row">
-                <h3>{t("storage.export_tests")}</h3>
-                <div>
+                <div className="storage-row-label">
+                    <FontAwesomeIcon icon={faFileExport}/>
+                    <h3>{t("storage.export_tests")}</h3>
+                </div>
+                <div className="storage-row-actions">
                     <button className="dialog-btn" onClick={() => downloadHistory("csv")}>
                         {t("storage.csv")}</button>
                     <button className="dialog-btn" onClick={() => downloadHistory("json")}>
@@ -78,16 +85,25 @@ export default ({tests, close}) => {
             </div>
 
             <div className="storage-row">
-                <h3>{t("storage.import_tests")}</h3>
-                <button className="dialog-btn" onClick={importHistory}>{t("storage.import")}</button>
+                <div className="storage-row-label">
+                    <FontAwesomeIcon icon={faFileImport}/>
+                    <h3>{t("storage.import_tests")}</h3>
+                </div>
+                <div className="storage-row-actions">
+                    <button className="dialog-btn" onClick={importHistory}>{t("storage.import")}</button>
+                </div>
             </div>
 
             <div className="storage-row">
-                <h3>{t("storage.clear_history")}</h3>
-                <button className="dialog-btn dialog-secondary" onClick={deleteHistory}>
-                    {deleteWarning ? t("storage.confirm_delete") : t("storage.delete")}</button>
+                <div className="storage-row-label">
+                    <FontAwesomeIcon icon={faTrashCan}/>
+                    <h3>{t("storage.clear_history")}</h3>
+                </div>
+                <div className="storage-row-actions">
+                    <button className="dialog-btn dialog-secondary" onClick={deleteHistory}>
+                        {deleteWarning ? t("storage.confirm_delete") : t("storage.delete")}</button>
+                </div>
             </div>
-
         </>
     )
 }

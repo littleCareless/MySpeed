@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Dialog, DialogHeader, DialogBody, DialogFooter} from "@/common/contexts/Dialog";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faInfinity, faClock, faMugHot, faMoon} from "@fortawesome/free-solid-svg-icons";
+import {faInfinity, faClock, faMugHot, faMoon, faChevronDown} from "@fortawesome/free-solid-svg-icons";
 import {t} from "i18next";
 import {postRequest} from "@/common/utils/RequestUtil";
 import "./styles.sass";
@@ -16,6 +16,7 @@ const PRESETS = [
 export const PauseDialog = ({open, onClose, onPause}) => {
     const [selected, setSelected] = useState("manual");
     const [customHours, setCustomHours] = useState("");
+    const [showCustom, setShowCustom] = useState(false);
 
     const handleSave = async (close) => {
         const preset = PRESETS.find(p => p.id === selected);
@@ -58,21 +59,29 @@ export const PauseDialog = ({open, onClose, onPause}) => {
                                     </div>
                                 ))}
                             </div>
-                            <div className="pause-custom">
-                                <div className="pause-custom-header">
-                                    <h3>{t("pause.custom")}</h3>
+                            
+                            <button 
+                                className={`pause-custom-toggle${showCustom ? " pause-custom-open" : ""}`}
+                                onClick={() => setShowCustom(!showCustom)}
+                            >
+                                <span>{t("pause.custom")}</span>
+                                <FontAwesomeIcon icon={faChevronDown}/>
+                            </button>
+                            
+                            {showCustom && (
+                                <div className="pause-custom">
+                                    <input type="number"
+                                           className={`dialog-input pause-input${selected === "custom" && !isCustomValid ? " input-error" : ""}`}
+                                           value={customHours}
+                                           onChange={(e) => {
+                                               setCustomHours(e.target.value);
+                                               setSelected("custom");
+                                           }}
+                                           placeholder={t("update.hours")}
+                                           min="0.1"
+                                           step="0.5"/>
                                 </div>
-                                <input type="number"
-                                       className={`dialog-input pause-input${selected === "custom" && !isCustomValid ? " input-error" : ""}`}
-                                       value={customHours}
-                                       onChange={(e) => {
-                                           setCustomHours(e.target.value);
-                                           setSelected("custom");
-                                       }}
-                                       placeholder={t("update.hours")}
-                                       min="0.1"
-                                       step="0.5"/>
-                            </div>
+                            )}
                         </div>
                     </DialogBody>
                     <DialogFooter>

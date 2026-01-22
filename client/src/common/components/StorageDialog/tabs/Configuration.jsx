@@ -3,6 +3,7 @@ import {deleteRequest, downloadRequest, putRequest} from "@/common/utils/Request
 import {ToastNotificationContext} from "@/common/contexts/ToastNotification";
 import {ConfigContext} from "@/common/contexts/Config";
 import {t} from "i18next";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faClockRotateLeft, faFileExport, faFileImport} from "@fortawesome/free-solid-svg-icons";
 
 export default ({close}) => {
@@ -63,19 +64,34 @@ export default ({close}) => {
     return (
         <>
             <div className="storage-row">
-                <h3>{t("storage.export_settings")}</h3>
-                <button className="dialog-btn" onClick={exportConfig}>{t("storage.export")}</button>
+                <div className="storage-row-label">
+                    <FontAwesomeIcon icon={faFileExport}/>
+                    <h3>{t("storage.export_settings")}</h3>
+                </div>
+                <div className="storage-row-actions">
+                    <button className="dialog-btn" onClick={exportConfig}>{t("storage.export")}</button>
+                </div>
             </div>
 
             <div className="storage-row">
-                <h3>{t("storage.import_settings")}</h3>
-                <button className="dialog-btn" onClick={importConfig}>{t("storage.import")}</button>
+                <div className="storage-row-label">
+                    <FontAwesomeIcon icon={faFileImport}/>
+                    <h3>{t("storage.import_settings")}</h3>
+                </div>
+                <div className="storage-row-actions">
+                    <button className="dialog-btn" onClick={importConfig}>{t("storage.import")}</button>
+                </div>
             </div>
 
             <div className="storage-row">
-                <h3>{t("storage.factory_reset")}</h3>
-                <button className="dialog-btn dialog-secondary" onClick={factoryReset}>
-                    {deleteWarning ? t("storage.confirm_reset") : t("storage.reset")}</button>
+                <div className="storage-row-label">
+                    <FontAwesomeIcon icon={faClockRotateLeft}/>
+                    <h3>{t("storage.factory_reset")}</h3>
+                </div>
+                <div className="storage-row-actions">
+                    <button className="dialog-btn dialog-secondary" onClick={factoryReset}>
+                        {deleteWarning ? t("storage.confirm_reset") : t("storage.reset")}</button>
+                </div>
             </div>
         </>
     )

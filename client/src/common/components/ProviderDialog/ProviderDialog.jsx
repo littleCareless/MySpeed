@@ -1,7 +1,7 @@
 import {Dialog, DialogHeader, DialogBody, DialogFooter} from "@/common/contexts/Dialog";
 import {t} from "i18next";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCheck, faServer, faNetworkWired, faLink} from "@fortawesome/free-solid-svg-icons";
+import {faCheck, faServer, faNetworkWired, faLink, faHashtag} from "@fortawesome/free-solid-svg-icons";
 import "./styles.sass";
 import React, {useContext, useEffect, useState} from "react";
 import OoklaImage from "./assets/img/ookla.webp";
@@ -28,6 +28,7 @@ export const ProviderDialog = ({open, onClose}) => {
     const [libreServers, setLibreServers] = useState({});
     const [serverId, setServerId] = useState("none");
     const [libreUrl, setLibreUrl] = useState(config.libreUrl || "none");
+    const [acceptedOokla, setAcceptedOokla] = useState(config.provider === "ookla");
 
     useEffect(() => {
         if (!open) return;
@@ -76,6 +77,7 @@ export const ProviderDialog = ({open, onClose}) => {
     };
 
     const isUsingCustomUrl = provider === "libre" && libreUrl && libreUrl !== "none";
+    const canUpdate = provider !== "ookla" || acceptedOokla;
 
     return (
         <Dialog open={open} onClose={onClose} className="provider-dialog-wrapper">
@@ -130,6 +132,7 @@ export const ProviderDialog = ({open, onClose}) => {
                                 {provider !== "cloudflare" && serverId !== "none" && !isUsingCustomUrl && (
                                     <div className="provider-setting">
                                         <div className="provider-setting-label">
+                                            <FontAwesomeIcon icon={faHashtag}/>
                                             <h3>{t("dialog.provider.server_id")}</h3>
                                         </div>
                                         <input type="text" className="dialog-input provider-input"
@@ -153,18 +156,25 @@ export const ProviderDialog = ({open, onClose}) => {
                             </div>
 
                             {provider === "ookla" && (
-                                <p className="provider-license">
-                                    <Trans components={{
-                                        Eula: <a href="https://www.speedtest.net/about/eula" target="_blank" rel="noreferrer"/>,
-                                        GDPR: <a href="https://www.speedtest.net/about/privacy" target="_blank" rel="noreferrer"/>,
-                                        TOS: <a href="https://www.speedtest.net/about/terms" target="_blank" rel="noreferrer"/>
-                                    }}>dialog.provider.ookla_notice</Trans>
-                                </p>
+                                <label className="provider-license">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={acceptedOokla} 
+                                        onChange={(e) => setAcceptedOokla(e.target.checked)}
+                                    />
+                                    <span>
+                                        <Trans components={{
+                                            Eula: <a href="https://www.speedtest.net/about/eula" target="_blank" rel="noreferrer"/>,
+                                            GDPR: <a href="https://www.speedtest.net/about/privacy" target="_blank" rel="noreferrer"/>,
+                                            TOS: <a href="https://www.speedtest.net/about/terms" target="_blank" rel="noreferrer"/>
+                                        }}>dialog.provider.ookla_license</Trans>
+                                    </span>
+                                </label>
                             )}
                         </div>
                     </DialogBody>
                     <DialogFooter>
-                        <button className="dialog-btn" onClick={() => update(close)}>{t("dialog.update")}</button>
+                        <button className="dialog-btn" onClick={() => update(close)} disabled={!canUpdate}>{t("dialog.update")}</button>
                     </DialogFooter>
                 </>
             )}
