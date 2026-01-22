@@ -302,3 +302,29 @@ export const getLatest = async () => {
     if (latest.resultId === null) delete latest.resultId;
     return latest;
 }
+
+export const exportTests = async (fromDate, toDate) => {
+    const [fromYear, fromMonth, fromDay] = fromDate.split('-').map(Number);
+    const [toYear, toMonth, toDay] = toDate.split('-').map(Number);
+    
+    const from = new Date(fromYear, fromMonth - 1, fromDay, 0, 0, 0, 0);
+    const to = new Date(toYear, toMonth - 1, toDay, 23, 59, 59, 999);
+    
+    const dbEntries = (await tests.findAll({order: [["created", "ASC"]]}))
+        .filter((entry) => {
+            const entryDate = new Date(entry.created);
+            return entryDate >= from && entryDate <= to;
+        });
+
+    return dbEntries.map(entry => ({
+        id: entry.id,
+        ping: entry.ping,
+        jitter: entry.jitter,
+        download: entry.download,
+        upload: entry.upload,
+        time: entry.time,
+        type: entry.type,
+        created: entry.created,
+        error: entry.error
+    }));
+}

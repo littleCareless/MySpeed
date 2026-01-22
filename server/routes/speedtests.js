@@ -7,6 +7,19 @@ import password from '../middlewares/password.js';
 
 const app = express.Router();
 
+const validateDateRange = (from, to) => {
+    if (!from || !to) {
+        return { valid: false, message: "Both 'from' and 'to' date parameters are required" };
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(from)) {
+        return { valid: false, message: "Invalid 'from' date format. Use YYYY-MM-DD" };
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(to)) {
+        return { valid: false, message: "Invalid 'to' date format. Use YYYY-MM-DD" };
+    }
+    return { valid: true };
+};
+
 app.get("/", password(true), async (req, res) => {
     if (req.query.limit && /[^0-9]/.test(req.query.limit))
         return res.status(400).json({message: "You need to provide a correct number in the limit parameter"});
@@ -19,18 +32,37 @@ app.get("/", password(true), async (req, res) => {
 
 app.get("/statistics", password(true), async (req, res) => {
     const { from, to } = req.query;
-
-    if (!from || !to) {
-        return res.status(400).json({ message: "Both 'from' and 'to' date parameters are required" });
-    }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(from)) {
-        return res.status(400).json({ message: "Invalid 'from' date format. Use YYYY-MM-DD" });
-    }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(to)) {
-        return res.status(400).json({ message: "Invalid 'to' date format. Use YYYY-MM-DD" });
+    const validation = validateDateRange(from, to);
+    if (!validation.valid) {
+        return res.status(400).json({ message: validation.message });
     }
     
     res.json(await tests.listStatistics(from, to));
+});
+
+app.get("/export", password(true), async (req, res) => {
+    const { from, to, format } = req.query;
+    const validation = validateDateRange(from, to);
+    if (!validation.valid) {
+        return res.status(400).json({ message: validation.message });
+    }
+
+    const exportData = await tests.exportTests(from, to);
+
+    if (format === 'csv') {
+        const csvHeader = 'id,ping,jitter,download,upload,time,type,created,error\n';
+        const csvRows = exportData.map(test => 
+            `${test.id},${test.ping ?? ''},${test.jitter ?? ''},${test.download ?? ''},${test.upload ?? ''},${test.time ?? ''},${test.type ?? ''},${test.created ?? ''},${(test.error ?? '').replace(/,/g, ';').replace(/\n/g, ' ')}`
+        ).join('\n');
+        
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename="myspeed-export-${from}-to-${to}.csv"`);
+        res.send(csvHeader + csvRows);
+    } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="myspeed-export-${from}-to-${to}.json"`);
+        res.json(exportData);
+    }
 });
 
 app.post("/run", password(false), async (req, res) => {
