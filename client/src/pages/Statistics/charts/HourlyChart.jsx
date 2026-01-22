@@ -1,10 +1,10 @@
 import { Bar } from "react-chartjs-2";
-import { useMemo, useContext } from "react";
+import { useMemo, useContext, memo } from "react";
 import { t } from "i18next";
 import { ThemeContext } from "@/common/contexts/Theme";
 import "./SpeedChart/styles.sass";
 
-const HourlyChart = (props) => {
+const HourlyChart = memo((props) => {
     const [isDarkMode] = useContext(ThemeContext);
 
     const chartData = useMemo(() => {
@@ -38,22 +38,45 @@ const HourlyChart = (props) => {
         };
     }, [props.hourlyAverages]);
 
-    const gridColor = isDarkMode ? 'rgba(42, 52, 65, 0.6)' : 'rgba(203, 213, 225, 0.8)';
-    const tickColor = isDarkMode ? 'hsl(215, 20%, 50%)' : 'hsl(215, 25%, 40%)';
-    const tooltipBg = isDarkMode ? 'hsl(215, 28%, 10%)' : 'hsl(0, 0%, 100%)';
-    const tooltipTitle = isDarkMode ? 'hsl(210, 40%, 96%)' : 'hsl(215, 25%, 20%)';
-    const tooltipBody = isDarkMode ? 'hsl(215, 20%, 65%)' : 'hsl(215, 15%, 40%)';
-    const tooltipBorder = isDarkMode ? 'hsl(215, 25%, 22%)' : 'hsl(215, 20%, 85%)';
+    const themeColors = useMemo(() => ({
+        gridColor: isDarkMode ? 'rgba(42, 52, 65, 0.6)' : 'rgba(203, 213, 225, 0.8)',
+        tickColor: isDarkMode ? 'hsl(215, 20%, 50%)' : 'hsl(215, 25%, 40%)',
+        tooltipBg: isDarkMode ? 'hsl(215, 28%, 10%)' : 'hsl(0, 0%, 100%)',
+        tooltipTitle: isDarkMode ? 'hsl(210, 40%, 96%)' : 'hsl(215, 25%, 20%)',
+        tooltipBody: isDarkMode ? 'hsl(215, 20%, 65%)' : 'hsl(215, 15%, 40%)',
+        tooltipBorder: isDarkMode ? 'hsl(215, 25%, 22%)' : 'hsl(215, 20%, 85%)'
+    }), [isDarkMode]);
 
-    const chartOptions = {
+    const chartOptions = useMemo(() => ({
         responsive: true,
         maintainAspectRatio: false,
+        resizeDelay: 100,
+        animation: {
+            duration: 250,
+            easing: 'easeOutQuart'
+        },
+        animations: {
+            colors: false,
+            x: false
+        },
+        transitions: {
+            active: {
+                animation: {
+                    duration: 100
+                }
+            },
+            resize: {
+                animation: {
+                    duration: 0
+                }
+            }
+        },
         plugins: {
             tooltip: {
-                backgroundColor: tooltipBg,
-                titleColor: tooltipTitle,
-                bodyColor: tooltipBody,
-                borderColor: tooltipBorder,
+                backgroundColor: themeColors.tooltipBg,
+                titleColor: themeColors.tooltipTitle,
+                bodyColor: themeColors.tooltipBody,
+                borderColor: themeColors.tooltipBorder,
                 borderWidth: 1,
                 padding: 14,
                 cornerRadius: 10,
@@ -74,7 +97,7 @@ const HourlyChart = (props) => {
                     usePointStyle: true,
                     pointStyle: 'rect',
                     padding: 20,
-                    color: tickColor,
+                    color: themeColors.tickColor,
                     font: {
                         size: 12,
                         weight: 500
@@ -85,32 +108,32 @@ const HourlyChart = (props) => {
         scales: {
             x: {
                 grid: {
-                    color: gridColor,
+                    color: themeColors.gridColor,
                     drawBorder: false
                 },
                 border: {
                     display: false
                 },
                 ticks: {
-                    color: tickColor,
+                    color: themeColors.tickColor,
                     maxRotation: 0
                 }
             },
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: gridColor,
+                    color: themeColors.gridColor,
                     drawBorder: false
                 },
                 border: {
                     display: false
                 },
                 ticks: {
-                    color: tickColor
+                    color: themeColors.tickColor
                 }
             }
         }
-    };
+    }), [themeColors, props.hourlyAverages]);
 
     return (
         <div className="chart-container" onClick={props.onClick}>
@@ -122,6 +145,6 @@ const HourlyChart = (props) => {
             </div>
         </div>
     );
-};
+});
 
 export default HourlyChart;

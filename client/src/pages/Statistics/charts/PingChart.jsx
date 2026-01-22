@@ -1,10 +1,10 @@
 import { Line } from "react-chartjs-2";
-import { useMemo, useContext } from "react";
+import { useMemo, useContext, memo } from "react";
 import { t } from "i18next";
 import { ThemeContext } from "@/common/contexts/Theme";
 import "./SpeedChart/styles.sass";
 
-const PingChart = ({ compact = false, ...props }) => {
+const PingChart = memo(({ compact = false, ...props }) => {
     const [isDarkMode] = useContext(ThemeContext);
 
     const filteredData = useMemo(() => {
@@ -45,7 +45,7 @@ const PingChart = ({ compact = false, ...props }) => {
         };
     }, [props.labels, props.data, props.failed, props.errors]);
 
-    const hasJitterData = filteredData.jitter.some(j => j !== null && j !== undefined);
+    const hasJitterData = useMemo(() => filteredData.jitter.some(j => j !== null && j !== undefined), [filteredData.jitter]);
 
     const failedMarkerData = useMemo(() => {
         return filteredData.labels.map((_, index) => 
@@ -53,24 +53,47 @@ const PingChart = ({ compact = false, ...props }) => {
         );
     }, [filteredData]);
 
-    const hasFailedTests = failedMarkerData.some(v => v !== null);
+    const hasFailedTests = useMemo(() => failedMarkerData.some(v => v !== null), [failedMarkerData]);
 
-    const gridColor = isDarkMode ? 'rgba(42, 52, 65, 0.6)' : 'rgba(203, 213, 225, 0.8)';
-    const tickColor = isDarkMode ? 'hsl(215, 20%, 50%)' : 'hsl(215, 25%, 40%)';
-    const tooltipBg = isDarkMode ? 'hsl(215, 28%, 10%)' : 'hsl(0, 0%, 100%)';
-    const tooltipTitle = isDarkMode ? 'hsl(210, 40%, 96%)' : 'hsl(215, 25%, 20%)';
-    const tooltipBody = isDarkMode ? 'hsl(215, 20%, 65%)' : 'hsl(215, 15%, 40%)';
-    const tooltipBorder = isDarkMode ? 'hsl(215, 25%, 22%)' : 'hsl(215, 20%, 85%)';
+    const themeColors = useMemo(() => ({
+        gridColor: isDarkMode ? 'rgba(42, 52, 65, 0.6)' : 'rgba(203, 213, 225, 0.8)',
+        tickColor: isDarkMode ? 'hsl(215, 20%, 50%)' : 'hsl(215, 25%, 40%)',
+        tooltipBg: isDarkMode ? 'hsl(215, 28%, 10%)' : 'hsl(0, 0%, 100%)',
+        tooltipTitle: isDarkMode ? 'hsl(210, 40%, 96%)' : 'hsl(215, 25%, 20%)',
+        tooltipBody: isDarkMode ? 'hsl(215, 20%, 65%)' : 'hsl(215, 15%, 40%)',
+        tooltipBorder: isDarkMode ? 'hsl(215, 25%, 22%)' : 'hsl(215, 20%, 85%)'
+    }), [isDarkMode]);
 
-    const chartOptions = {
+    const chartOptions = useMemo(() => ({
         responsive: true,
         maintainAspectRatio: false,
+        resizeDelay: 100,
+        animation: {
+            duration: 250,
+            easing: 'easeOutQuart'
+        },
+        animations: {
+            colors: false,
+            x: false
+        },
+        transitions: {
+            active: {
+                animation: {
+                    duration: 100
+                }
+            },
+            resize: {
+                animation: {
+                    duration: 0
+                }
+            }
+        },
         plugins: {
             tooltip: {
-                backgroundColor: tooltipBg,
-                titleColor: tooltipTitle,
-                bodyColor: tooltipBody,
-                borderColor: tooltipBorder,
+                backgroundColor: themeColors.tooltipBg,
+                titleColor: themeColors.tooltipTitle,
+                bodyColor: themeColors.tooltipBody,
+                borderColor: themeColors.tooltipBorder,
                 borderWidth: 1,
                 padding: 14,
                 cornerRadius: 10,
@@ -111,7 +134,7 @@ const PingChart = ({ compact = false, ...props }) => {
                     usePointStyle: true,
                     pointStyle: 'circle',
                     padding: 20,
-                    color: tickColor,
+                    color: themeColors.tickColor,
                     font: {
                         size: 12,
                         weight: 500
@@ -124,14 +147,14 @@ const PingChart = ({ compact = false, ...props }) => {
             x: {
                 reverse: false,
                 grid: {
-                    color: gridColor,
+                    color: themeColors.gridColor,
                     drawBorder: false
                 },
                 border: {
                     display: false
                 },
                 ticks: {
-                    color: tickColor,
+                    color: themeColors.tickColor,
                     maxTicksLimit: filteredData.isSingleDay ? 12 : 5,
                     callback: function(value, index) {
                         const date = new Date(filteredData.labels[index]);
@@ -146,14 +169,14 @@ const PingChart = ({ compact = false, ...props }) => {
             y: {
                 beginAtZero: true,
                 grid: {
-                    color: gridColor,
+                    color: themeColors.gridColor,
                     drawBorder: false
                 },
                 border: {
                     display: false
                 },
                 ticks: {
-                    color: tickColor
+                    color: themeColors.tickColor
                 }
             }
         },
@@ -167,14 +190,14 @@ const PingChart = ({ compact = false, ...props }) => {
                 borderWidth: 2.5
             },
             point: {
-                radius: 3,
-                hoverRadius: 6,
+                radius: compact ? 0 : 3,
+                hoverRadius: compact ? 0 : 6,
                 hoverBorderWidth: 2
             }
         }
-    };
+    }), [themeColors, filteredData.labels, filteredData.errors, filteredData.failed, filteredData.isSingleDay, compact]);
 
-    const chartData = {
+    const chartData = useMemo(() => ({
         labels: filteredData.labels,
         datasets: [
             {
@@ -243,7 +266,7 @@ const PingChart = ({ compact = false, ...props }) => {
                 order: 0
             }] : [])
         ],
-    };
+    }), [filteredData, compact, hasJitterData, hasFailedTests, failedMarkerData]);
 
     return (
         <div className="chart-container ping-chart" onClick={props.onClick}>
@@ -255,6 +278,6 @@ const PingChart = ({ compact = false, ...props }) => {
             </div>
         </div>
     );
-};
+});
 
 export default PingChart;

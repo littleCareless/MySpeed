@@ -2,10 +2,10 @@ import "./styles.sass";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartArea, faListUl } from "@fortawesome/free-solid-svg-icons";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import {t} from "i18next";
 
-export const Pagination = () => {
+export const Pagination = memo(() => {
     const navigate = useNavigate();
     const location = useLocation();
     const [activeIndex, setActiveIndex] = useState(location.pathname === "/" ? 0 : 1);
@@ -36,14 +36,16 @@ export const Pagination = () => {
         return () => window.removeEventListener('resize', updateActiveBackground);
     }, [updateActiveBackground]);
 
+    const handleNavigation = useCallback((path, index) => {
+        setActiveIndex(index);
+        navigate(path);
+    }, [navigate]);
+
     return (
         <div className="pagination" ref={paginationRef}>
             <div
                 className={`pagination-item${activeIndex === 0 ? " page-active" : ""}`}
-                onClick={() => {
-                    navigate("/");
-                    setActiveIndex(0);
-                }}
+                onClick={() => handleNavigation("/", 0)}
                 ref={el => itemRefs.current[0] = el}
             >
                 <FontAwesomeIcon icon={faListUl}/>
@@ -51,10 +53,7 @@ export const Pagination = () => {
             </div>
             <div
                 className={`pagination-item${activeIndex === 1 ? " page-active" : ""}`}
-                onClick={() => {
-                    navigate("/statistics");
-                    setActiveIndex(1);
-                }}
+                onClick={() => handleNavigation("/statistics", 1)}
                 ref={el => itemRefs.current[1] = el}
             >
                 <FontAwesomeIcon icon={faChartArea}/>
@@ -63,4 +62,4 @@ export const Pagination = () => {
             <div className="pagination-active-background"></div>
         </div>
     );
-};
+});

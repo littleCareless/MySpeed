@@ -19,7 +19,7 @@
   position: relative
   width: fit-content
   min-width: 400px
-  max-width: 1400px
+  max-width: min(1400px, calc(100vw - 3rem))
   max-height: 90vh
   background-color: $dark-gray
   backdrop-filter: blur(4px)
@@ -31,7 +31,7 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3)
 
   &.modal-chart
-    width: 100%
+    width: min(100%, calc(100vw - 3rem))
 
 .chart-modal-close
   position: absolute
@@ -72,10 +72,12 @@
 
   &.modal-body-chart
     .chart-container
-      min-height: 70vh
+      min-height: min(70vh, 500px)
+      max-height: 75vh
             
     .chart-body
-      min-height: 60vh
+      min-height: min(60vh, 400px)
+      max-height: 65vh
 
   .stats-header
     padding: 0.5rem 0 0.75rem 0.25rem
@@ -155,3 +157,41 @@
   to
     opacity: 1
     transform: scale(1)
+
+@media screen and (max-width: 768px)
+  .chart-modal-backdrop
+    padding: 0.75rem
+    
+  .chart-modal-content
+    min-width: auto
+    max-width: calc(100vw - 1.5rem)
+    max-height: 85vh
+    
+    &.modal-chart
+      width: calc(100vw - 1.5rem)
+  
+  .chart-modal-body
+    padding: 0.75rem
+    
+    &.modal-body-chart
+      .chart-container
+        min-height: min(50vh, 300px)
+        max-height: 60vh
+              
+      .chart-body
+        min-height: min(40vh, 250px)
+        max-height: 50vh
+
+@media screen and (max-width: 500px)
+  .chart-modal-content
+    border-radius: 0.75rem
+    
+  .chart-modal-body
+    &.modal-body-chart
+      .chart-container
+        min-height: min(45vh, 280px)
+        max-height: 55vh
+              
+      .chart-body
+        min-height: min(35vh, 220px)
+        max-height: 45vh

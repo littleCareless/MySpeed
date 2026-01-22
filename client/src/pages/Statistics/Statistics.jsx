@@ -11,7 +11,7 @@ import {
     Tooltip,
     Filler
 } from "chart.js";
-import {useEffect, useState, useCallback} from "react";
+import {useEffect, useState, useCallback, startTransition, useDeferredValue} from "react";
 import {jsonRequest} from "@/common/utils/RequestUtil";
 import DateRangePicker from "@/common/components/DateRangePicker";
 import ChartModal from "@/common/components/ChartModal";
@@ -51,7 +51,7 @@ const crosshairPlugin = {
     }
 };
 
-ChartJS.register(crosshairPlugin);
+if (!ChartJS.registry.plugins.get('crosshair')) ChartJS.register(crosshairPlugin);
 
 ChartJS.defaults.color = "hsl(215, 20%, 55%)";
 ChartJS.defaults.font.color = "hsl(215, 20%, 55%)";
@@ -76,6 +76,7 @@ export const Statistics = () => {
     const [latestTest, setLatestTest] = useState(null);
     const [loading, setLoading] = useState(true);
     const [expandedChart, setExpandedChart] = useState(null);
+    const [mountPhase, setMountPhase] = useState(0);
 
     const [dateRange, setDateRange] = useState(() => {
         const to = new Date();
@@ -83,6 +84,21 @@ export const Statistics = () => {
         from.setDate(from.getDate() - 7);
         return { from, to };
     });
+
+    const deferredStatistics = useDeferredValue(statistics);
+    const isStale = deferredStatistics !== statistics;
+
+    useEffect(() => {
+        const timer = setTimeout(() => setMountPhase(1), 50);
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
+        if (mountPhase === 1) {
+            const timer = setTimeout(() => setMountPhase(2), 150);
+            return () => clearTimeout(timer);
+        }
+    }, [mountPhase]);
 
     const formatDateParam = (date) => {
         const year = date.getFullYear();
@@ -92,32 +108,29 @@ export const Statistics = () => {
     };
 
     const updateStats = useCallback(() => {
-        setLoading(true);
         const fromParam = formatDateParam(dateRange.from);
         const toParam = formatDateParam(dateRange.to);
-        
-        return Promise.all([
+        startTransition(() => setLoading(true));
+        Promise.all([
             jsonRequest(`/speedtests/statistics/?from=${fromParam}&to=${toParam}`),
             jsonRequest("/speedtests?limit=1")
-        ])
-        .then(([stats, tests]) => {
-            setStatistics(stats);
-            setLatestTest(tests.length > 0 ? tests[0] : null);
-            setLoading(false);
-        })
-        .catch(error => {
+        ]).then(([stats, tests]) => {
+            startTransition(() => {
+                setStatistics(stats);
+                setLatestTest(tests.length > 0 ? tests[0] : null);
+                setLoading(false);
+            });
+        }).catch(error => {
             console.error("Failed to load statistics:", error);
-            setLoading(false);
+            startTransition(() => setLoading(false));
         });
     }, [dateRange]);
 
-    const handleDateRangeChange = (from, to) => {
-        setDateRange({ from, to });
-    };
+    const handleDateRangeChange = (from, to) => setDateRange({ from, to });
 
     useEffect(() => {
-        updateStats();
-    }, [updateStats]);
+        if (mountPhase >= 2) updateStats();
+    }, [mountPhase, updateStats]);
 
     useEffect(() => {
         const callback = () => updateStats();
@@ -125,37 +138,51 @@ export const Statistics = () => {
         return () => i18n.off("languageChanged", callback);
     }, []);
 
-    if (loading) return <></>;
-    if (!statistics) return <></>;
-    if (!statistics.tests || statistics.tests.length === 0) return <h2 className="error-text">{t("test.not_available")}</h2>;
+    if (mountPhase === 0) return null;
+
+    if (loading && !deferredStatistics) {
+        return (
+            <div className="statistic-area statistic-loading">
+                <div className="statistics-header">
+                    <div className="skeleton-picker skeleton-visible"></div>
+                </div>
+                <div className="skeleton-chart skeleton-visible"></div>
+                <div className="skeleton-chart skeleton-visible"></div>
+                <div className="skeleton-chart skeleton-visible"></div>
+            </div>
+        );
+    }
+
+    if (!deferredStatistics) return <></>;
+    if (!deferredStatistics.tests || deferredStatistics.tests.length === 0) return <h2 className="error-text">{t("test.not_available")}</h2>;
 
     const renderChart = (chartType) => {
         switch (chartType) {
             case 'overview':
-                return <OverviewChart tests={statistics.tests} time={statistics.time} dateRange={dateRange}/>;
+                return <OverviewChart tests={deferredStatistics.tests} time={deferredStatistics.time} dateRange={dateRange}/>;
             case 'latest':
                 return <LatestTestChart test={latestTest} expanded/>;
             case 'consistency':
-                return <ConsistencyChart consistency={statistics.consistency}/>;
+                return <ConsistencyChart consistency={deferredStatistics.consistency}/>;
             case 'download':
-                return <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 94%, 43%)" failed={statistics.failed} errors={statistics.errors} />;
+                return <SpeedChart labels={deferredStatistics.labels} data={deferredStatistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 94%, 43%)" failed={deferredStatistics.failed} errors={deferredStatistics.errors} />;
             case 'upload':
-                return <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="upload" titleKey="latest.up" color="hsl(258, 90%, 66%)" failed={statistics.failed} errors={statistics.errors} />;
+                return <SpeedChart labels={deferredStatistics.labels} data={deferredStatistics.data} dataKey="upload" titleKey="latest.up" color="hsl(258, 90%, 66%)" failed={deferredStatistics.failed} errors={deferredStatistics.errors} />;
             case 'ping':
-                return <PingChart labels={statistics.labels} data={statistics.data} failed={statistics.failed} errors={statistics.errors}/>;
+                return <PingChart labels={deferredStatistics.labels} data={deferredStatistics.data} failed={deferredStatistics.failed} errors={deferredStatistics.errors}/>;
             case 'hourly':
-                return <HourlyChart hourlyAverages={statistics.hourlyAverages}/>;
+                return <HourlyChart hourlyAverages={deferredStatistics.hourlyAverages}/>;
             case 'avgDownload':
-                return <AverageChart title={t("statistics.values.down")} data={statistics.download}/>;
+                return <AverageChart title={t("statistics.values.down")} data={deferredStatistics.download}/>;
             case 'avgUpload':
-                return <AverageChart title={t("statistics.values.up")} data={statistics.upload}/>;
+                return <AverageChart title={t("statistics.values.up")} data={deferredStatistics.upload}/>;
             default:
                 return null;
         }
     };
 
     return (
-        <div className="statistic-area">
+        <div className={`statistic-area${isStale ? ' statistic-stale' : ''}`}>
             <div className="statistics-header">
                 <DateRangePicker 
                     from={dateRange.from} 
@@ -165,18 +192,18 @@ export const Statistics = () => {
                 <ExportButton dateRange={dateRange} />
             </div>
 
-            <OverviewChart tests={statistics.tests} time={statistics.time} dateRange={dateRange} onClick={() => setExpandedChart('overview')}/>
+            <OverviewChart tests={deferredStatistics.tests} time={deferredStatistics.time} dateRange={dateRange} onClick={() => setExpandedChart('overview')}/>
             <LatestTestChart test={latestTest} onClick={() => setExpandedChart('latest')}/>
-            <ConsistencyChart consistency={statistics.consistency} onClick={() => setExpandedChart('consistency')}/>
+            <ConsistencyChart consistency={deferredStatistics.consistency} onClick={() => setExpandedChart('consistency')}/>
 
-            <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 94%, 43%)" failed={statistics.failed} errors={statistics.errors} onClick={() => setExpandedChart('download')} compact/>
-            <SpeedChart labels={statistics.labels} data={statistics.data} dataKey="upload" titleKey="latest.up" color="hsl(258, 90%, 66%)" failed={statistics.failed} errors={statistics.errors} onClick={() => setExpandedChart('upload')} compact/>
-            <PingChart labels={statistics.labels} data={statistics.data} failed={statistics.failed} errors={statistics.errors} onClick={() => setExpandedChart('ping')} compact/>
+            <SpeedChart labels={deferredStatistics.labels} data={deferredStatistics.data} dataKey="download" titleKey="latest.down" color="hsl(187, 94%, 43%)" failed={deferredStatistics.failed} errors={deferredStatistics.errors} onClick={() => setExpandedChart('download')} compact/>
+            <SpeedChart labels={deferredStatistics.labels} data={deferredStatistics.data} dataKey="upload" titleKey="latest.up" color="hsl(258, 90%, 66%)" failed={deferredStatistics.failed} errors={deferredStatistics.errors} onClick={() => setExpandedChart('upload')} compact/>
+            <PingChart labels={deferredStatistics.labels} data={deferredStatistics.data} failed={deferredStatistics.failed} errors={deferredStatistics.errors} onClick={() => setExpandedChart('ping')} compact/>
 
-            <HourlyChart hourlyAverages={statistics.hourlyAverages} onClick={() => setExpandedChart('hourly')}/>
+            <HourlyChart hourlyAverages={deferredStatistics.hourlyAverages} onClick={() => setExpandedChart('hourly')}/>
 
-            <AverageChart title={t("statistics.values.down")} data={statistics.download} onClick={() => setExpandedChart('avgDownload')}/>
-            <AverageChart title={t("statistics.values.up")} data={statistics.upload} onClick={() => setExpandedChart('avgUpload')}/>
+            <AverageChart title={t("statistics.values.down")} data={deferredStatistics.download} onClick={() => setExpandedChart('avgDownload')}/>
+            <AverageChart title={t("statistics.values.up")} data={deferredStatistics.upload} onClick={() => setExpandedChart('avgUpload')}/>
 
             <ChartModal 
                 isOpen={!!expandedChart} 
