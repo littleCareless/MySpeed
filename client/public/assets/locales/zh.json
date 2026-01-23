@@ -375,7 +375,7 @@
         "finished_message": "测试完成通知内容",
         "finished_message_placeholder": "延迟 %ping% ms, 下载 %download% Mbps, 上传 %upload% Mbps"
       }
-    }
+    },
     "webhook": {
       "title": "自定义Webhook",
       "fields": {
