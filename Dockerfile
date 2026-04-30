@@ -22,7 +22,7 @@ RUN deno install --allow-scripts
 FROM denoland/deno:debian
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    tzdata \
+    tzdata ca-certificates openssl \
     && rm -rf /var/lib/apt/lists/*
 
 ENV TZ=Etc/UTC
