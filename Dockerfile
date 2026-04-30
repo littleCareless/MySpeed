@@ -1,25 +1,21 @@
-FROM node:20-alpine AS client-build
+FROM oven/bun:1 AS client-build
 
 WORKDIR /client
-COPY ./client/package*.json ./
-RUN npm install --force
+COPY ./client/package.json ./
+RUN bun install
 COPY ./client ./
-RUN npm run build
+RUN bun run build
 
-FROM denoland/deno:debian AS server-build
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 make g++ nodejs npm \
-    && rm -rf /var/lib/apt/lists/*
+FROM oven/bun:1 AS server-build
 
 WORKDIR /myspeed
 
 COPY ./server /myspeed/server
-COPY ./deno.json /myspeed/deno.json
+COPY ./package.json /myspeed/package.json
 
-RUN deno install --allow-scripts
+RUN bun install
 
-FROM denoland/deno:debian
+FROM oven/bun:1
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     tzdata ca-certificates openssl \
@@ -30,13 +26,12 @@ ENV TZ=Etc/UTC
 WORKDIR /myspeed
 
 COPY --from=server-build /myspeed/server /myspeed/server
-COPY --from=server-build /myspeed/deno.json /myspeed/deno.json
+COPY --from=server-build /myspeed/package.json /myspeed/package.json
 COPY --from=server-build /myspeed/node_modules /myspeed/node_modules
-COPY --from=server-build /deno-dir /deno-dir
 COPY --from=client-build /client/build /myspeed/build
 
 VOLUME ["/myspeed/data"]
 
 EXPOSE 5216
 
-CMD ["deno", "run", "--allow-all", "server/index.js"]
+CMD ["bun", "run", "server/index.js"]

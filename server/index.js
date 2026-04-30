@@ -2,7 +2,6 @@ import express from 'express';
 import path from 'node:path';
 import fs from 'node:fs';
 import https from 'node:https';
-import { fileURLToPath } from 'node:url';
 import * as timerTask from './tasks/timer.js';
 import * as integrationTask from './tasks/integrations.js';
 import './util/createFolders.js';
@@ -25,10 +24,7 @@ import { requestInterfaces } from './util/loadInterfaces.js';
 import { load as loadCli } from './util/loadCli.js';
 import { removeOld } from './tasks/speedtest.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const devModeHtml = fs.readFileSync(path.join(__dirname, 'templates', 'env.html'), 'utf-8');
+const devModeHtml = fs.readFileSync(path.join(process.cwd(), 'server', 'templates', 'env.html'), 'utf-8');
 
 const app = express();
 
@@ -59,13 +55,8 @@ app.use("/api/prometheus", prometheusRoutes);
 app.use('/api/opengraph', opengraphRoutes);
 app.use("/api*all", (req, res) => res.status(404).json({message: "Route not found"}));
 
-let buildPath = path.join(__dirname, '..', 'build');
+let buildPath = path.join(process.cwd(), 'build');
 let buildExists = fs.existsSync(buildPath);
-
-if (!buildExists) {
-    buildPath = path.join(process.cwd(), 'build');
-    buildExists = fs.existsSync(buildPath);
-}
 
 if (buildExists) {
     app.use(express.static(buildPath));

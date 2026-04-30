@@ -7,8 +7,12 @@
 /.pnp
 .pnp.js
 
-# deno
-deno.lock
+# bun
+bun.lock
+bun.lockb
+/client/bun.lock
+/client/bun.lockb
+/client/package-lock.json
 
 # production
 /build

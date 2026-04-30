@@ -1,9 +1,7 @@
 import IntegrationData from '../models/IntegrationData.js';
+import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { pathToFileURL } from 'node:url';
 
 const integrations = {};
 
@@ -36,15 +34,16 @@ export const triggerEvent = async (name, data) => {
 }
 
 export const initialize = async () => {
-    const integrationsDir = path.join(__dirname, '..', 'integrations');
+    const integrationsDir = path.join(process.cwd(), 'server', 'integrations');
 
-    for await (const entry of Deno.readDir(integrationsDir)) {
-        if (!entry.isFile || !entry.name.endsWith('.js')) continue;
+    const entries = fs.readdirSync(integrationsDir, { withFileTypes: true });
+    for (const entry of entries) {
+        if (!entry.isFile() || !entry.name.endsWith('.js')) continue;
 
         const integrationName = entry.name.replace('.js', '');
         const filePath = path.join(integrationsDir, entry.name);
 
-        const module = await import(`file://${filePath}`);
+        const module = await import(pathToFileURL(filePath).href);
         integrations[integrationName] = module.default(registerEvent(integrationName));
         console.log(`Integration "${integrationName}" loaded successfully`);
     }

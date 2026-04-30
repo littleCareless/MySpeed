@@ -10,11 +10,7 @@ import cron from 'cron-validator';
 import db from '../config/database.js';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import * as interfaces from '../util/loadInterfaces.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const configDefaults = {
     ping: "25",
@@ -78,9 +74,9 @@ export const getUsedStorage = async () => {
             size += parseFloat(sizes[i].size);
         }
     } else {
-        const STORAGE_PATH = `../../data/storage${process.env.PREVIEW_MODE === "true" ? "_preview" : ""}.db`;
+        const STORAGE_PATH = path.join(process.cwd(), 'data', `storage${process.env.PREVIEW_MODE === "true" ? "_preview" : ""}.db`);
 
-        size = fs.statSync(path.join(__dirname, STORAGE_PATH)).size;
+        size = fs.statSync(STORAGE_PATH).size;
     }
 
     return {size, testCount: await test.count()};
