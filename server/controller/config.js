@@ -24,8 +24,11 @@ const configDefaults = {
     libreUrl: "none",
     password: "none",
     passwordLevel: "none",
-    interface: "none"
+    interface: "none",
+    retentionDays: "365"
 }
+
+const MAX_RETENTION_DAYS = 10000;
 
 export const insertDefaults = async () => {
     let insert = [];
@@ -119,6 +122,23 @@ export const validateInput = async (key, value) => {
 
     if (key === "interface" && !Object.keys(interfaces.interfaces).includes(value))
         return "The provided interface does not exist";
+
+    if (key === "retentionDays") {
+        if (/[^0-9-]/.test(value.toString()))
+            return "You need to provide a number in order to change this";
+
+        const num = parseInt(value);
+        if (isNaN(num))
+            return "You need to provide a valid number";
+
+        if (num <= 0) {
+            value = "0";
+        } else if (num > MAX_RETENTION_DAYS) {
+            return `Retention must be ${MAX_RETENTION_DAYS} days or less (use 0 for unlimited)`;
+        } else {
+            value = num.toString();
+        }
+    }
 
     if (configDefaults[key] === undefined)
         return "The provided key does not exist";
