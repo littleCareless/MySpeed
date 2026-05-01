@@ -5,8 +5,8 @@ import { getValue } from './config.js';
 
 const DEFAULT_RETENTION_DAYS = 365;
 
-export const create = async (ping, download, upload, time, serverId, type = "auto", resultId = null, error = null, jitter = null) => {
-    return (await tests.create({ping, jitter, download, upload, error, serverId, type, resultId, time, created: new Date().toISOString()})).id;
+export const create = async (ping, download, upload, time, serverId, type = "auto", resultId = null, error = null, jitter = null, serverName = null, serverHost = null) => {
+    return (await tests.create({ping, jitter, download, upload, error, serverId, serverName, serverHost, type, resultId, time, created: new Date().toISOString()})).id;
 }
 
 export const getOne = async (id) => {
