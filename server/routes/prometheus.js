@@ -26,9 +26,17 @@ const resolveServerLabels = (latest) => {
     let serverName = latest.serverName ?? null;
     let serverHost = latest.serverHost ?? null;
 
-    if (!serverName) {
+    if (!serverName || !serverHost) {
         const ooklaServers = serverController.getOoklaServers();
-        if (ooklaServers && ooklaServers[serverId]) serverName = ooklaServers[serverId];
+        const entry = ooklaServers && ooklaServers[serverId];
+        if (entry) {
+            if (typeof entry === "string") {
+                if (!serverName) serverName = entry;
+            } else if (typeof entry === "object") {
+                if (!serverName) serverName = entry.sponsor || entry.name || null;
+                if (!serverHost) serverHost = entry.host || null;
+            }
+        }
     }
 
     return {
