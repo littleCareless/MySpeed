@@ -1,45 +1,26 @@
-import axios from 'axios';
 import fs from 'node:fs';
+import { getJson } from './http.js';
 
-// Load servers from ookla
-if (!fs.existsSync("data/servers/ookla.json")) {
-    let servers = {};
-    try {
-        axios.get("https://www.speedtest.net/api/js/servers?limit=20")
-            .then(res => res.data)
-            .then(data => {
-                data?.forEach(row => {
-                    servers[row.id] = row.name + " (" + row.distance + "km)";
-                });
-
-                try {
-                    fs.writeFileSync("data/servers/ookla.json", JSON.stringify(servers, null, 4));
-                } catch (e) {
-                    console.error("Could not save servers file");
-                }
-            });
-    } catch (e) {
-        console.error("Could not get servers");
+const sources = [
+    {
+        file: "data/servers/ookla.json",
+        url: "https://www.speedtest.net/api/js/servers?limit=20",
+        format: (row) => `${row.name} (${row.distance}km)`
+    },
+    {
+        file: "data/servers/librespeed.json",
+        url: "https://librespeed.org/backend-servers/servers.php",
+        format: (row) => row.name
     }
-}
+];
 
-// Load servers from librespeed
-if (!fs.existsSync("data/servers/librespeed.json")) {
-    let servers = {};
-    try {
-        axios.get("https://librespeed.org/backend-servers/servers.php")
-            .then(res => res.data)
-            .then(data => {
-                data?.forEach(row => {
-                    servers[row.id] = row.name;
-                });
-                try {
-                    fs.writeFileSync("data/servers/librespeed.json", JSON.stringify(servers, null, 4));
-                } catch (e) {
-                    console.error("Could not save servers file");
-                }
-            });
-    } catch (e) {
-        console.error("Could not get servers");
-    }
+for (const {file, url, format} of sources) {
+    if (fs.existsSync(file)) continue;
+
+    getJson(url)
+        .then((data) => {
+            const servers = Object.fromEntries((data ?? []).map((row) => [row.id, format(row)]));
+            fs.writeFileSync(file, JSON.stringify(servers, null, 4));
+        })
+        .catch(() => console.error("Could not load servers"));
 }

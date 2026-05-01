@@ -1,8 +1,8 @@
 import express from 'express';
-import axios from 'axios';
 import password from '../middlewares/password.js';
 import * as serverController from '../controller/servers.js';
 import * as interfaces from '../util/loadInterfaces.js';
+import { getJson } from '../util/http.js';
 import packageJson from '../../package.json';
 
 const version = packageJson.version;
@@ -13,7 +13,8 @@ app.get("/version", password(false), async (req, res) => {
     if (process.env.PREVIEW_MODE === "true") return res.json({local: version, remote: "0"});
 
     try {
-        res.json({local: version, remote: ((await axios.get(remote_url)).data.tag_name).replace("v", "")});
+        const data = await getJson(remote_url);
+        res.json({local: version, remote: data.tag_name.replace("v", "")});
     } catch (e) {
         res.json({local: version, remote: "0"});
     }
