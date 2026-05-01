@@ -2,7 +2,8 @@
 
 .export-button-container
   position: relative
-  display: inline-block
+  display: inline-flex
+  flex-shrink: 0
 
 .export-button
   display: flex
@@ -18,6 +19,7 @@
   font-family: inherit
   font-size: 0.95rem
   font-weight: 600
+  white-space: nowrap
   
   &:hover:not(:disabled)
     border-color: $accent-primary
@@ -29,6 +31,7 @@
 .export-icon
   color: $subtext
   font-size: 1rem
+  flex-shrink: 0
 
 .export-text
   white-space: nowrap
@@ -94,7 +97,9 @@
     display: none
   
   .export-button
-    padding: 0.6rem 0.75rem
+    padding: 0.55rem 0.7rem
+    aspect-ratio: 1 / 1
+    justify-content: center
   
   .chevron-icon
     display: none
@@ -106,4 +111,5 @@
     left: 50%
     right: auto
     transform: translateX(-50%)
-    max-width: calc(100vw - 2rem)
+    width: calc(100vw - 2rem)
+    max-width: 20rem
