@@ -18,13 +18,22 @@ import integrationsRoutes from './routes/integrations.js';
 import prometheusRoutes from './routes/prometheus.js';
 import opengraphRoutes from './routes/opengraph.js';
 import db from './config/database.js';
+import { runMigrations } from './util/migrationRunner.js';
 import * as config from './controller/config.js';
 import { initialize as initializeIntegrations } from './controller/integrations.js';
 import { requestInterfaces } from './util/loadInterfaces.js';
 import { load as loadCli } from './util/loadCli.js';
 import { removeOld } from './tasks/speedtest.js';
 
-const devModeHtml = fs.readFileSync(path.join(process.cwd(), 'server', 'templates', 'env.html'), 'utf-8');
+const devModeHtmlPath = path.join(process.cwd(), 'server', 'templates', 'env.html');
+const devModeHtml = fs.existsSync(devModeHtmlPath) ? fs.readFileSync(devModeHtmlPath, 'utf-8') : '';
+
+let embeddedClient = null;
+try {
+    embeddedClient = await import('./clientEmbed.js');
+} catch {
+
+}
 
 const app = express();
 
@@ -61,12 +70,15 @@ let buildExists = fs.existsSync(buildPath);
 if (buildExists) {
     app.use(express.static(buildPath));
     app.get('*all', (req, res) => res.sendFile(path.join(buildPath, 'index.html')));
+} else if (embeddedClient) {
+    app.use(embeddedClient.createEmbeddedMiddleware());
+    app.get('*all', embeddedClient.createEmbeddedFallback());
 } else {
     app.get("*all", (req, res) => res.status(500).type('html').send(devModeHtml));
 }
 
 const run = async () => {
-    await db.sync({alter: true, force: false});
+    await runMigrations();
 
     await initializeIntegrations();
 

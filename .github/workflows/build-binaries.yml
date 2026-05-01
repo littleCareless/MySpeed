@@ -37,8 +37,17 @@ jobs:
       - name: Install server dependencies
         run: bun install
 
+      - name: Generate migrations
+        run: bun run generate-migrations
+
+      - name: Generate integrations
+        run: bun run generate-integrations
+
+      - name: Generate client embed
+        run: bun run generate-client-embed
+
       - name: Compile binary
-        run: bun build --compile --target=bun-windows-x64 server/index.js --outfile MySpeed.exe
+        run: bun build --compile --compile-autoload-package-json --external pg-hstore --external pg --target=bun-windows-x64 server/index.js --outfile MySpeed.exe
 
       - name: Upload to Release
         uses: actions/github-script@v7
@@ -104,8 +113,17 @@ jobs:
       - name: Install server dependencies
         run: bun install
 
+      - name: Generate migrations
+        run: bun run generate-migrations
+
+      - name: Generate integrations
+        run: bun run generate-integrations
+
+      - name: Generate client embed
+        run: bun run generate-client-embed
+
       - name: Compile binary
-        run: bun build --compile --target=${{ matrix.target }} server/index.js --outfile MySpeed
+        run: bun build --compile --compile-autoload-package-json --external pg-hstore --external pg --target=${{ matrix.target }} server/index.js --outfile MySpeed
 
       - name: Rename binary
         run: mv MySpeed ${{ matrix.artifact_name }}
@@ -160,8 +178,17 @@ jobs:
       - name: Install server dependencies
         run: bun install
 
+      - name: Generate migrations
+        run: bun run generate-migrations
+
+      - name: Generate integrations
+        run: bun run generate-integrations
+
+      - name: Generate client embed
+        run: bun run generate-client-embed
+
       - name: Compile binary
-        run: bun build --compile --target=${{ matrix.target }} server/index.js --outfile MySpeed
+        run: bun build --compile --compile-autoload-package-json --external pg-hstore --external pg --target=${{ matrix.target }} server/index.js --outfile MySpeed
 
       - name: Rename binary
         run: mv MySpeed ${{ matrix.artifact_name }}
@@ -201,6 +228,15 @@ jobs:
 
       - name: Move build folder
         run: mv client/build .
+
+      - name: Install server dependencies
+        run: bun install
+
+      - name: Generate migrations
+        run: bun run generate-migrations
+
+      - name: Generate integrations
+        run: bun run generate-integrations
 
       - name: Create zip archive
         run: zip -r MySpeed.zip build server package.json

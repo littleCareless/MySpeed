@@ -2,7 +2,7 @@ import express from 'express';
 import * as testController from '../controller/speedtests.js';
 import promClient from 'prom-client';
 import * as config from '../controller/config.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 const app = express.Router();
 

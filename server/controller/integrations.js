@@ -1,7 +1,5 @@
 import IntegrationData from '../models/IntegrationData.js';
-import fs from 'node:fs';
-import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import integrationModules from '../integrations/index.js';
 
 const integrations = {};
 
@@ -34,18 +32,9 @@ export const triggerEvent = async (name, data) => {
 }
 
 export const initialize = async () => {
-    const integrationsDir = path.join(process.cwd(), 'server', 'integrations');
-
-    const entries = fs.readdirSync(integrationsDir, { withFileTypes: true });
-    for (const entry of entries) {
-        if (!entry.isFile() || !entry.name.endsWith('.js')) continue;
-
-        const integrationName = entry.name.replace('.js', '');
-        const filePath = path.join(integrationsDir, entry.name);
-
-        const module = await import(pathToFileURL(filePath).href);
-        integrations[integrationName] = module.default(registerEvent(integrationName));
-        console.log(`Integration "${integrationName}" loaded successfully`);
+    for (const { name, setup } of integrationModules) {
+        integrations[name] = setup(registerEvent(name));
+        console.log(`Integration "${name}" loaded successfully`);
     }
 };
 

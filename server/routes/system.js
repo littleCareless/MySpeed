@@ -1,12 +1,11 @@
 import express from 'express';
-import { createRequire } from 'node:module';
 import axios from 'axios';
 import password from '../middlewares/password.js';
 import * as serverController from '../controller/servers.js';
 import * as interfaces from '../util/loadInterfaces.js';
+import packageJson from '../../package.json';
 
-const require = createRequire(import.meta.url);
-const version = require('../../package.json').version;
+const version = packageJson.version;
 const remote_url = "https://api.github.com/repos/gnmyt/myspeed/releases/latest";
 const app = express.Router();
 

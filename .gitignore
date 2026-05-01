@@ -14,10 +14,17 @@ bun.lockb
 /client/bun.lockb
 /client/package-lock.json
 
+# generated
+/server/migrations/index.js
+/server/integrations/index.js
+/server/clientEmbed.js
+
 # production
 /build
 /data
 /bin
+/MySpeed
+/MySpeed.exe
 
 # docs
 /docs/.vitepress/dist

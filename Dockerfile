@@ -11,9 +11,12 @@ FROM oven/bun:1 AS server-build
 WORKDIR /myspeed
 
 COPY ./server /myspeed/server
+COPY ./scripts /myspeed/scripts
 COPY ./package.json /myspeed/package.json
 
 RUN bun install
+RUN bun run generate-migrations
+RUN bun run generate-integrations
 
 FROM oven/bun:1
 

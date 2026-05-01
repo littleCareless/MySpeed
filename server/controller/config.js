@@ -4,7 +4,7 @@ import test from '../models/Speedtests.js';
 import recommendations from '../models/Recommendations.js';
 import integration from '../models/IntegrationData.js';
 import { triggerEvent } from './integrations.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import * as timer from '../tasks/timer.js';
 import cron from 'cron-validator';
 import db from '../config/database.js';
