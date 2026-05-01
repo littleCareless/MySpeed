@@ -155,7 +155,22 @@
     "reset": "Zurücksetzen",
     "confirm_reset": "Ja, zurücksetzen",
     "settings_exported": "Die Einstellungen wurden exportiert",
-    "settings_imported": "Die Einstellungen wurden importiert"
+    "settings_imported": "Die Einstellungen wurden importiert",
+    "retention": "Datenspeicherung",
+    "retention_desc": "Wie lange Speedtest-Ergebnisse aufbewahrt werden, bevor sie automatisch gelöscht werden.",
+    "retention_saved": "Speicherdauer aktualisiert",
+    "retention_days_placeholder": "365",
+    "retention_options": {
+      "week": "7 Tage",
+      "month": "30 Tage",
+      "quarter": "90 Tage",
+      "half_year": "180 Tage",
+      "year": "1 Jahr (Standard)",
+      "forever": "Für immer behalten",
+      "custom": "Benutzerdefiniert..."
+    },
+    "retention_days_suffix": "Tage",
+    "retention_back": "Zurück zu Voreinstellungen"
   },
   "latest": {
     "ping": "Ping",
