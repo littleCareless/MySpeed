@@ -7,8 +7,6 @@ data
 .idea
 docs
 web
-myspeed-cli
-scripts
 *.md
 *.lock
 *.lockb
