@@ -392,7 +392,9 @@
       "title": "HealthChecks",
       "fields": {
         "url": "HealthChecks-URL",
-        "url_placeholder": "https://hc-ping.com/<uuid>"
+        "url_placeholder": "https://hc-ping.com/<uuid>",
+        "interval": "Ping-Intervall (Minuten)",
+        "interval_placeholder": "1"
       }
     },
     "ntfy": {
@@ -443,7 +445,9 @@
         "send_finished": "Abgeschlossene senden",
         "send_alive": "Lebendig-Nachrichten senden",
         "send_recommendations": "Empfehlungen senden",
-        "send_config_updates": "Konfigurations-Updates senden"
+        "send_config_updates": "Konfigurations-Updates senden",
+        "interval": "Keep-Alive-Intervall (Minuten)",
+        "interval_placeholder": "1"
       }
     }
   },
