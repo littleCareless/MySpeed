@@ -28,7 +28,8 @@ export default (registerEvent) => {
             {name: "send_alive", type: "boolean", required: false},
             {name: "send_failed", type: "boolean", required: false},
             {name: "send_recommendations", type: "boolean", required: false},
-            {name: "send_config_updates", type: "boolean", required: false}
+            {name: "send_config_updates", type: "boolean", required: false},
+            {name: "interval", type: "number", required: false, min: 1, max: 1440}
         ]
     };
 };
