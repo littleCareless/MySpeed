@@ -7,13 +7,6 @@
 /.pnp
 .pnp.js
 
-# bun
-bun.lock
-bun.lockb
-/client/bun.lock
-/client/bun.lockb
-/client/package-lock.json
-
 # generated
 /server/migrations/index.js
 /server/integrations/index.js
