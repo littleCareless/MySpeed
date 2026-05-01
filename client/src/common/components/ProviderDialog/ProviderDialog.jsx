@@ -79,6 +79,19 @@ export const ProviderDialog = ({open, onClose}) => {
     const isUsingCustomUrl = provider === "libre" && libreUrl && libreUrl !== "none";
     const canUpdate = provider !== "ookla" || acceptedOokla;
 
+    const formatServerLabel = (entry) => {
+        if (!entry) return "";
+        if (typeof entry === "string") return entry;
+        const location = [entry.name, entry.country].filter(Boolean).join(", ");
+        const head = entry.sponsor || location || entry.host || "";
+        const parts = [];
+        if (head) parts.push(head);
+        if (entry.sponsor && location) parts.push(location);
+        const main = parts.join(" - ");
+        const distance = (entry.distance || entry.distance === 0) ? ` (${entry.distance} km)` : "";
+        return main + distance;
+    };
+
     return (
         <Dialog open={open} onClose={onClose} className="provider-dialog-wrapper">
             {({close}) => (
@@ -120,10 +133,10 @@ export const ProviderDialog = ({open, onClose}) => {
                                                 onChange={(e) => handleServerIdChange(e.target.value)}>
                                             <option value="none">{t("dialog.provider.choose_automatically")}</option>
                                             {provider === "ookla" && Object.keys(ooklaServers).map((current, index) => (
-                                                <option key={index} value={current}>{ooklaServers[current]}</option>
+                                                <option key={index} value={current}>{formatServerLabel(ooklaServers[current])}</option>
                                             ))}
                                             {provider === "libre" && Object.keys(libreServers).map((current, index) => (
-                                                <option key={index} value={current}>{libreServers[current]}</option>
+                                                <option key={index} value={current}>{formatServerLabel(libreServers[current])}</option>
                                             ))}
                                         </select>
                                     </div>
