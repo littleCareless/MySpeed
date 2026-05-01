@@ -397,6 +397,22 @@
         "interval_placeholder": "1"
       }
     },
+    "influxdb": {
+      "title": "InfluxDB",
+      "fields": {
+        "url": "Server-URL",
+        "url_placeholder": "http://localhost:8086",
+        "org": "Organisation",
+        "bucket": "Bucket",
+        "token": "API-Token",
+        "measurement": "Measurement-Name",
+        "measurement_placeholder": "speedtests (Standard)",
+        "host": "Host-Tag",
+        "host_placeholder": "Standard: Hostname des Geräts",
+        "tags": "Zusätzliche Tags",
+        "tags_placeholder": "region=eu,role=primary (komma-getrennt)"
+      }
+    },
     "ntfy": {
       "title": "ntfy",
       "fields": {
