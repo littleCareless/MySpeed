@@ -11,6 +11,7 @@ import {jsonRequest, patchRequest} from "@/common/utils/RequestUtil";
 import {Trans} from "react-i18next";
 import {ConfigContext} from "@/common/contexts/Config";
 import {ToastNotificationContext} from "@/common/contexts/ToastNotification";
+import SelectableOption, {SelectableList} from "@/common/components/SelectableOption";
 
 export const providers = [
     {id: "ookla", name: "Ookla", image: OoklaImage},
@@ -99,15 +100,15 @@ export const ProviderDialog = ({open, onClose}) => {
                     <DialogHeader onClose={close}>{t("update.provider_title")}</DialogHeader>
                     <DialogBody>
                         <div className="provider-content">
-                            <div className="provider-list">
+                            <SelectableList className="provider-list">
                                 {providers.map((current) => (
-                                    <div className={`provider-item${current.id === provider ? " provider-item-active" : ""}`}
-                                         key={current.id} onClick={() => setProvider(current.id)}>
-                                        <img src={current.image} alt={current.name}/>
-                                        <h3>{current.name}</h3>
-                                    </div>
+                                    <SelectableOption key={current.id}
+                                                      image={{src: current.image, alt: current.name}}
+                                                      title={current.name}
+                                                      active={current.id === provider}
+                                                      onClick={() => setProvider(current.id)}/>
                                 ))}
-                            </div>
+                            </SelectableList>
 
                             <div className="provider-settings">
                                 <div className="provider-setting">

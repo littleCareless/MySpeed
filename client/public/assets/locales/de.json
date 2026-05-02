@@ -66,6 +66,7 @@
     "dark_mode": "Dunkler Modus",
     "theme_switched_light": "In den hellen Modus geschaltet",
     "theme_switched_dark": "In den dunklen Modus geschaltet",
+    "preferences": "Einstellungen",
     "info": "Infos zum Projekt",
     "provider": "Über den Anbieter",
     "integrations": "Integrationen"
@@ -179,6 +180,7 @@
     "jitter_unit": "ms",
     "down": "Download",
     "speed_unit": "Mbit/s",
+    "byte_speed_unit": "MB/s",
     "up": "Upload",
     "latest": "Letzter Test",
     "before": "vor"
@@ -469,5 +471,32 @@
   },
   "common": {
     "back_to_top": "Zurück zum Anfang"
+  },
+  "preferences": {
+    "title": "Einstellungen",
+    "theme": {
+      "title": "Erscheinungsbild",
+      "description": "Wechsle zwischen dunklem und hellem Design.",
+      "dark": "Dunkel",
+      "dark_desc": "Augenschonender bei wenig Licht",
+      "light": "Hell",
+      "light_desc": "Hellere Darstellung für tagsüber"
+    },
+    "time_format": {
+      "title": "Zeitformat",
+      "description": "Wie Uhrzeiten in der gesamten App angezeigt werden.",
+      "h24": "24-Stunden",
+      "h24_desc": "Anzeige im Format 14:30",
+      "h12": "12-Stunden",
+      "h12_desc": "Anzeige im Format 2:30 PM"
+    },
+    "speed_unit": {
+      "title": "Geschwindigkeitseinheit",
+      "description": "Lege fest, wie Geschwindigkeiten angezeigt werden. Werte werden automatisch umgerechnet.",
+      "mbps": "Mbit/s (Megabit pro Sekunde)",
+      "mbps_desc": "Standardeinheit von Anbietern und Speedtests",
+      "mbytes": "MB/s (Megabyte pro Sekunde)",
+      "mbytes_desc": "Üblich in Browsern und Download-Managern"
+    }
   }
 }
