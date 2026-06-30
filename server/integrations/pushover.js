@@ -1,36 +1,25 @@
-const axios = require("axios");
-const {replaceVariables} = require("../util/helpers");
+import { postJson } from "../util/http.js";
+import { replaceVariables } from "../util/helpers.js";
 
-const BASE_URL = "https://api.pushover.net/1";
+const URL = "https://api.pushover.net/1/messages.json";
 
 const defaults = {
-    finished: "A speedtest is finished:\nPing: %ping% ms\nUpload: %upload% Mbps\nDownload: %download% Mbps",
+    finished: "A speedtest is finished:\nPing: %ping% ms (±%jitter% ms)\nUpload: %upload% Mbps\nDownload: %download% Mbps",
     failed: "A speedtest has failed. Reason: %error%"
-}
+};
 
-module.exports = (registerEvent) => {
-    registerEvent('testFinished', async (integration, data, triggerActivity) => {
-        if (!integration.data.send_finished) return;
+const send = ({token, user_key}, message, activity) =>
+    postJson(URL, {token, user: user_key, message}, {activity});
 
-        const message = replaceVariables(integration.data.finished_message || defaults.finished, data);
-
-        axios.post(`${BASE_URL}/messages.json`, {
-            token: integration.data.token,
-            user: integration.data.user_key, message
-        }).then(() => triggerActivity())
-            .catch(() => triggerActivity(true));
+export default (registerEvent) => {
+    registerEvent('testFinished', async ({data: c}, data, activity) => {
+        if (c.send_finished) await send(c,
+            replaceVariables(c.finished_message || defaults.finished, data), activity);
     });
 
-    registerEvent('testFailed', async (integration, error, triggerActivity) => {
-        if (!integration.data.send_failed) return;
-
-        const message = replaceVariables(integration.data.error_message || defaults.failed, {error});
-
-        axios.post(`${BASE_URL}/messages.json`, {
-            token: integration.data.token,
-            user: integration.data.user_key, message
-        }).then(() => triggerActivity())
-            .catch(() => triggerActivity(true));
+    registerEvent('testFailed', async ({data: c}, error, activity) => {
+        if (c.send_failed) await send(c,
+            replaceVariables(c.error_message || defaults.failed, {error}), activity);
     });
 
     return {
@@ -44,4 +33,4 @@ module.exports = (registerEvent) => {
             {name: "error_message", type: "textarea", required: false}
         ]
     };
-}
+};

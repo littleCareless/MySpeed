@@ -7,8 +7,18 @@
 /.pnp
 .pnp.js
 
+# generated
+/server/migrations/index.js
+/server/integrations/index.js
+/server/clientEmbed.js
 
 # production
 /build
 /data
 /bin
+/MySpeed
+/MySpeed.exe
+
+# docs
+/docs/.vitepress/dist
+/docs/.vitepress/cache

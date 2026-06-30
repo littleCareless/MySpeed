@@ -1,33 +1,40 @@
-FROM node:22-alpine AS build
-RUN apk add --no-cache g++ make cmake python3 py3-setuptools
+FROM oven/bun:1 AS client-build
+
+WORKDIR /client
+COPY ./client/package.json ./
+RUN bun install
+COPY ./client ./
+RUN bun run build
+
+FROM oven/bun:1 AS server-build
 
 WORKDIR /myspeed
 
-COPY ./client ./client
-COPY ./server ./server
-COPY ./package.json ./package.json
+COPY ./server /myspeed/server
+COPY ./scripts /myspeed/scripts
+COPY ./package.json /myspeed/package.json
 
-RUN yarn install
-RUN cd client && yarn install --force
-RUN npm run build
-RUN mv /myspeed/client/build /myspeed
+RUN bun install
+RUN bun run generate-migrations
+RUN bun run generate-integrations
 
-FROM node:22-alpine
+FROM oven/bun:1
 
-RUN apk add --no-cache tzdata
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tzdata ca-certificates openssl \
+    && rm -rf /var/lib/apt/lists/*
 
-ENV NODE_ENV=production
 ENV TZ=Etc/UTC
 
 WORKDIR /myspeed
 
-COPY --from=build /myspeed/build /myspeed/build
-COPY --from=build /myspeed/server /myspeed/server
-COPY --from=build /myspeed/node_modules /myspeed/node_modules
-COPY --from=build /myspeed/package.json /myspeed/package.json
+COPY --from=server-build /myspeed/server /myspeed/server
+COPY --from=server-build /myspeed/package.json /myspeed/package.json
+COPY --from=server-build /myspeed/node_modules /myspeed/node_modules
+COPY --from=client-build /client/build /myspeed/build
 
 VOLUME ["/myspeed/data"]
 
 EXPOSE 5216
 
-CMD ["node", "server"]
+CMD ["bun", "run", "server/index.js"]

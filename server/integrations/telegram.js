@@ -1,30 +1,24 @@
-const axios = require("axios");
-const {replaceVariables} = require("../util/helpers");
+import { postJson } from "../util/http.js";
+import { replaceVariables } from "../util/helpers.js";
 
 const defaults = {
-    finished: "✨ *A speedtest is finished*\n🏓 `Ping`: %ping% ms\n🔼 `Upload`: %upload% Mbps\n🔽 `Download`: %download% Mbps",
+    finished: "✨ *A speedtest is finished*\n🏓 `Ping`: %ping% ms (±%jitter% ms)\n🔼 `Upload`: %upload% Mbps\n🔽 `Download`: %download% Mbps",
     failed: "❌ *A speedtest has failed*\n`Reason`: %error%"
-}
+};
 
-const postWebhook = async (token, chatId, message, triggerActivity) => {
-    axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
-        text: message, chat_id: chatId, parse_mode: "markdown"
-    })
-        .then(() => triggerActivity())
-        .catch(() => triggerActivity(true));
-}
+const send = (token, chat_id, text, activity) =>
+    postJson(`https://api.telegram.org/bot${token}/sendMessage`,
+        {text, chat_id, parse_mode: "markdown"}, {activity});
 
-module.exports = (registerEvent) => {
-    registerEvent('testFinished', async (integration, data, activity) => {
-        if (integration.data.send_finished)
-            await postWebhook(integration.data.token, integration.data.chat_id,
-                replaceVariables(integration.data.finished_message || defaults.finished, data), activity)
+export default (registerEvent) => {
+    registerEvent('testFinished', async ({data: c}, data, activity) => {
+        if (c.send_finished) await send(c.token, c.chat_id,
+            replaceVariables(c.finished_message || defaults.finished, data), activity);
     });
 
-    registerEvent('testFailed', async (integration, error, activity) => {
-        if (integration.data.send_failed)
-            await postWebhook(integration.data.token, integration.data.chat_id,
-                replaceVariables(integration.data.failed_message || defaults.failed, {error}), activity)
+    registerEvent('testFailed', async ({data: c}, error, activity) => {
+        if (c.send_failed) await send(c.token, c.chat_id,
+            replaceVariables(c.failed_message || defaults.failed, {error}), activity);
     });
 
     return {
@@ -38,4 +32,4 @@ module.exports = (registerEvent) => {
             {name: "error_message", type: "textarea", required: false}
         ]
     };
-}
+};
