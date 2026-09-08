@@ -11,39 +11,43 @@ import HeaderComponent from "./common/components/Header";
 import {SpeedtestProvider} from "./common/contexts/Speedtests";
 import {ConfigProvider} from "./common/contexts/Config";
 import {StatusProvider} from "./common/contexts/Status";
-import {InputDialogProvider} from "@/common/contexts/InputDialog/InputDialog";
+import {AlertProvider} from "@/common/contexts/Alert";
 import {ThemeProvider} from "@/common/contexts/Theme";
+import {PreferencesProvider} from "@/common/contexts/Preferences";
 import i18n from './i18n';
 import Loading from "@/pages/Loading";
 import Error from "@/pages/Error";
+import RouteError from "@/pages/RouteError";
 import {ToastNotificationProvider} from "@/common/contexts/ToastNotification";
 import {NodeProvider} from "@/common/contexts/Node";
 import {library} from '@fortawesome/fontawesome-svg-core';
-import {fas} from '@fortawesome/free-solid-svg-icons';
-import {fab} from "@fortawesome/free-brands-svg-icons";
+import {faBell, faBellConcierge, faDatabase, faGlobe, faHeartPulse} from '@fortawesome/free-solid-svg-icons';
+import {faDiscord, faTelegram} from "@fortawesome/free-brands-svg-icons";
 import {PushOverIcon} from "@/common/assets/icons/pushover";
 import Nodes from "@/pages/Nodes";
 import Statistics from "@/pages/Statistics";
 import Home from "@/pages/Home";
 
-library.add(fas, fab);
+library.add(faBell, faBellConcierge, faDatabase, faGlobe, faHeartPulse, faDiscord, faTelegram);
 library.add(PushOverIcon);
 
 const Providers = ({children}) => (
     <ThemeProvider>
-        <InputDialogProvider>
-            <ToastNotificationProvider>
-                <ConfigProvider>
-                    <NodeProvider>
-                        <SpeedtestProvider>
-                            <StatusProvider>
-                                {children}
-                            </StatusProvider>
-                        </SpeedtestProvider>
-                    </NodeProvider>
-                </ConfigProvider>
-            </ToastNotificationProvider>
-        </InputDialogProvider>
+        <PreferencesProvider>
+            <AlertProvider>
+                <ToastNotificationProvider>
+                    <ConfigProvider>
+                        <NodeProvider>
+                            <SpeedtestProvider>
+                                <StatusProvider>
+                                    {children}
+                                </StatusProvider>
+                            </SpeedtestProvider>
+                        </NodeProvider>
+                    </ConfigProvider>
+                </ToastNotificationProvider>
+            </AlertProvider>
+        </PreferencesProvider>
     </ThemeProvider>
 );
 
@@ -65,6 +69,7 @@ const App = () => {
                     <main><Outlet/></main>
                 </Providers>
             ),
+            errorElement: <RouteError />,
             children: [
                 {path: "/", element: <Home/>},
                 {path: "/nodes", element: <Nodes/>},

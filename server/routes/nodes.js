@@ -1,6 +1,9 @@
-const app = require('express').Router();
-const nodes = require('../controller/node');
-const password = require("../middlewares/password");
+import express from 'express';
+import * as nodes from '../controller/node.js';
+import password from '../middlewares/password.js';
+import { passwordHeaderNames, writePasswordHeaders } from '../util/passwordHeader.js';
+
+const app = express.Router();
 
 app.get("/", password(false), async (req, res) => {
     return res.json(await nodes.listAll());
@@ -32,7 +35,7 @@ app.delete("/:nodeId", password(false), async (req, res) => {
     const node = await nodes.getOne(req.params.nodeId);
     if (node === null) return res.status(404).json({message: "Node not found"});
 
-    await nodes.delete(req.params.nodeId);
+    await nodes.deleteNode(req.params.nodeId);
     res.json({message: "Node successfully deleted"});
 });
 
@@ -76,10 +79,11 @@ app.all("/:nodeId/*route", password(false), async (req, res) => {
 
     const url = node.url + req.originalUrl.replace("/api/nodes/" + req.params.nodeId, "/api");
 
-    req.headers['password'] = node.password;
+    passwordHeaderNames.forEach(name => delete req.headers[name]);
+    Object.assign(req.headers, writePasswordHeaders(node.password));
     delete req.headers['host'];
 
     await nodes.proxyRequest(url, req, res);
 });
 
-module.exports = app;
+export default app;

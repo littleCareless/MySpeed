@@ -1,76 +1,147 @@
 import "./styles.sass";
 import Logo from "@/common/assets/logo192.png";
-import Button from "@/common/components/Button";
-import {faBars, faBarsStaggered, faHeart} from "@fortawesome/free-solid-svg-icons";
-import {Link} from "react-router-dom";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {useEffect, useState} from "react";
-import {DOCUMENTATION_BASE} from "@/main.jsx";
+import {
+  faXmark,
+  faBars,
+  faArrowUpRightFromSquare,
+} from "@fortawesome/free-solid-svg-icons";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
+import { Link, useLocation } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState, useEffect } from "react";
+import { DOCUMENTATION_BASE } from "@/common/utils/constants";
 
-export const DONATION_LINK = "https://www.ko-fi.com/gnmyt";
+export const GITHUB_LINK = "https://github.com/gnmyt/myspeed";
+
+const NAV_ITEMS = [
+  { path: "/", label: "Home", isExternal: false },
+  { path: "/install", label: "Install", isExternal: false },
+  { path: "/tutorials", label: "Tutorials", isExternal: false },
+  { path: DOCUMENTATION_BASE, label: "Docs", isExternal: true },
+];
 
 export const Navigation = () => {
-    const [mobileOpen, setMobileOpen] = useState(true);
-    const [showScreen, setShowScreen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const location = useLocation();
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            setMobileOpen(false);
-        }, 500);
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-        return () => clearTimeout(timeout);
-    }, []);
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location]);
 
-    const onAnimationEnd = (event) => {
-        if (event.animationName === "navClose") {
-            setShowScreen(false);
-        }
-    }
+  const isActive = (path) => location.pathname === path;
 
-    const openMenu = () => {
-        setMobileOpen(true);
-        setShowScreen(true);
-    }
+  return (
+    <>
+      <nav className={scrolled ? "nav-scrolled" : ""}>
+        <div className="nav-inner">
+          <Link className="logo-area" to="/" aria-label="MySpeed home">
+            <img src={Logo} alt="" />
+            <span>MySpeed</span>
+          </Link>
 
-    return (
-        <>
-            <nav>
-                <Link className="logo-area" to="/">
-                    <img src={Logo} alt="Logo"/>
-                    <h1>MySpeed</h1>
+          <div className="nav-links" aria-label="Primary navigation">
+            {NAV_ITEMS.map((item) =>
+              item.isExternal ? (
+                <a
+                  key={item.path}
+                  href={item.path}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.label}
+                  <FontAwesomeIcon
+                    icon={faArrowUpRightFromSquare}
+                    className="external-icon"
+                  />
+                </a>
+              ) : (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={isActive(item.path) ? "active" : ""}
+                >
+                  {item.label}
                 </Link>
-                <div className="nav-area">
-                    <ul>
-                        <li><Link to="/install">Install</Link></li>
-                        <li><Link to="/tutorials">Tutorials</Link></li>
-                        <li><Link to={DOCUMENTATION_BASE}>Documentation</Link></li>
-                    </ul>
-                    <Button icon={faHeart} text="Donate" color="red"
-                            onClick={() => window.open(DONATION_LINK, "_blank")}/>
-                </div>
-                <div className="mobile-toggle" onClick={openMenu}>
-                    <FontAwesomeIcon icon={mobileOpen ? faBarsStaggered : faBars}/>
-                </div>
-            </nav>
+              ),
+            )}
+          </div>
 
-            <div className={`mobile-nav ${mobileOpen ? "" : "mobile-nav-closed"}`}
-                 onClick={() => setMobileOpen(false)} onAnimationEnd={onAnimationEnd}>
-                <Link className={`logo${showScreen ? "" : " logo-pulse"}`} to="/">
-                    <img src={Logo} alt="Logo"/>
-                    <h1>MySpeed</h1>
-                </Link>
-                {showScreen && <>
-                    <div className="mobile-links">
-                        <Link to={"/install"}>Install</Link>
-                        <Link to={"/tutorials"}>Tutorials</Link>
-                        <Link to={DOCUMENTATION_BASE}>Documentation</Link>
-                    </div>
-                    <Button icon={faHeart} text="Donate" color="red"
-                            onClick={() => window.open(DONATION_LINK, "_blank")}/>
-                </>
-                }
-            </div>
+          <div className="nav-actions">
+            <a
+              href={GITHUB_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="github-link"
+              aria-label="Open MySpeed on GitHub"
+            >
+              <FontAwesomeIcon icon={faGithub} />
+            </a>
 
-        </>
-    );
-}
+            <button
+              className="mobile-toggle"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+            >
+              <FontAwesomeIcon icon={mobileOpen ? faXmark : faBars} />
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      <div className={`mobile-nav ${mobileOpen ? "mobile-open" : ""}`}>
+        <div className="mobile-header">
+          <Link to="/" className="mobile-logo">
+            <img src={Logo} alt="MySpeed Logo" />
+            <span>MySpeed</span>
+          </Link>
+          <button className="mobile-close" onClick={() => setMobileOpen(false)}>
+            <FontAwesomeIcon icon={faXmark} />
+          </button>
+        </div>
+
+        <div className="mobile-links">
+          {NAV_ITEMS.map((item) =>
+            item.isExternal ? (
+              <a
+                key={item.path}
+                href={item.path}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {item.label}
+                <FontAwesomeIcon
+                  icon={faArrowUpRightFromSquare}
+                  className="external-icon"
+                />
+              </a>
+            ) : (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={isActive(item.path) ? "active" : ""}
+              >
+                {item.label}
+              </Link>
+            ),
+          )}
+          <a href={GITHUB_LINK} target="_blank" rel="noopener noreferrer">
+            GitHub
+          </a>
+        </div>
+      </div>
+
+      {mobileOpen && (
+        <div className="mobile-overlay" onClick={() => setMobileOpen(false)} />
+      )}
+    </>
+  );
+};

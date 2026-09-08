@@ -1,7 +1,8 @@
-const config = require('../controller/config');
-const bcrypt = require('bcrypt');
+import * as config from '../controller/config.js';
+import bcrypt from 'bcryptjs';
+import { readPasswords } from '../util/passwordHeader.js';
 
-module.exports = (allowViewAccess) => async (req, res, next) => {
+export default (allowViewAccess) => async (req, res, next) => {
     if (process.env.PREVIEW_MODE === "true") return next();
 
     let passwordHash = await config.getValue("password");
@@ -12,7 +13,7 @@ module.exports = (allowViewAccess) => async (req, res, next) => {
         return next();
     }
 
-    if (req.headers.password && bcrypt.compareSync(req.headers.password, passwordHash)) {
+    if (readPasswords(req).some(candidate => bcrypt.compareSync(candidate, passwordHash))) {
         req.viewMode = false;
         return next();
     }
@@ -23,4 +24,4 @@ module.exports = (allowViewAccess) => async (req, res, next) => {
     }
 
     return res.status(401).json({message: "Please provide the correct password in the header"});
-}
+};
